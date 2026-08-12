@@ -29,6 +29,7 @@ export interface MaterialAgent {
   inventory: Record<string, number>;
   inventory_capacity: number;
   active: boolean;
+  current_action: string | null;
 }
 
 export interface ResourceNode {

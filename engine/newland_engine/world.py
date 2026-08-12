@@ -154,6 +154,9 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
                     agent.skills.get(practiced_skill, 0.0)
                     + float(event.payload.get("skill_gain_each", 0.0)),
                 )
+    elif event.event_type == "ActionAccepted":
+        agent = state.agents[event.actor_ids[0]]
+        agent.current_action = event.payload.get("action_type")
     elif event.event_type == "DisputeOpened":
         state.disputes[event.event_id] = DisputeState(
             dispute_id=event.event_id,
@@ -481,7 +484,7 @@ class WorldAdjudicator:
                     event_type="AgentRested",
                     payload={
                         "duration_minutes": intention.duration_minutes,
-                        "energy_recovered": min(0.25, intention.duration_minutes / 240),
+                        "energy_recovered": min(1.0, intention.duration_minutes * 0.03),
                     },
                     **common,
                 )

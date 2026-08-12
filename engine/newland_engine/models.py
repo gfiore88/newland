@@ -427,6 +427,7 @@ class MaterialAgentState:
     active: bool = True
     is_dead: bool = False
     starvation_ticks: int = 0
+    current_action: str | None = None
 
 
 @dataclass(slots=True)

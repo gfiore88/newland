@@ -39,6 +39,7 @@ export class NewlandMapScene {
   private readonly entityLayer = new Container();
   private readonly labelLayer = new Container();
   private readonly resonanceMarks: Graphics[] = [];
+  private readonly restMarks: Text[] = [];
   private dragPointer: number | null = null;
   private dragOrigin = { x: 0, y: 0 };
   private viewportOrigin = { x: 0, y: 0 };
@@ -126,6 +127,10 @@ export class NewlandMapScene {
       for (const [index, mark] of this.resonanceMarks.entries()) {
         mark.alpha = 0.28 + Math.sin(phase + index * 0.7) * 0.12;
         mark.scale.set(1 + Math.sin(phase + index) * 0.025);
+      }
+      for (const [index, mark] of this.restMarks.entries()) {
+        mark.y = -22 + Math.sin(phase * 2 + index) * 3;
+        mark.alpha = 0.6 + Math.sin(phase * 2 + index) * 0.4;
       }
       void ticker;
     });
@@ -286,6 +291,16 @@ export class NewlandMapScene {
         name.anchor.set(0.5, 0);
         name.position.set(0, 17);
         group.addChild(shadow, body, name);
+        if (agent.current_action === "rest") {
+          const zzz = new Text({
+            text: "Zzz",
+            style: { fill: COLORS.mossBright, fontFamily: "Inter, sans-serif", fontSize: 10, fontWeight: "bold" },
+          });
+          zzz.anchor.set(0.5, 1);
+          zzz.position.set(0, -22);
+          group.addChild(zzz);
+          this.restMarks.push(zzz);
+        }
         this.entityLayer.addChild(group);
       });
     }
@@ -336,6 +351,7 @@ export class NewlandMapScene {
 
   private clearLayers(): void {
     this.resonanceMarks.length = 0;
+    this.restMarks.length = 0;
     for (const layer of [
       this.terrainLayer,
       this.pathLayer,
