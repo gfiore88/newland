@@ -61,6 +61,7 @@
 - [adr-0008-zero-static-agent-decisions.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0008-zero-static-agent-decisions.md) - *ADR-0008: ogni decisione dei Newlander nasce in tempo reale dalla cognizione generativa; nessun fallback statico.*
 - [adr-0009-supervised-runtime-and-inference-priority.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0009-supervised-runtime-and-inference-priority.md) - *ADR-0009: supervisore unico e priorità agent-first per l'inferenza locale condivisa.*
 - [adr-0010-dynamic-embodied-carrying-capacity.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0010-dynamic-embodied-carrying-capacity.md) - *ADR-0010 proposto: capacità di carico individuale derivata dal corpo e dalla sua storia fisica.*
+- [adr-0011-generative-arrival-identity.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0011-generative-arrival-identity.md) - *ADR-0011: Generative Arrival Identity (Nessun profilo statico agli arrivi).*
 
 ---
 

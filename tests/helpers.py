@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
+from newland_engine.arrivals import ArrivalProfile
 from newland_engine.cognition import (
     AffectRevision,
     AnamnesisFragmentRevision,
@@ -20,7 +21,44 @@ from newland_engine.cognition import (
     ResonanceOrientationRevision,
     RoleInterpretationRevision,
 )
-from newland_engine.models import Intention
+from newland_engine.models import AgentMind, Intention
+
+TEST_FIXTURE_PROFILES = (
+    ArrivalProfile(
+        mind=AgentMind(
+            agent_id="nwl-001",
+            name="Elia Moretti",
+            values=["cura", "sincerità", "custodia"],
+            temperament=["meditativo", "pragmatico", "melanconico"],
+            goals=["comprendere la cittadina senza forzare risposte"],
+        ),
+        native_language="it",
+        arrival_memory=(
+            "Ricordo una strada secondaria diventata gradualmente silenziosa, "
+            "fino all'ingresso nella cittadina."
+        ),
+        language_proficiencies={"it": 1.0},
+        skills={"osservazione": 0.55, "cura_materiali": 0.45},
+        location="cittadina_iniziale",
+    ),
+    ArrivalProfile(
+        mind=AgentMind(
+            agent_id="nwl-002",
+            name="Amina Haddad",
+            values=["dignità", "reciprocità", "prudenza"],
+            temperament=["osservatrice", "riservata", "tenace"],
+            goals=["trovare un ritmo sicuro nel nuovo luogo"],
+        ),
+        native_language="ar",
+        arrival_memory=(
+            "Ricordo una deviazione ordinaria, l'aria cambiata senza una soglia visibile "
+            "e l'impossibilità di ritrovare la strada percorsa."
+        ),
+        language_proficiencies={"ar": 1.0},
+        skills={"osservazione": 0.45, "orientamento": 0.6, "mediazione": 0.5},
+        location="cittadina_iniziale",
+    ),
+)
 
 
 class ScriptedTestCognition:

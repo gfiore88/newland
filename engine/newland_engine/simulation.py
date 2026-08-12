@@ -29,44 +29,10 @@ from .physiology import PhysiologySystem
 from .scheduler import ActivationScheduler
 from .world import WorldAdjudicator, reduce_event, replay
 
-DEFAULT_AGENTS: tuple[AgentMind, ...] = ()
-INITIAL_AGENT_BODIES: dict[str, dict[str, Any]] = {}
-INITIAL_ARRIVAL_MEMORIES: dict[str, str] = {}
 
-DEFAULT_INITIAL_PROFILES = (
-    ArrivalProfile(
-        mind=AgentMind(
-            agent_id="nwl-001",
-            name="Elia Moretti",
-            values=["cura", "sincerità", "custodia"],
-            temperament=["meditativo", "pragmatico", "melanconico"],
-            goals=["comprendere la cittadina senza forzare risposte"],
-        ),
-        native_language="it",
-        arrival_memory=(
-            "Ricordo una strada secondaria diventata gradualmente silenziosa, "
-            "fino all'ingresso nella cittadina."
-        ),
-        language_proficiencies={"it": 1.0},
-        skills={"osservazione": 0.55, "cura_materiali": 0.45},
-    ),
-    ArrivalProfile(
-        mind=AgentMind(
-            agent_id="nwl-002",
-            name="Amina Haddad",
-            values=["dignità", "reciprocità", "prudenza"],
-            temperament=["osservatrice", "riservata", "tenace"],
-            goals=["trovare un ritmo sicuro nel nuovo luogo"],
-        ),
-        native_language="ar",
-        arrival_memory=(
-            "Ricordo una deviazione ordinaria, l'aria cambiata senza una soglia visibile "
-            "e l'impossibilità di ritrovare la strada percorsa."
-        ),
-        language_proficiencies={"ar": 1.0},
-        skills={"osservazione": 0.45, "orientamento": 0.6, "mediazione": 0.5},
-    ),
-)
+# NOTE: Test fixture profiles for seed_initial_encounter live in tests/helpers.py
+# per ADR-0008 [AUT-007]. No static identity data in production code.
+
 
 INITIAL_TERRITORY = {
     "locations": {
@@ -178,19 +144,11 @@ class NewlandSimulation:
                     "event store contains a world with agents but no persisted minds"
                 )
             self._ensure_territory()
-            self._ensure_initial_capabilities()
-            self._ensure_initial_arrival_memories()
             self._rebuild_agenda()
             return
 
-        minds = {
-            mind.agent_id: AgentMind.from_dict(mind.to_dict())
-            for mind in DEFAULT_AGENTS
-        }
         tick = 0
         world_time = world_time_for_tick(tick)
-        location = "cittadina_iniziale"
-        all_agents = tuple(sorted(minds))
         events = [
             EventEnvelope(
                 event_type="WorldInitialized",
@@ -199,55 +157,8 @@ class NewlandSimulation:
                 payload={"name": "Newland", **INITIAL_TERRITORY},
             )
         ]
-        for mind in minds.values():
-            body = INITIAL_AGENT_BODIES[mind.agent_id]
-            events.extend(
-                [
-                    EventEnvelope(
-                        event_type="AgentRegistered",
-                        world_tick=tick,
-                        world_time=world_time,
-                        actor_ids=(mind.agent_id,),
-                        location=location,
-                        payload={
-                            "name": mind.name,
-                            "location": location,
-                            "energy": 0.8,
-                            "hunger": 0.1,
-                            "thirst": 0.1,
-                            "inventory_capacity": 20.0,
-                            **body,
-                        },
-                        visibility="private",
-                        recipient_ids=(mind.agent_id,),
-                    ),
-                    EventEnvelope(
-                        event_type="AgentArrived",
-                        world_tick=tick,
-                        world_time=world_time,
-                        actor_ids=(mind.agent_id,),
-                        location=location,
-                        payload={"name": mind.name},
-                        visibility="local",
-                        recipient_ids=all_agents,
-                    ),
-                    EventEnvelope(
-                        event_type="TransitionRemembered",
-                        world_tick=tick,
-                        world_time=world_time,
-                        actor_ids=(mind.agent_id,),
-                        location=location,
-                        payload={"experience": INITIAL_ARRIVAL_MEMORIES[mind.agent_id]},
-                        visibility="private",
-                        recipient_ids=(mind.agent_id,),
-                    ),
-                ]
-            )
         persisted = self.store.append_many(events)
         self.state = replay(persisted)
-        self.minds = minds
-        for mind in self.minds.values():
-            self.store.save_mind(mind)
 
     def _ensure_territory(self) -> None:
         if not self.state.resources or not self.state.activities:
@@ -290,57 +201,13 @@ class NewlandSimulation:
         for event in persisted:
             reduce_event(self.state, event)
 
-    def _ensure_initial_capabilities(self) -> None:
-        events: list[EventEnvelope] = []
-        for agent_id, body in INITIAL_AGENT_BODIES.items():
-            agent = self.state.agents.get(agent_id)
-            if agent is None or agent.native_language != "und":
-                continue
-            events.append(
-                EventEnvelope(
-                    event_type="AgentCapabilitiesConfigured",
-                    world_tick=self.state.tick,
-                    world_time=world_time_for_tick(self.state.tick),
-                    actor_ids=(agent_id,),
-                    location=agent.location,
-                    payload=body,
-                    visibility="private",
-                    recipient_ids=(agent_id,),
-                )
-            )
-        if not events:
-            return
-        persisted = self.store.append_many(events)
-        for event in persisted:
-            reduce_event(self.state, event)
-
-    def _ensure_initial_arrival_memories(self) -> None:
-        remembered_ids = {
-            event.actor_ids[0]
-            for event in self.store.events()
-            if event.event_type == "TransitionRemembered" and event.actor_ids
-        }
-        events = [
-            EventEnvelope(
-                event_type="TransitionRemembered",
-                world_tick=self.state.tick,
-                world_time=world_time_for_tick(self.state.tick),
-                actor_ids=(agent_id,),
-                location=self.state.agents[agent_id].location,
-                payload={"experience": experience},
-                visibility="private",
-                recipient_ids=(agent_id,),
-            )
-            for agent_id, experience in INITIAL_ARRIVAL_MEMORIES.items()
-            if agent_id in self.state.agents and agent_id not in remembered_ids
-        ]
-        if events:
-            self.store.append_many(events)
-
-    def seed_initial_encounter(self) -> None:
+    def seed_initial_encounter(
+        self, profiles: tuple[ArrivalProfile, ...] | None = None
+    ) -> None:
+        """Seed world with test fixture profiles (ADR-0008 [AUT-007]: test doubles only)."""
         self.initialize()
-        if not self.minds:
-            self.admit_arrivals(DEFAULT_INITIAL_PROFILES)
+        if not self.minds and profiles is not None:
+            self.admit_arrivals(profiles)
         if self.scheduler:
             return
         self._rebuild_agenda()

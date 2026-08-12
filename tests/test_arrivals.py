@@ -4,7 +4,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import json
+from io import BytesIO
+from unittest.mock import patch
+
 from helpers import ScriptedTestCognition
+from newland_engine.arrival_factory import GenerativeArrivalFactory
 from newland_engine.arrivals import ArrivalProfile
 from newland_engine.event_store import EventStore
 from newland_engine.models import AgentMind
@@ -124,6 +129,47 @@ class ArrivalTests(unittest.TestCase):
                 self.assertIn("nwl-101", main_sim.minds)
                 self.assertEqual("Lucía Rivera", main_sim.minds["nwl-101"].name)
                 self.assertGreaterEqual(len(produced), 1)
+
+
+    @patch("newland_engine.arrival_factory.urlopen")
+    def test_generative_arrival_factory(self, mock_urlopen) -> None:
+        """Verify GenerativeArrivalFactory produces a valid ArrivalProfile (ADR-0011)."""
+        mock_response = {
+            "model": "test-model",
+            "message": {
+                "content": json.dumps({
+                    "values": ["coraggio", "libertà"],
+                    "temperament": ["vivace", "ribelle"],
+                    "goals": ["esplorare ogni angolo della cittadina"],
+                    "skills": {"corsa": 0.8, "sopravvivenza": 0.4},
+                    "arrival_memory": "Stavo correndo lungo il fiume, l'acqua si è fatta stranamente silenziosa e mi sono ritrovato qui."
+                })
+            }
+        }
+        
+        class MockResponseContextManager:
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                pass
+            def read(self):
+                return json.dumps(mock_response).encode("utf-8")
+                
+        mock_urlopen.return_value = MockResponseContextManager()
+
+        factory = GenerativeArrivalFactory(model="test-model")
+        profile, provenance = factory.generate(name="Marco Rossi", native_language="it")
+
+        self.assertEqual("Marco Rossi", profile.mind.name)
+        self.assertEqual(["coraggio", "libertà"], profile.mind.values)
+        self.assertEqual(["vivace", "ribelle"], profile.mind.temperament)
+        self.assertEqual(["esplorare ogni angolo della cittadina"], profile.mind.goals)
+        self.assertEqual(0.8, profile.skills["corsa"])
+        self.assertEqual("Stavo correndo lungo il fiume, l'acqua si è fatta stranamente silenziosa e mi sono ritrovato qui.", profile.arrival_memory)
+        
+        self.assertEqual("ollama", provenance.provider)
+        self.assertEqual("test-model", provenance.model)
+        self.assertEqual(1, provenance.attempts)
 
 
 if __name__ == "__main__":

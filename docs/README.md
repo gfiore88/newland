@@ -24,7 +24,8 @@ docs/
 │   ├── adr-0007-autonomous-agent-mind-and-world-runtime.md <-- ADR-0007 (Runtime Agenti Autonomi & World Adjudicator)
 │   ├── adr-0008-zero-static-agent-decisions.md             <-- ADR-0008 (Zero Decisioni Statiche)
 │   ├── adr-0009-supervised-runtime-and-inference-priority.md <-- ADR-0009 (Supervisore & Priorità LLM)
-│   └── adr-0010-dynamic-embodied-carrying-capacity.md        <-- ADR-0010 proposto (Capacità corporea dinamica)
+│   ├── adr-0010-dynamic-embodied-carrying-capacity.md        <-- ADR-0010 proposto (Capacità corporea dinamica)
+│   └── adr-0011-generative-arrival-identity.md             <-- ADR-0011 (Generative Arrival Identity)
 ├── agents/                                  <-- Specifiche ed Agenti
 │   └── templates/                           <-- Template Schede Personaggio (.agent.md)
 │       └── character-template.agent.md

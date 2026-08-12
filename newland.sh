@@ -11,7 +11,7 @@ show_menu() {
   echo "=================================================="
   echo "  1) 🧹 Reset Mondo (Pulisce DB e processi)"
   echo "  2) 🚀 Avvia Server Live (http://0.0.0.0:8765)"
-  echo "  3) 👤 Fai Entrare un Abitante (Varca la Soglia)"
+  echo "  3) 👤 Fai Entrare un Abitante (Identità generata da AI)"
   echo "  4) 🚪 Esci"
   echo "=================================================="
 }
