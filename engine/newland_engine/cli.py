@@ -25,7 +25,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--model",
         action="append",
         dest="models",
-        help="Ollama model; repeat for generative failover (default: qwen3:4b)",
+        help="Ollama model; repeat for generative failover (default: qwen3:8b)",
     )
 
     subparsers.add_parser("events", help="print the canonical event log")
@@ -36,7 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "run":
-        models = args.models or ["qwen3:4b"]
+        models = args.models or ["qwen3:8b"]
         cognition = GenerativeCognitionPool(
             [OllamaCognition(model=model) for model in models]
         )

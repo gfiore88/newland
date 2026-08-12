@@ -13,7 +13,7 @@ uv run newland --db data/newland.db run
 
 # Failover fra modelli generativi, senza fallback statico
 uv run newland --db data/newland.db run \
-  --model qwen3:4b --model qwen3:8b
+  --model qwen3:8b --model qwen3:4b
 
 # Ispezione della verità canonica
 uv run newland --db data/newland.db events
