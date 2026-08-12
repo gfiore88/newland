@@ -36,4 +36,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Creata la sintesi fonte `src-brainstorming-04-anamnesis-and-the-way-of-newland.md`.
 - Compilata l'entità `ent-il-modo-di-newland.md`.
 - Compilato il concetto `cnc-ricerca-anamnesi.md`.
+
+## [2026-08-12] ingest | Brainstorming 05 - Singolarità del Modo, Flashback e Scelta di Vivere
+- Ingerita fonte grezza `docs/raw/raw-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md`.
+- Creata la sintesi fonte `src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md`.
+- Compilata l'entità `ent-nodi-di-risonanza.md`.
+- Compilato il concetto `cnc-scelta-del-presente.md`.
 - Aggiornato l'indice generale `docs/index.md`.
