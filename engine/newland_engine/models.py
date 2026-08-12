@@ -165,6 +165,28 @@ class RoleInterpretation:
 
 
 @dataclass(slots=True)
+class AnamnesisFragment:
+    fragment_key: str
+    phenomenon_label: str
+    content: str
+    interpretation: str
+    confidence: float
+    created_tick: int
+    updated_tick: int
+    source_event_ids: list[str] = field(default_factory=list)
+    source_memory_ids: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
+class ResonanceOrientation:
+    receptive: bool
+    interpretation: str
+    updated_tick: int
+    source_event_ids: list[str] = field(default_factory=list)
+    source_memory_ids: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
 class AgentMind:
     agent_id: str
     name: str
@@ -182,6 +204,8 @@ class AgentMind:
     plans: dict[str, Plan] = field(default_factory=dict)
     commitments: dict[str, Commitment] = field(default_factory=dict)
     role_interpretations: dict[str, RoleInterpretation] = field(default_factory=dict)
+    anamnesis_fragments: dict[str, AnamnesisFragment] = field(default_factory=dict)
+    resonance_orientation: ResonanceOrientation | None = None
     memories: list[Memory] = field(default_factory=list)
     reflections: list[Reflection] = field(default_factory=list)
     last_perceived_sequence: int = 0
@@ -260,7 +284,29 @@ class AgentMind:
             )
             for key, value in data.get("role_interpretations", {}).items()
         }
+        normalized["anamnesis_fragments"] = {
+            key: (
+                value
+                if isinstance(value, AnamnesisFragment)
+                else AnamnesisFragment(**value)
+            )
+            for key, value in data.get("anamnesis_fragments", {}).items()
+        }
+        orientation = data.get("resonance_orientation")
+        normalized["resonance_orientation"] = (
+            orientation
+            if orientation is None or isinstance(orientation, ResonanceOrientation)
+            else ResonanceOrientation(**orientation)
+        )
         return cls(**normalized)
+
+    @property
+    def resonance_receptive(self) -> bool:
+        return (
+            True
+            if self.resonance_orientation is None
+            else self.resonance_orientation.receptive
+        )
 
     def relationship_with(self, other_id: str) -> Relationship:
         if other_id == self.agent_id:

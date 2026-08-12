@@ -138,6 +138,23 @@ class ResonanceMechanicsTests(unittest.TestCase):
         self.assertEqual("ActionRejected", remote[-1].event_type)
         self.assertEqual("ActionRejected", invented[-1].event_type)
 
+    def test_closed_inner_channel_filters_signal_without_rewriting_it(self) -> None:
+        self.state.agents["nwl-001"].location = "spring"
+        signal = self.adjudicator.adjudicate(
+            self.state,
+            "nwl-001",
+            Intention(action_type="attune_resonance", node_id="spring_echo"),
+            tick=1,
+        )[-1]
+        service = PerceptionService()
+
+        self.assertEqual(1, len(service.perceive("nwl-001", [signal])))
+        self.assertEqual(
+            [],
+            service.perceive("nwl-001", [signal], resonance_receptive=False),
+        )
+        self.assertEqual("ResonanceSignalReceived", signal.event_type)
+
 
 if __name__ == "__main__":
     unittest.main()

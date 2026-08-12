@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from newland_engine.cognition import (
     AffectRevision,
+    AnamnesisFragmentRevision,
     AttentionSchedule,
     BeliefRevision,
     CognitionContext,
@@ -16,6 +17,7 @@ from newland_engine.cognition import (
     PlanRevision,
     ReflectionDraft,
     RelationshipRevision,
+    ResonanceOrientationRevision,
     RoleInterpretationRevision,
 )
 from newland_engine.models import Intention
@@ -244,6 +246,71 @@ class GeneratedRoleInterpretationTestCognition:
             ),
             provider="test-double",
             model="generated-role-interpretation-fixture",
+            inference_id=str(uuid4()),
+            attempts=1,
+        )
+
+
+class GeneratedAnamnesisTestCognition:
+    def decide(self, context: CognitionContext) -> CognitionResult:
+        signal = next(
+            observation.event
+            for observation in reversed(context.observations)
+            if observation.event.event_type == "ResonanceSignalReceived"
+        )
+        return CognitionResult(
+            intention=Intention(
+                action_type="rest",
+                duration_minutes=5,
+                motivation_summary=(
+                    "Fermarmi dopo un'esperienza che non so ancora interpretare."
+                ),
+                confidence=0.72,
+            ),
+            memory_appraisals=(
+                MemoryAppraisal(
+                    source_event_id=signal.event_id,
+                    subjective_summary=(
+                        "Nel bosco ho sentito un segnale che la mia mente ha tradotto "
+                        "in un'immagine incerta."
+                    ),
+                    salience=0.91,
+                    emotional_tone="disorientamento quieto",
+                    confidence=0.68,
+                ),
+            ),
+            mental_updates=MentalUpdates(
+                anamnesis_fragments=(
+                    AnamnesisFragmentRevision(
+                        fragment_key="cerchio_di_luce_senza_nome",
+                        phenomenon_label="immagine improvvisa e incompleta",
+                        content=(
+                            "Una curva luminosa si richiude su se stessa, ma non so "
+                            "se sia ricordo, intuizione o semplice risposta del corpo."
+                        ),
+                        interpretation=(
+                            "La considero una possibilità soggettiva, non una verità "
+                            "sul passato o sul mondo."
+                        ),
+                        confidence=0.43,
+                        source_event_ids=(signal.event_id,),
+                    ),
+                ),
+                resonance_orientation=ResonanceOrientationRevision(
+                    receptive=False,
+                    interpretation=(
+                        "Per ora scelgo di non cercare altri segnali e di tornare "
+                        "alla vita presente."
+                    ),
+                    source_event_ids=(signal.event_id,),
+                ),
+            ),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=12,
+                reason="Lasciare sedimentare l'esperienza senza inseguirla.",
+            ),
+            provider="test-double",
+            model="generated-anamnesis-fixture",
             inference_id=str(uuid4()),
             attempts=1,
         )

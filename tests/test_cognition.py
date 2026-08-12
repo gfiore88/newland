@@ -4,6 +4,7 @@ import unittest
 
 from helpers import ScriptedTestCognition, UnavailableTestCognition
 from newland_engine.cognition import (
+    AnamnesisFragmentRevision,
     AttentionSchedule,
     CognitionContext,
     CognitionResult,
@@ -48,6 +49,55 @@ def context() -> CognitionContext:
 
 
 class GenerativeCognitionPoolTests(unittest.TestCase):
+    def test_anamnesis_requires_a_perceived_resonance_source(self) -> None:
+        cognition_context = context()
+        ordinary_event = EventEnvelope(
+            event_type="AgentArrived",
+            world_tick=1,
+            world_time=world_time_for_tick(1),
+            event_id="ordinary-event",
+            actor_ids=("nwl-other",),
+            visibility="local",
+            recipient_ids=("nwl-test",),
+        )
+        cognition_context = CognitionContext(
+            mind=cognition_context.mind,
+            material_state=cognition_context.material_state,
+            observations=(Observation(ordinary_event),),
+            nearby_agents=cognition_context.nearby_agents,
+            activation_reason=cognition_context.activation_reason,
+        )
+        result = CognitionResult(
+            intention=Intention(action_type="rest"),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                anamnesis_fragments=(
+                    AnamnesisFragmentRevision(
+                        fragment_key="unsupported",
+                        phenomenon_label="immagine inventata",
+                        content="Un contenuto senza alcun segnale di risonanza.",
+                        interpretation="Non è fondato nell'esperienza prevista.",
+                        confidence=0.5,
+                        source_event_ids=(ordinary_event.event_id,),
+                    ),
+                )
+            ),
+            attention_schedule=AttentionSchedule(4, "Riesaminare l'esperienza."),
+            provider="test-double",
+            model="invalid-anamnesis-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        with self.assertRaisesRegex(ValueError, "resonance provenance"):
+            validate_cognition_result(result, cognition_context)
+
+    def test_anamnesis_labels_are_free_text_not_runtime_categories(self) -> None:
+        schema = OllamaCognition._schema()["properties"]["mental_updates"][
+            "properties"
+        ]["anamnesis_fragments"]["items"]["properties"]["phenomenon_label"]
+        self.assertNotIn("enum", schema)
+
     def test_resonance_action_must_reference_a_local_node(self) -> None:
         cognition_context = context()
         result = CognitionResult(

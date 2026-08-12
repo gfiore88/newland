@@ -7,6 +7,7 @@ from pathlib import Path
 from helpers import (
     CooperativeCycleTestCognition,
     GeneratedAgendaTestCognition,
+    GeneratedAnamnesisTestCognition,
     GeneratedMentalStateTestCognition,
     GeneratedReflectionTestCognition,
     GeneratedRoleInterpretationTestCognition,
@@ -17,12 +18,116 @@ from helpers import (
     UnavailableTestCognition,
 )
 from newland_engine.event_store import EventStore
-from newland_engine.models import AgentMind, EventEnvelope, world_time_for_tick
+from newland_engine.models import (
+    AgentMind,
+    EventEnvelope,
+    Intention,
+    world_time_for_tick,
+)
 from newland_engine.simulation import NewlandSimulation
-from newland_engine.world import replay
+from newland_engine.world import reduce_event, replay
 
 
 class SimulationTests(unittest.TestCase):
+    def test_resonance_does_not_create_static_flashback_when_cognition_fails(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=UnavailableTestCognition()
+            ) as simulation:
+                simulation.initialize()
+                movement = simulation.adjudicator.adjudicate(
+                    simulation.state,
+                    "nwl-001",
+                    Intention(action_type="move", destination="bosco_est"),
+                    tick=1,
+                    cognition={
+                        "provider": "test-double",
+                        "model": "setup-movement",
+                        "inference_id": "setup",
+                    },
+                )
+                persisted = simulation.store.append_many(movement)
+                for event in persisted:
+                    reduce_event(simulation.state, event)
+
+                produced = simulation.run(max_activations=1)
+                mind = simulation.minds["nwl-001"]
+
+            event_types = {event.event_type for event in produced}
+            self.assertIn("CognitionDeferred", event_types)
+            self.assertNotIn("AnamnesisFragmentRevised", event_types)
+            self.assertNotIn("ResonanceOrientationRevised", event_types)
+            self.assertEqual({}, mind.anamnesis_fragments)
+            self.assertIsNone(mind.resonance_orientation)
+
+    def test_flashback_content_and_channel_closure_are_generated_privately(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=GeneratedAnamnesisTestCognition()
+            ) as simulation:
+                simulation.initialize()
+                movement = simulation.adjudicator.adjudicate(
+                    simulation.state,
+                    "nwl-001",
+                    Intention(action_type="move", destination="bosco_est"),
+                    tick=1,
+                    cognition={
+                        "provider": "test-double",
+                        "model": "setup-movement",
+                        "inference_id": "setup",
+                    },
+                )
+                persisted = simulation.store.append_many(movement)
+                for event in persisted:
+                    reduce_event(simulation.state, event)
+                signal = next(
+                    event
+                    for event in persisted
+                    if event.event_type == "ResonanceSignalReceived"
+                )
+                self.assertEqual({}, simulation.minds["nwl-001"].anamnesis_fragments)
+
+                produced = simulation.run(max_activations=1)
+                mind = simulation.minds["nwl-001"]
+
+            fragment = mind.anamnesis_fragments["cerchio_di_luce_senza_nome"]
+            self.assertEqual(
+                "immagine improvvisa e incompleta", fragment.phenomenon_label
+            )
+            self.assertEqual([signal.event_id], fragment.source_event_ids)
+            self.assertFalse(mind.resonance_receptive)
+            mental_events = [
+                event
+                for event in produced
+                if event.event_type
+                in {"AnamnesisFragmentRevised", "ResonanceOrientationRevised"}
+            ]
+            self.assertEqual(2, len(mental_events))
+            self.assertTrue(
+                all(
+                    event.visibility == "private"
+                    and event.recipient_ids == ("nwl-001",)
+                    and event.payload["cognition"]["model"]
+                    == "generated-anamnesis-fixture"
+                    for event in mental_events
+                )
+            )
+
+            with NewlandSimulation(
+                path, cognition=GeneratedAnamnesisTestCognition()
+            ) as restarted:
+                restored = restarted.minds["nwl-001"]
+                self.assertFalse(restored.resonance_receptive)
+                self.assertIn(
+                    "cerchio_di_luce_senza_nome", restored.anamnesis_fragments
+                )
+
     def test_roles_exist_only_after_private_generative_interpretation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "newland.db"

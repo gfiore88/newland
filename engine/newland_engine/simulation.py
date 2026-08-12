@@ -392,7 +392,11 @@ class NewlandSimulation:
     def _rebuild_agenda(self) -> None:
         for agent_id, mind in self.minds.items():
             unseen = self.store.events(after_sequence=mind.last_perceived_sequence)
-            if self.perception.perceive(agent_id, unseen):
+            if self.perception.perceive(
+                agent_id,
+                unseen,
+                resonance_receptive=mind.resonance_receptive,
+            ):
                 self.scheduler.schedule(
                     agent_id,
                     tick=max(1, self.state.tick),
@@ -458,7 +462,11 @@ class NewlandSimulation:
     def _activate(self, agent_id: str, tick: int, reason: str) -> list[EventEnvelope]:
         mind = self.minds[agent_id]
         unseen = self.store.events(after_sequence=mind.last_perceived_sequence)
-        observations = self.perception.perceive(agent_id, unseen)
+        observations = self.perception.perceive(
+            agent_id,
+            unseen,
+            resonance_receptive=mind.resonance_receptive,
+        )
 
         material = self.state.agents[agent_id]
         nearby = tuple(
@@ -753,12 +761,13 @@ class NewlandSimulation:
     ) -> None:
         for event in events:
             if event.event_type == "ResonanceSignalReceived":
-                self.scheduler.schedule(
-                    actor_id,
-                    tick=tick + 1,
-                    reason="segnale corporeo di risonanza percepito",
-                    priority=5,
-                )
+                if self.minds[actor_id].resonance_receptive:
+                    self.scheduler.schedule(
+                        actor_id,
+                        tick=tick + 1,
+                        reason="segnale corporeo di risonanza percepito",
+                        priority=5,
+                    )
                 continue
             if event.event_type in {"SpeechUttered", "HelpOffered"}:
                 target_id = event.payload.get("target_id")

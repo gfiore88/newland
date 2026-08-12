@@ -7,10 +7,12 @@ from uuid import uuid4
 from .cognition import MentalUpdates
 from .models import (
     AgentMind,
+    AnamnesisFragment,
     Belief,
     Commitment,
     Plan,
     Reflection,
+    ResonanceOrientation,
     RoleInterpretation,
 )
 
@@ -292,6 +294,61 @@ class MentalStateApplier:
                         revision.source_memory_ids,
                     )
                 )
+
+        for revision in updates.anamnesis_fragments:
+            fragment = mind.anamnesis_fragments.get(revision.fragment_key)
+            if fragment is None:
+                fragment = AnamnesisFragment(
+                    fragment_key=revision.fragment_key,
+                    phenomenon_label=revision.phenomenon_label,
+                    content=revision.content,
+                    interpretation=revision.interpretation,
+                    confidence=revision.confidence,
+                    created_tick=tick,
+                    updated_tick=tick,
+                    source_event_ids=list(revision.source_event_ids),
+                    source_memory_ids=list(revision.source_memory_ids),
+                )
+                mind.anamnesis_fragments[revision.fragment_key] = fragment
+            else:
+                fragment.phenomenon_label = revision.phenomenon_label
+                fragment.content = revision.content
+                fragment.interpretation = revision.interpretation
+                fragment.confidence = revision.confidence
+                fragment.updated_tick = tick
+                self._extend_unique(
+                    fragment.source_event_ids, revision.source_event_ids
+                )
+                self._extend_unique(
+                    fragment.source_memory_ids, revision.source_memory_ids
+                )
+            mutations.append(
+                MindMutation(
+                    "AnamnesisFragmentRevised",
+                    asdict(fragment),
+                    revision.source_event_ids,
+                    revision.source_memory_ids,
+                )
+            )
+
+        if updates.resonance_orientation is not None:
+            revision = updates.resonance_orientation
+            orientation = ResonanceOrientation(
+                receptive=revision.receptive,
+                interpretation=revision.interpretation,
+                updated_tick=tick,
+                source_event_ids=list(revision.source_event_ids),
+                source_memory_ids=list(revision.source_memory_ids),
+            )
+            mind.resonance_orientation = orientation
+            mutations.append(
+                MindMutation(
+                    "ResonanceOrientationRevised",
+                    asdict(orientation),
+                    revision.source_event_ids,
+                    revision.source_memory_ids,
+                )
+            )
         return mutations
 
     @staticmethod

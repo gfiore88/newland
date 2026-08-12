@@ -195,6 +195,37 @@ class RoleInterpretationRevision:
 
 
 @dataclass(frozen=True, slots=True)
+class AnamnesisFragmentRevision:
+    fragment_key: str
+    phenomenon_label: str
+    content: str
+    interpretation: str
+    confidence: float
+    source_event_ids: tuple[str, ...] = ()
+    source_memory_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.fragment_key.strip():
+            raise ValueError("anamnesis fragment key is required")
+        if not self.phenomenon_label.strip() or not self.content.strip():
+            raise ValueError("anamnesis phenomenon and content are required")
+        if not 0.0 <= self.confidence <= 1.0:
+            raise ValueError("anamnesis confidence must be between 0 and 1")
+
+
+@dataclass(frozen=True, slots=True)
+class ResonanceOrientationRevision:
+    receptive: bool
+    interpretation: str
+    source_event_ids: tuple[str, ...] = ()
+    source_memory_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.interpretation.strip():
+            raise ValueError("resonance orientation interpretation is required")
+
+
+@dataclass(frozen=True, slots=True)
 class AttentionSchedule:
     next_activation_in_ticks: int
     reason: str
@@ -216,6 +247,8 @@ class MentalUpdates:
     plans: tuple[PlanRevision, ...] = ()
     commitments: tuple[CommitmentRevision, ...] = ()
     role_interpretations: tuple[RoleInterpretationRevision, ...] = ()
+    anamnesis_fragments: tuple[AnamnesisFragmentRevision, ...] = ()
+    resonance_orientation: ResonanceOrientationRevision | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -228,7 +261,7 @@ class CognitionResult:
     model: str
     inference_id: str
     attempts: int
-    prompt_version: str = "agent-cognition-v3"
+    prompt_version: str = "agent-cognition-v4"
 
     def provenance(self) -> dict[str, Any]:
         return {
@@ -377,6 +410,10 @@ class OllamaCognition:
             "senza scegliere da una tassonomia e senza trattarlo come un incarico ufficiale assegnato dal mondo. "
             "Per creare o cambiare una tua interpretazione di ruolo usa operation=upsert; usa operation=remove soltanto "
             "con un interpretation_key già presente in role_interpretations. Se non esistono ruoli interpretati, non puoi rimuoverne. "
+            "Un ResonanceSignalReceived è soltanto uno stimolo: non sei obbligato a viverlo come flashback. "
+            "Se emerge davvero un'immagine, memoria somatica, intuizione o altro fenomeno, formulalo liberamente in anamnesis_fragments, "
+            "come esperienza soggettiva incerta e non come verità canonica. Puoi anche non produrre alcun frammento. "
+            "Con resonance_orientation puoi scegliere liberamente se restare ricettivo o chiudere il canale interiore; usa null se non vuoi cambiare scelta. "
             "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
             "Puoi usare soltanto destination, resource_id e activity_id elencati nelle affordance locali; "
             "la loro presenza non ti obbliga a usarli. "
@@ -447,6 +484,21 @@ class OllamaCognition:
                 )
                 for item in data["role_interpretations"]
             ),
+            anamnesis_fragments=tuple(
+                AnamnesisFragmentRevision(
+                    **OllamaCognition._classify_sources(item, context)
+                )
+                for item in data["anamnesis_fragments"]
+            ),
+            resonance_orientation=(
+                ResonanceOrientationRevision(
+                    **OllamaCognition._classify_sources(
+                        data["resonance_orientation"], context
+                    )
+                )
+                if data["resonance_orientation"] is not None
+                else None
+            ),
         )
 
     @staticmethod
@@ -502,9 +554,12 @@ class OllamaCognition:
             *updates.plans,
             *updates.commitments,
             *updates.role_interpretations,
+            *updates.anamnesis_fragments,
         ]
         if updates.affect is not None:
             sourced_updates.append(updates.affect)
+        if updates.resonance_orientation is not None:
+            sourced_updates.append(updates.resonance_orientation)
         for update in sourced_updates:
             source_events = set(update.source_event_ids)
             source_memories = set(update.source_memory_ids)
@@ -526,6 +581,27 @@ class OllamaCognition:
                 and role.interpretation_key not in context.mind.role_interpretations
             ):
                 raise ValueError("role revision references an unknown interpretation")
+        resonance_event_ids = {
+            observation.event.event_id
+            for observation in context.observations
+            if observation.event.event_type == "ResonanceSignalReceived"
+        }
+        resonance_memory_ids = {
+            memory.memory_id
+            for memory in context.mind.memories
+            if memory.event_type == "ResonanceSignalReceived"
+        }
+        resonance_updates: list[object] = [*updates.anamnesis_fragments]
+        if updates.resonance_orientation is not None:
+            resonance_updates.append(updates.resonance_orientation)
+        for update in resonance_updates:
+            if not (
+                set(update.source_event_ids) & resonance_event_ids
+                or set(update.source_memory_ids) & resonance_memory_ids
+            ):
+                raise ValueError(
+                    "anamnesis and resonance orientation require perceived resonance provenance"
+                )
         for plan in updates.plans:
             if plan.operation != "upsert" and plan.plan_key not in context.mind.plans:
                 raise ValueError("plan revision references an unknown plan")
@@ -744,6 +820,24 @@ class OllamaCognition:
                 }
                 for role in context.mind.role_interpretations.values()
             ],
+            "anamnesis_fragments": [
+                {
+                    "fragment_key": fragment.fragment_key,
+                    "phenomenon_label": fragment.phenomenon_label,
+                    "content": fragment.content,
+                    "interpretation": fragment.interpretation,
+                    "confidence": fragment.confidence,
+                }
+                for fragment in context.mind.anamnesis_fragments.values()
+            ],
+            "resonance_orientation": (
+                {
+                    "receptive": context.mind.resonance_orientation.receptive,
+                    "interpretation": context.mind.resonance_orientation.interpretation,
+                }
+                if context.mind.resonance_orientation is not None
+                else None
+            ),
             "reflections": [
                 {
                     "statement": reflection.statement,
@@ -1154,6 +1248,71 @@ class OllamaCognition:
                                 "additionalProperties": False,
                             },
                         },
+                        "anamnesis_fragments": {
+                            "type": "array",
+                            "description": (
+                                "Esperienze soggettive opzionali generate solo da segnali "
+                                "di risonanza percepiti; non sono fatti canonici sul passato."
+                            ),
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "fragment_key": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                    },
+                                    "phenomenon_label": {
+                                        "type": "string",
+                                        "maxLength": 160,
+                                    },
+                                    "content": {"type": "string", "maxLength": 900},
+                                    "interpretation": {
+                                        "type": "string",
+                                        "maxLength": 700,
+                                    },
+                                    "confidence": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                    },
+                                    "source_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                        "minItems": 1,
+                                    },
+                                },
+                                "required": [
+                                    "fragment_key",
+                                    "phenomenon_label",
+                                    "content",
+                                    "interpretation",
+                                    "confidence",
+                                    "source_ids",
+                                ],
+                                "additionalProperties": False,
+                            },
+                        },
+                        "resonance_orientation": {
+                            "type": ["object", "null"],
+                            "properties": {
+                                "receptive": {"type": "boolean"},
+                                "interpretation": {
+                                    "type": "string",
+                                    "maxLength": 700,
+                                },
+                                "source_ids": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "minItems": 1,
+                                },
+                            },
+                            "required": [
+                                "receptive",
+                                "interpretation",
+                                "source_ids",
+                            ],
+                            "additionalProperties": False,
+                        },
                     },
                     "required": [
                         "beliefs",
@@ -1164,6 +1323,8 @@ class OllamaCognition:
                         "plans",
                         "commitments",
                         "role_interpretations",
+                        "anamnesis_fragments",
+                        "resonance_orientation",
                     ],
                     "additionalProperties": False,
                 },

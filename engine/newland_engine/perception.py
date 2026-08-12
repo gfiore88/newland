@@ -33,10 +33,21 @@ class Observation:
 
 
 class PerceptionService:
-    def perceive(self, agent_id: str, events: list[EventEnvelope]) -> list[Observation]:
+    def perceive(
+        self,
+        agent_id: str,
+        events: list[EventEnvelope],
+        *,
+        resonance_receptive: bool = True,
+    ) -> list[Observation]:
         visible: list[Observation] = []
         for event in events:
             if event.event_type not in PERCEPTIBLE_EVENT_TYPES:
+                continue
+            if (
+                event.event_type == "ResonanceSignalReceived"
+                and not resonance_receptive
+            ):
                 continue
             if not self._visible_to(agent_id, event):
                 continue
