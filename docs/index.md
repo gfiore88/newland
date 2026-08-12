@@ -13,6 +13,7 @@
 - [src-brainstorming-04-anamnesis-and-the-way-of-newland.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-04-anamnesis-and-the-way-of-newland.md) - *Brainstorming 04: L'Anamnesi, la Ricerca del "Modo" e la Sintonizzazione della Coscienza.*
 - [src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md) - *Brainstorming 05: Singolarità del "Modo", Flashback, Nodi Geografici e la Scelta di Vivere Senza Capire.*
 - [src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md) - *Brainstorming 06: Transizione Invisibile Quotidiana, la Cittadina Iniziale ed l'Esplorazione Emergente.*
+- [src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md) - *Brainstorming 07: Conflitti Primordiali, Accoglienza Melanconica ed Architettura Rurale.*
 
 ---
 
@@ -28,6 +29,8 @@
 - [ent-nodi-di-risonanza.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-nodi-di-risonanza.md) - *Luoghi geografici che emettono frequenze sottili e scatenano flashback e percezioni insolite.*
 - [ent-la-cittadina-iniziale.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-la-cittadina-iniziale.md) - *Il micro-insediamento di partenza circondato dai punti d'accesso periferici.*
 - [ent-soglia-invisibile.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-soglia-invisibile.md) - *La transizione impercettibile dal mondo reale a Newland (es. deviazione stradale errata).*
+- [ent-accoglienza-melanconica.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-accoglienza-melanconica.md) - *L'assenza di festa all'arrivo dei nuovi Newlander e la condivisione muta del fardello.*
+- [ent-architettura-rurale.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-architettura-rurale.md) - *L'estetica rurale della Cittadina Iniziale (pietra a secco, legno grezzo, argilla, tetti vegetali).*
 
 ---
 
@@ -40,6 +43,7 @@
 - [cnc-ricerca-anamnesi.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-ricerca-anamnesi.md) - *L'Anamnesi e la ricerca interiore per interpretare ed allinearsi col Modo.*
 - [cnc-scelta-del-presente.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-scelta-del-presente.md) - *La scelta legittima di "soffermarsi a vivere senza capire" vs la via disorientante della conoscenza.*
 - [cnc-esplorazione-emergente.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-esplorazione-emergente.md) - *Il meccanismo di svelamento progressivo dei territori esterni in risposta al desiderio del cuore dei Newlander.*
+- [cnc-gestione-primordiale-conflitti.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-gestione-primordiale-conflitti.md) - *La risoluzione tribale/primordiale dei conflitti e l'emersione spontanea dei ruoli comunitari.*
 
 ---
 

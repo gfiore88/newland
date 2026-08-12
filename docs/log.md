@@ -48,4 +48,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Creata la sintesi fonte `src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md`.
 - Compilate le entità `ent-la-cittadina-iniziale.md` ed `ent-soglia-invisibile.md`.
 - Compilato il concetto `cnc-esplorazione-emergente.md`.
+
+## [2026-08-12] ingest | Brainstorming 07 - Conflitti Primordiali, Accoglienza Melanconica ed Architettura Rurale
+- Ingerita fonte grezza `docs/raw/raw-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md`.
+- Creata la sintesi fonte `src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md`.
+- Compilate le entità `ent-accoglienza-melanconica.md` ed `ent-architettura-rurale.md`.
+- Compilato il concetto `cnc-gestione-primordiale-conflitti.md`.
 - Aggiornato l'indice generale `docs/index.md`.
