@@ -1,0 +1,16 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Logs and Temp Files
+*.log
+*.tmp
+temp/
+tmp/
+
+# Node & Python artifacts if any
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+env/
