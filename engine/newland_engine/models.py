@@ -341,54 +341,48 @@ class Intention:
             raise ValueError("confidence must be between 0 and 1")
         communicative = {
             "speak",
-            "propose_cooperation",
-            "respond_cooperation",
-            "open_dispute",
-            "respond_dispute",
-        }
-        if self.action_type in communicative and not self.spoken_content:
-            raise ValueError(f"{self.action_type} requires spoken_content")
-        if self.action_type in communicative and not self.language:
-            raise ValueError(f"{self.action_type} requires language")
-        if self.action_type == "move" and not self.destination:
-            raise ValueError("move requires destination")
-        if self.action_type in {"gather", "consume"}:
+        if self.action_type in {"speak", "propose_cooperation", "open_dispute", "respond_cooperation", "respond_dispute"}:
+            if not self.spoken_content:
+                raise ValueError(f"Errore critico: l'azione {self.action_type} richiede il campo spoken_content.")
+            if not self.language:
+                raise ValueError(f"Errore critico: l'azione {self.action_type} richiede il campo language.")
+        if self.action_type == "move":
+            if not self.destination:
+                raise ValueError("Errore critico: l'azione move richiede il campo destination.")
+        elif self.action_type in {"gather", "consume"}:
             if not self.resource_id:
-                raise ValueError(f"{self.action_type} requires resource_id")
-            if self.quantity is None or self.quantity <= 0:
-                raise ValueError(f"{self.action_type} requires a positive quantity")
-        if self.action_type == "perform_activity" and not self.activity_id:
-            raise ValueError("perform_activity requires activity_id")
-        if self.action_type == "propose_cooperation" and (
-            not self.target_id or not self.activity_id
-        ):
-            raise ValueError("propose_cooperation requires target_id and activity_id")
-        if self.action_type == "respond_cooperation" and (
-            not self.proposal_id or self.response not in {"accept", "decline"}
-        ):
-            raise ValueError(
-                "respond_cooperation requires proposal_id and accept/decline"
-            )
-        if self.action_type == "perform_cooperation" and not self.proposal_id:
-            raise ValueError("perform_cooperation requires proposal_id")
-        if self.action_type == "open_dispute" and (
-            not self.target_id or not self.subject_event_id
-        ):
-            raise ValueError("open_dispute requires target_id and subject_event_id")
-        if self.action_type == "respond_dispute" and (
-            not self.dispute_id
-            or self.response
-            not in {
+                raise ValueError(f"Errore critico: l'azione {self.action_type} richiede il campo resource_id.")
+            if not self.quantity or self.quantity <= 0:
+                raise ValueError(f"Errore critico: l'azione {self.action_type} richiede una quantity maggiore di zero.")
+        elif self.action_type == "perform_activity":
+            if not self.activity_id:
+                raise ValueError("Errore critico: l'azione perform_activity richiede il campo activity_id.")
+        elif self.action_type == "propose_cooperation":
+            if not self.target_id or not self.activity_id:
+                raise ValueError("Errore critico: l'azione propose_cooperation richiede target_id e activity_id.")
+        elif self.action_type == "respond_cooperation":
+            if not self.proposal_id or self.response not in {"accept", "decline"}:
+                raise ValueError(
+                    "Errore critico: l'azione respond_cooperation richiede proposal_id e response (accept o decline)."
+                )
+        elif self.action_type == "perform_cooperation":
+            if not self.proposal_id:
+                raise ValueError("Errore critico: l'azione perform_cooperation richiede il campo proposal_id.")
+        elif self.action_type == "open_dispute":
+            if not self.target_id or not self.subject_event_id:
+                raise ValueError("Errore critico: l'azione open_dispute richiede target_id e subject_event_id.")
+        elif self.action_type == "respond_dispute":
+            if not self.dispute_id or self.response not in {
                 "contest",
                 "offer_resolution",
                 "accept_resolution",
-            }
-        ):
-            raise ValueError(
-                "respond_dispute requires dispute_id and a supported response"
-            )
-        if self.action_type == "attune_resonance" and not self.node_id:
-            raise ValueError("attune_resonance requires node_id")
+            }:
+                raise ValueError(
+                    "Errore critico: l'azione respond_dispute richiede dispute_id e un response valido (contest, offer_resolution, accept_resolution)."
+                )
+        elif self.action_type == "attune_resonance":
+            if not self.node_id:
+                raise ValueError("Errore critico: l'azione attune_resonance richiede il campo node_id.")
         allowed_fields = ACTION_ARGUMENTS[self.action_type]
         optional_values = {
             "target_id": self.target_id,

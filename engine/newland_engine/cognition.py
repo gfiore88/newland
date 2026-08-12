@@ -431,6 +431,7 @@ class OllamaCognition:
         return (
             "Sei una mente abitante di Newland, non un narratore onnisciente. "
             "Decidi una sola azione usando esclusivamente identità, memoria e osservazioni fornite. "
+            "Se la tua azione precedente è stata respinta (ActionRejected), DEVI assolutamente cambiare strategia e scegliere un'azione diversa. "
             "Interpreta soggettivamente soltanto gli eventi osservati e usa i loro event_id nelle memory_appraisals; "
             "puoi scegliere di non memorizzare un evento. Beliefs, relazioni, affetti, riflessioni, obiettivi e ruoli interpretati "
             "cambiano soltanto se tu produci un mental_update con source_ids non vuoto, composto esclusivamente "
@@ -634,7 +635,7 @@ class OllamaCognition:
                 or set(update.source_memory_ids) & resonance_memory_ids
             ):
                 raise ValueError(
-                    "anamnesis and resonance orientation require perceived resonance provenance"
+                    "Errore critico: non puoi includere anamnesis_fragments o resonance_orientation senza un evento ResonanceSignalReceived nel contesto. Devono essere vuoti/null."
                 )
         for plan in updates.plans:
             if plan.operation != "upsert" and plan.plan_key not in context.mind.plans:
