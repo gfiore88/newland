@@ -75,7 +75,7 @@ root.innerHTML = `
 `;
 
 const stage = requiredElement<HTMLDivElement>("#world-stage");
-const apiBase = import.meta.env.VITE_OBSERVER_API ?? "http://127.0.0.1:8765";
+const apiBase = import.meta.env.VITE_OBSERVER_API ?? window.location.origin;
 const store = new ObserverStore(apiBase);
 let selection: Selection | null = null;
 let lastRenderedSequence = -1;

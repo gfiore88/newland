@@ -147,6 +147,37 @@ describe("ObserverStore", () => {
     expect(store.state.viewMode).toBe("live");
     expect(store.state.viewSnapshot?.last_sequence).toBe(4);
   });
+
+  it("retries bootstrap after the Observer starts late", async () => {
+    vi.useFakeTimers();
+    let firstRequest = true;
+    const fetcher = vi.fn(async (input: string | URL | Request) => {
+      if (firstRequest) {
+        firstRequest = false;
+        throw new TypeError("NetworkError when attempting to fetch resource");
+      }
+      const url = String(input);
+      if (url.includes("snapshot")) return new Response(JSON.stringify(makeSnapshot(3)));
+      if (url.includes("chronicle")) {
+        return new Response(JSON.stringify({ entries: [] }));
+      }
+      return new Response(JSON.stringify({ events: [makeEvent(3)] }));
+    });
+    const store = new ObserverStore(
+      "http://127.0.0.1:8765",
+      fetcher,
+      () => new FakeEventStream(),
+    );
+
+    await store.start();
+    expect(store.state.connection).toBe("offline");
+    await vi.advanceTimersByTimeAsync(2_000);
+
+    expect(store.state.snapshot?.last_sequence).toBe(3);
+    expect(store.state.events.map((event) => event.sequence)).toEqual([3]);
+    store.stop();
+    vi.useRealTimers();
+  });
 });
 
 function makeSnapshot(

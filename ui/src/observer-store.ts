@@ -40,6 +40,7 @@ export class ObserverStore {
   private worldStream: EventStream | null = null;
   private chronicleStream: EventStream | null = null;
   private refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  private bootstrapRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private seekRequest = 0;
   private mutableState: ObserverStoreState = {
     snapshot: null,
@@ -108,6 +109,10 @@ export class ObserverStore {
         connection: "offline",
         error: error instanceof Error ? error.message : String(error),
       });
+      this.bootstrapRetryTimer = setTimeout(() => {
+        this.bootstrapRetryTimer = null;
+        void this.start();
+      }, 2_000);
     }
   }
 
@@ -119,6 +124,10 @@ export class ObserverStore {
     if (this.refreshTimer !== null) {
       clearTimeout(this.refreshTimer);
       this.refreshTimer = null;
+    }
+    if (this.bootstrapRetryTimer !== null) {
+      clearTimeout(this.bootstrapRetryTimer);
+      this.bootstrapRetryTimer = null;
     }
   }
 
