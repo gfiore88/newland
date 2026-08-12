@@ -44,6 +44,9 @@ Ogni evento persistito contiene:
 - [EVT-011] `CooperationProposed`, `CooperationResponded` e `CooperationPerformed` registrano proposta, consenso o rifiuto e attività condivisa come fatti distinti.
 - [EVT-012] `DisputeOpened` e `DisputeResponded` registrano il confronto fra partecipanti su un evento realmente percepito.
 - [EVT-013] `RoleInterpretationRevised` è privato: registra una lettura soggettiva generata dalla mente, non una carica canonica assegnata dal mondo.
+- [EVT-014] `ResonanceNodesConfigured` registra posizione e intensità fisica dei nodi senza descrivere effetti mentali.
+- [EVT-015] `ResonanceSignalReceived` contiene esclusivamente nodo, intensità e modalità di esposizione ed è privato dell'abitante coinvolto.
+- [EVT-016] `AnamnesisFragmentRevised` e `ResonanceOrientationRevised` sono mutazioni private generate dalla mente con provenienza Ollama.
 
 ## 3. Contratto `AgentMind`
 
@@ -59,6 +62,8 @@ La baseline persiste:
 - [MND-008] prossima attivazione scelta dalla mente, con tick e motivazione.
 - [MND-009] lingua madre, lingue parlate, competenze pratiche e appartenenza familiare come fatti situati distinti dalle interpretazioni sociali.
 - [MND-010] interpretazioni private e rivedibili dei ruoli propri o di persone conosciute, con etichetta libera, confidenza e provenienza.
+- [MND-011] frammenti di anamnesi soggettivi, fallibili e rivedibili, distinti dai fatti canonici del mondo.
+- [MND-012] orientamento personale verso la risonanza: la mente può scegliere di restare ricettiva o chiudere il proprio canale attentivo.
 
 Salienza soggettiva, tono emotivo, convinzioni, interpretazione delle relazioni e riflessioni sono output generativi della mente. Il runtime ne valida intervalli e riferimenti agli eventi percepiti, ma non li assegna con tabelle o euristiche statiche.
 
@@ -70,12 +75,14 @@ Ogni risposta cognitiva può includere, oltre all'intenzione:
 - [GEN-002] `beliefs`: revisioni di convinzioni con confidenza e fonti;
 - [GEN-003] `relationships`: variazioni di familiarità, fiducia, calore e tensione scelte dalla mente;
 - [GEN-004] `affect`: variazioni emotive motivate;
-- [GEN-005] `reflections`: sintesi sostenute da memorie esistenti;
+- [GEN-005] `reflections`: sintesi sostenute da eventi percepiti o memorie esistenti;
 - [GEN-006] `goals`: aggiunte o rimozioni motivate degli obiettivi.
 - [GEN-007] `plans`: creazione, revisione, completamento o abbandono di piani con passi espliciti.
 - [GEN-008] `commitments`: impegni autonomi con scadenza e persone conosciute coinvolte.
 - [GEN-009] `attention_schedule`: momento e ragione della prossima riattivazione spontanea.
 - [GEN-010] `role_interpretations`: creazione, revisione o ritiro di significati sociali formulati liberamente dalla mente, senza tassonomia del runtime.
+- [GEN-011] `anamnesis_fragments`: immagini, memorie somatiche, intuizioni o fenomeni liberamente descritti e trattati come esperienze soggettive, non rivelazioni canoniche.
+- [GEN-012] `resonance_orientation`: scelta motivata di ricevere o filtrare futuri segnali interiori; `null` conserva la scelta precedente.
 
 Il runtime limita i delta numerici, impedisce riferimenti a persone o memorie sconosciute e persiste ogni mutazione come evento privato con provenienza del modello. Non decide se o come uno stato mentale debba cambiare.
 
@@ -93,6 +100,8 @@ La mente non contiene lo stato globale e non può leggere direttamente il databa
 - [PER-006] Il contesto cognitivo espone soltanto uscite adiacenti, risorse presenti e attività disponibili nella posizione corrente.
 - [PER-007] Il parlato conserva testo e lingua originali; il runtime non traduce né assegna automaticamente comprensione.
 - [PER-008] La memoria della transizione è percepibile esclusivamente dalla persona che l'ha vissuta.
+- [PER-009] Un segnale di risonanza non è percepibile da altri abitanti e non contiene flashback, immagini, significato o reazione.
+- [PER-010] Dopo una scelta generativa di non ricettività, il filtro attentivo esclude i segnali dalla cognizione senza cancellare o riscrivere gli eventi fisici.
 
 ## 5. Intenzione e arbitraggio
 
@@ -107,6 +116,7 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [ACT-007] Per parlare, la mente sceglie testo e lingua; l'arbitro verifica soltanto che il parlante conosca quella lingua.
 - [ACT-008] Le attività possono richiedere una competenza minima e produrre esperienza incrementale; il runtime non deriva da ciò un ruolo comunitario.
 - [ACT-009] I parametri estranei all'azione scelta vengono rimossi al confine del protocollo LLM; azione, contenuti e parametri pertinenti restano quelli generati dalla mente e attraversano la normale validazione.
+- [ACT-010] `attune_resonance` è un'intenzione generativa volontaria valida soltanto presso un nodo locale; il suo esito fisico non prescrive alcuna esperienza interiore.
 
 ## 6. Arrivi e identità sociali
 
@@ -125,7 +135,17 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [SOC-006] Mediatore, costruttore, saggio, protettore o qualsiasi altra etichetta non appartengono a un enum e non vengono derivati da skill, statistiche o frequenze d'azione.
 - [SOC-007] Ogni mente può attribuire a sé o a persone conosciute ruoli differenti e perfino incompatibili; tali interpretazioni restano private finché un agente non le rende osservabili attraverso una propria azione o parola.
 
-## 8. Scheduling
+## 8. Risonanza e anamnesi
+
+- [RSN-001] I nodi sono fatti territoriali replayable con luogo e intensità; non possiedono tabelle di flashback, archetipi o contenuti narrativi.
+- [RSN-002] Entrare nel luogo di un nodo produce un contatto fisico privato; soltanto la mente decide se trasformarlo in memoria, riflessione, frammento di anamnesi o nessun cambiamento.
+- [RSN-003] Ogni frammento richiede almeno una fonte riconducibile a un `ResonanceSignalReceived` realmente percepito o ricordato dall'agente.
+- [RSN-004] `phenomenon_label`, contenuto, interpretazione e confidenza sono output liberi del modello e non appartengono a enum o pattern del runtime.
+- [RSN-005] La stessa esposizione può produrre esperienze diverse in menti diverse; il runtime non confronta personalità o statistiche per scegliere l'esito.
+- [RSN-006] La scelta di chiudere il canale impedisce l'interrupt cognitivo dei segnali successivi, ma l'agente può continuare la vita ordinaria o scegliere in futuro una nuova sintonizzazione.
+- [RSN-007] Se la cognizione fallisce, il mondo registra `CognitionDeferred` e non crea alcun flashback o orientamento sostitutivo.
+
+## 9. Scheduling
 
 - [SCH-001] Gli agenti vengono attivati da stimoli, soglie di bisogno, incontri, impegni o riflessioni pianificate.
 - [SCH-002] I processi fisici e fisiologici deterministici avanzano senza chiamate LLM; nessun processo deterministico sceglie un'intenzione per un abitante.
@@ -143,7 +163,7 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [BDY-003] Il superamento di una soglia può interrompere e riattivare la cognizione, ma non seleziona riposo, cibo, movimento o alcuna altra risposta.
 - [BDY-004] La risposta al corpo resta un'intenzione generativa dell'agente e attraversa il normale arbitraggio del mondo.
 
-## 9. Replay e test
+## 10. Replay e test
 
 - [TST-001] Riducendo gli eventi dall'inizio si deve ricostruire lo stesso stato materiale.
 - [TST-002] Un evento privato non deve comparire nella percezione di un altro agente.
@@ -151,3 +171,5 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [TST-004] Il replay usa decisioni già committate; una nuova inferenza genera un ramo distinto.
 - [TST-005] Il replay ricostruisce stato e ciclo delle cooperazioni e dei conflitti senza rieseguire inferenze.
 - [TST-006] Una competenza materiale, inclusa `mediazione`, non crea alcun ruolo: serve un'esplicita interpretazione generata dalla mente.
+- [TST-007] Replay e migrazione ricostruiscono i nodi di risonanza senza rigenerare esperienze interiori.
+- [TST-008] Un test di indisponibilità LLM deve provare che il segnale fisico non produce frammenti o orientamenti statici.

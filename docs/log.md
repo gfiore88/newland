@@ -92,3 +92,13 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Validati replay, consenso, provenienza, riferimenti sociali e assenza di tassonomie con 52 test automatici.
 - Verificato con Ollama `qwen3:8b`: Elia ha scelto `perform_activity` e ha generato separatamente per sé il ruolo `Osservatore Silenzioso`, fondato su eventi percepiti e non presente nel codice.
 - Impostato `qwen3:8b` come default locale dopo che il contratto cognitivo ampliato ha mostrato maggiore affidabilità rispetto al 4B; errori residui producono esclusivamente retry generativi o `CognitionDeferred`.
+
+## [2026-08-12] implementation | Milestone 3 - Risonanza, Flashback e Anamnesi
+- Aggiunti nodi territoriali replayable nel bosco e presso la sorgente, esposti come affordance fisiche locali senza contenuti narrativi.
+- Entrare in un nodo produce `ResonanceSignalReceived`, evento privato contenente soltanto identificatore, intensità e modalità di esposizione.
+- Introdotta `attune_resonance` come azione volontaria generata; l'arbitro verifica esclusivamente che il nodo esista e sia locale.
+- Aggiunti frammenti di anamnesi con etichetta e contenuto liberi, confidenza e provenienza obbligatoriamente riconducibile a un segnale percepito.
+- La mente può scegliere generativamente se restare ricettiva o chiudere il canale; il filtro attentivo rispetta la scelta senza cancellare il segnale fisico.
+- Le riflessioni possono ora fondarsi direttamente su eventi percepiti oltre che su memorie persistite; le variazioni affettive intense restano scelte dal modello e lo stato finale rimane limitato fra zero e uno.
+- Verificati isolamento, replay, migrazione, assenza di tassonomie e assenza di flashback statici con 62 test automatici.
+- Verificato con Ollama `qwen3:8b`: dopo il segnale del bosco Elia ha generato autonomamente due esperienze soggettive, una riflessione, la scelta di restare ricettivo e un'azione separata poi correttamente rifiutata dall'arbitro perché fisicamente invalida.

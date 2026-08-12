@@ -21,7 +21,7 @@
 - [M03-001] Grafo spaziale, movimento, risorse e attività. **Implementato.**
 - [M03-002] Arrivi, lingue, competenze e gruppi familiari. **Implementato.**
 - [M03-003] Cooperazione, conflitti e ruoli emergenti. **Implementato.**
-- [M03-004] Nodi di risonanza, flashback e anamnesi.
+- [M03-004] Nodi di risonanza, flashback e anamnesi. **Implementato.**
 
 ## Milestone 4 — Observer WebGL obbligatorio
 
