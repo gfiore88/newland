@@ -326,6 +326,8 @@ class NewlandSimulation:
                     activating_agent_id=activation.agent_id,
                 )
             )
+            if self.state.agents[activation.agent_id].is_dead:
+                continue
             produced.extend(
                 self._activate(activation.agent_id, activation.tick, activation.reason)
             )
