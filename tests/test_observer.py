@@ -198,6 +198,32 @@ class ObserverHttpTests(unittest.TestCase):
             before, ObserverReadModelTests._stored_state(self.database_path)
         )
 
+    def test_optional_runtime_health_and_static_ui_are_served_locally(self) -> None:
+        static_directory = Path(self.temporary_directory.name) / "dist"
+        static_directory.mkdir()
+        (static_directory / "index.html").write_text(
+            "<!doctype html><title>Newland</title>", encoding="utf-8"
+        )
+        server = ObserverServer(
+            self.database_path,
+            port=0,
+            static_directory=static_directory,
+            operational_health=lambda: {"agent_loop": "running"},
+        )
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base_url = f"http://{server.address.host}:{server.address.port}"
+        try:
+            with urllib.request.urlopen(f"{base_url}/") as response:
+                self.assertEqual("text/html", response.headers.get_content_type())
+                self.assertIn("Newland", response.read().decode("utf-8"))
+            with urllib.request.urlopen(f"{base_url}/api/health") as response:
+                health = json.loads(response.read().decode("utf-8"))
+            self.assertEqual({"agent_loop": "running"}, health["runtime"])
+        finally:
+            server.shutdown()
+            thread.join(timeout=2)
+
     def test_chronicle_query_and_stream_are_derived_and_read_only(self) -> None:
         with ChronicleStore(self.chronicle_path, read_only=True) as store:
             before = [entry.to_dict() for entry in store.entries()]

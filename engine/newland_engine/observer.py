@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import mimetypes
 from collections.abc import Callable
 from dataclasses import dataclass
 from http import HTTPStatus
@@ -8,7 +9,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import Event
 from typing import Any
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 from .chronicle import ChronicleStore, default_chronicle_path
 from .event_store import EventStore
@@ -98,12 +99,22 @@ class ObserverServer:
         host: str = "127.0.0.1",
         port: int = 8765,
         poll_interval: float = 0.5,
+        static_directory: str | Path | None = None,
+        operational_health: Callable[[], dict[str, Any]] | None = None,
     ) -> None:
         if poll_interval <= 0:
             raise ValueError("poll_interval must be positive")
         self.read_model = ObserverReadModel(database_path, chronicle_database_path)
         self.stop_event = Event()
         self.poll_interval = poll_interval
+        self.static_directory = (
+            None if static_directory is None else Path(static_directory).resolve()
+        )
+        if self.static_directory is not None and not (
+            self.static_directory / "index.html"
+        ).is_file():
+            raise ValueError("static_directory must contain index.html")
+        self.operational_health = operational_health
         handler = self._handler_type()
         self.httpd = ThreadingHTTPServer((host, port), handler)
         self.httpd.daemon_threads = True
@@ -125,6 +136,8 @@ class ObserverServer:
         read_model = self.read_model
         stop_event = self.stop_event
         poll_interval = self.poll_interval
+        static_directory = self.static_directory
+        operational_health = self.operational_health
 
         class ObserverRequestHandler(BaseHTTPRequestHandler):
             server_version = "NewlandObserver/0.1"
@@ -140,15 +153,16 @@ class ObserverServer:
                     if parsed.path == "/api/health":
                         snapshot = read_model.snapshot()
                         chronicle = read_model.chronicle_entries()
-                        self._json(
-                            {
-                                "status": "ok",
-                                "last_sequence": snapshot["last_sequence"],
-                                "last_chronicle_sequence": (
-                                    chronicle[-1]["sequence"] if chronicle else 0
-                                ),
-                            }
-                        )
+                        health = {
+                            "status": "ok",
+                            "last_sequence": snapshot["last_sequence"],
+                            "last_chronicle_sequence": (
+                                chronicle[-1]["sequence"] if chronicle else 0
+                            ),
+                        }
+                        if operational_health is not None:
+                            health["runtime"] = operational_health()
+                        self._json(health)
                         return
                     if parsed.path == "/api/snapshot":
                         query = parse_qs(parsed.query)
@@ -170,6 +184,11 @@ class ObserverServer:
                                 )
                             }
                         )
+                        return
+                    if static_directory is not None and not parsed.path.startswith(
+                        "/api/"
+                    ):
+                        self._static(parsed.path, static_directory)
                         return
                     if parsed.path == "/api/stream":
                         query = parse_qs(parsed.query)
@@ -214,6 +233,31 @@ class ObserverServer:
                     self._json({"error": str(error)}, status=HTTPStatus.BAD_REQUEST)
                     return
                 self._json({"error": "not found"}, status=HTTPStatus.NOT_FOUND)
+
+            def _static(self, request_path: str, root: Path) -> None:
+                relative = "index.html" if request_path == "/" else unquote(
+                    request_path.lstrip("/")
+                )
+                candidate = (root / relative).resolve()
+                if root not in candidate.parents and candidate != root:
+                    self._json({"error": "not found"}, status=HTTPStatus.NOT_FOUND)
+                    return
+                if not candidate.is_file():
+                    self._json({"error": "not found"}, status=HTTPStatus.NOT_FOUND)
+                    return
+                encoded = candidate.read_bytes()
+                content_type = mimetypes.guess_type(candidate.name)[0]
+                self.send_response(HTTPStatus.OK)
+                self.send_header(
+                    "Content-Type", content_type or "application/octet-stream"
+                )
+                self.send_header("Content-Length", str(len(encoded)))
+                self.send_header(
+                    "Cache-Control",
+                    "no-cache" if candidate.name == "index.html" else "public, max-age=31536000, immutable",
+                )
+                self.end_headers()
+                self.wfile.write(encoded)
 
             def _stream(
                 self,
