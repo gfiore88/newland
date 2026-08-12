@@ -26,6 +26,7 @@ class InferenceAdmissionSnapshot:
     agent_weight: int
     total_agent_wait_seconds: float
     total_chronicle_wait_seconds: float
+    accepting: bool
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -48,15 +49,28 @@ class InferenceAdmission:
             "chronicle": 0.0,
         }
         self._consecutive_agent_jobs = 0
+        self._accepting = True
+
+    def close(self) -> None:
+        """Reject queued and future jobs while allowing the active call to finish."""
+        with self._condition:
+            self._accepting = False
+            self._condition.notify_all()
 
     def run(self, workload: Workload, operation: Callable[[], ResultT]) -> ResultT:
         if workload not in {"agent", "chronicle"}:
             raise ValueError(f"unsupported inference workload: {workload}")
         queued_at = monotonic()
         with self._condition:
+            if not self._accepting:
+                raise InferenceAdmissionClosed("inference admission is closed")
             self._waiting[workload] += 1
             while not self._may_start(workload):
                 self._condition.wait()
+                if not self._accepting:
+                    self._waiting[workload] -= 1
+                    self._condition.notify_all()
+                    raise InferenceAdmissionClosed("inference admission is closed")
             self._waiting[workload] -= 1
             self._wait_seconds[workload] += monotonic() - queued_at
             self._in_flight = workload
@@ -94,6 +108,7 @@ class InferenceAdmission:
                 agent_weight=self.agent_weight,
                 total_agent_wait_seconds=self._wait_seconds["agent"],
                 total_chronicle_wait_seconds=self._wait_seconds["chronicle"],
+                accepting=self._accepting,
             )
 
     def _may_start(self, workload: Workload) -> bool:
@@ -108,6 +123,10 @@ class InferenceAdmission:
             self._waiting["agent"] > 0
             and self._consecutive_agent_jobs < self.agent_weight
         )
+
+
+class InferenceAdmissionClosed(RuntimeError):
+    pass
 
 
 class AdmittedCognition:

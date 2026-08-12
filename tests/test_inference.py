@@ -3,7 +3,7 @@ from __future__ import annotations
 import threading
 import unittest
 
-from newland_engine.inference import InferenceAdmission
+from newland_engine.inference import InferenceAdmission, InferenceAdmissionClosed
 
 
 class InferenceAdmissionTests(unittest.TestCase):
@@ -87,6 +87,36 @@ class InferenceAdmissionTests(unittest.TestCase):
         snapshot = admission.snapshot()
         self.assertEqual(1, snapshot.failed_agent_jobs)
         self.assertEqual(1, snapshot.completed_chronicle_jobs)
+
+    def test_close_allows_active_job_to_finish_and_rejects_queued_work(self) -> None:
+        admission = InferenceAdmission()
+        active_started = threading.Event()
+        release_active = threading.Event()
+        queued_stopped = threading.Event()
+
+        def active() -> None:
+            admission.run(
+                "agent",
+                lambda: (active_started.set(), release_active.wait(timeout=2)),
+            )
+
+        def queued() -> None:
+            with self.assertRaises(InferenceAdmissionClosed):
+                admission.run("chronicle", lambda: self.fail("queued job ran"))
+            queued_stopped.set()
+
+        active_thread = threading.Thread(target=active)
+        queued_thread = threading.Thread(target=queued)
+        active_thread.start()
+        self.assertTrue(active_started.wait(timeout=1))
+        queued_thread.start()
+        admission.close()
+        self.assertTrue(queued_stopped.wait(timeout=1))
+        self.assertFalse(admission.snapshot().accepting)
+        release_active.set()
+        active_thread.join(timeout=2)
+        queued_thread.join(timeout=2)
+        self.assertEqual(1, admission.snapshot().completed_agent_jobs)
 
 
 if __name__ == "__main__":

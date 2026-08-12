@@ -126,6 +126,7 @@ class LiveSupervisor:
 
     def shutdown(self) -> None:
         self.stop_event.set()
+        self.admission.close()
         if self.observer is not None:
             self.observer.shutdown()
         current = current_thread()
