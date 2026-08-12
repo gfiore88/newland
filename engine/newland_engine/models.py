@@ -124,6 +124,7 @@ class Reflection:
     confidence: float
     source_memory_ids: list[str]
     created_tick: int
+    source_event_ids: list[str] = field(default_factory=list)
 
 
 @dataclass(slots=True)

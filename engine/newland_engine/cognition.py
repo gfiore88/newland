@@ -114,8 +114,8 @@ class RelationshipRevision:
             "warmth_delta",
             "tension_delta",
         ):
-            if not -0.25 <= getattr(self, name) <= 0.25:
-                raise ValueError(f"{name} must be between -0.25 and 0.25")
+            if not -1.0 <= getattr(self, name) <= 1.0:
+                raise ValueError(f"{name} must be between -1 and 1")
 
 
 @dataclass(frozen=True, slots=True)
@@ -129,15 +129,16 @@ class AffectRevision:
 
     def __post_init__(self) -> None:
         for name in ("calm_delta", "curiosity_delta", "melancholy_delta"):
-            if not -0.25 <= getattr(self, name) <= 0.25:
-                raise ValueError(f"{name} must be between -0.25 and 0.25")
+            if not -1.0 <= getattr(self, name) <= 1.0:
+                raise ValueError(f"{name} must be between -1 and 1")
 
 
 @dataclass(frozen=True, slots=True)
 class ReflectionDraft:
     statement: str
     confidence: float
-    source_memory_ids: tuple[str, ...]
+    source_event_ids: tuple[str, ...] = ()
+    source_memory_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -465,7 +466,10 @@ class OllamaCognition:
                 if affect_data is not None
                 else None
             ),
-            reflections=tuple(ReflectionDraft(**item) for item in data["reflections"]),
+            reflections=tuple(
+                ReflectionDraft(**OllamaCognition._classify_sources(item, context))
+                for item in data["reflections"]
+            ),
             goals=tuple(
                 GoalRevision(**OllamaCognition._classify_sources(item, context))
                 for item in data["goals"]
@@ -550,6 +554,7 @@ class OllamaCognition:
         sourced_updates: list[object] = [
             *updates.beliefs,
             *updates.relationships,
+            *updates.reflections,
             *updates.goals,
             *updates.plans,
             *updates.commitments,
@@ -619,11 +624,6 @@ class OllamaCognition:
                 and commitment.commitment_key not in context.mind.commitments
             ):
                 raise ValueError("commitment revision references an unknown commitment")
-        for reflection in updates.reflections:
-            if not reflection.source_memory_ids:
-                raise ValueError("reflection requires supporting memories")
-            if set(reflection.source_memory_ids) - memory_ids:
-                raise ValueError("reflection references unknown memories")
 
     @staticmethod
     def _validate_intention_context(
@@ -1003,23 +1003,23 @@ class OllamaCognition:
                                     "other_agent_id": {"type": "string"},
                                     "familiarity_delta": {
                                         "type": "number",
-                                        "minimum": -0.25,
-                                        "maximum": 0.25,
+                                        "minimum": -1,
+                                        "maximum": 1,
                                     },
                                     "trust_delta": {
                                         "type": "number",
-                                        "minimum": -0.25,
-                                        "maximum": 0.25,
+                                        "minimum": -1,
+                                        "maximum": 1,
                                     },
                                     "warmth_delta": {
                                         "type": "number",
-                                        "minimum": -0.25,
-                                        "maximum": 0.25,
+                                        "minimum": -1,
+                                        "maximum": 1,
                                     },
                                     "tension_delta": {
                                         "type": "number",
-                                        "minimum": -0.25,
-                                        "maximum": 0.25,
+                                        "minimum": -1,
+                                        "maximum": 1,
                                     },
                                     "interpretation": {
                                         "type": "string",
@@ -1048,18 +1048,18 @@ class OllamaCognition:
                             "properties": {
                                 "calm_delta": {
                                     "type": "number",
-                                    "minimum": -0.25,
-                                    "maximum": 0.25,
+                                    "minimum": -1,
+                                    "maximum": 1,
                                 },
                                 "curiosity_delta": {
                                     "type": "number",
-                                    "minimum": -0.25,
-                                    "maximum": 0.25,
+                                    "minimum": -1,
+                                    "maximum": 1,
                                 },
                                 "melancholy_delta": {
                                     "type": "number",
-                                    "minimum": -0.25,
-                                    "maximum": 0.25,
+                                    "minimum": -1,
+                                    "maximum": 1,
                                 },
                                 "interpretation": {"type": "string", "maxLength": 500},
                                 "source_ids": {
@@ -1088,7 +1088,7 @@ class OllamaCognition:
                                         "minimum": 0,
                                         "maximum": 1,
                                     },
-                                    "source_memory_ids": {
+                                    "source_ids": {
                                         "type": "array",
                                         "items": {"type": "string"},
                                         "minItems": 1,
@@ -1097,7 +1097,7 @@ class OllamaCognition:
                                 "required": [
                                     "statement",
                                     "confidence",
-                                    "source_memory_ids",
+                                    "source_ids",
                                 ],
                                 "additionalProperties": False,
                             },

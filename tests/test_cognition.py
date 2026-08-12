@@ -4,6 +4,7 @@ import unittest
 
 from helpers import ScriptedTestCognition, UnavailableTestCognition
 from newland_engine.cognition import (
+    AffectRevision,
     AnamnesisFragmentRevision,
     AttentionSchedule,
     CognitionContext,
@@ -49,6 +50,16 @@ def context() -> CognitionContext:
 
 
 class GenerativeCognitionPoolTests(unittest.TestCase):
+    def test_intense_generated_affect_is_valid(self) -> None:
+        revision = AffectRevision(
+            calm_delta=-0.8,
+            curiosity_delta=0.9,
+            melancholy_delta=0.6,
+            interpretation="Una risposta intensa scelta dalla mente.",
+            source_event_ids=("event",),
+        )
+        self.assertEqual(-0.8, revision.calm_delta)
+
     def test_anamnesis_requires_a_perceived_resonance_source(self) -> None:
         cognition_context = context()
         ordinary_event = EventEnvelope(

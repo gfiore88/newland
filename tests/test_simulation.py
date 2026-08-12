@@ -109,6 +109,11 @@ class SimulationTests(unittest.TestCase):
                 in {"AnamnesisFragmentRevised", "ResonanceOrientationRevised"}
             ]
             self.assertEqual(2, len(mental_events))
+            reflection = next(
+                event for event in produced if event.event_type == "ReflectionCreated"
+            )
+            self.assertEqual((signal.event_id,), reflection.payload["source_event_ids"])
+            self.assertEqual((), reflection.payload["source_memory_ids"])
             self.assertTrue(
                 all(
                     event.visibility == "private"

@@ -280,6 +280,16 @@ class GeneratedAnamnesisTestCognition:
                 ),
             ),
             mental_updates=MentalUpdates(
+                reflections=(
+                    ReflectionDraft(
+                        statement=(
+                            "Non devo decidere subito se l'immagine sia un ricordo; "
+                            "posso riconoscere soltanto che mi ha attraversato."
+                        ),
+                        confidence=0.61,
+                        source_event_ids=(signal.event_id,),
+                    ),
+                ),
                 anamnesis_fragments=(
                     AnamnesisFragmentRevision(
                         fragment_key="cerchio_di_luce_senza_nome",

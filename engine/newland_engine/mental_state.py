@@ -123,12 +123,14 @@ class MentalStateApplier:
                 confidence=draft.confidence,
                 source_memory_ids=list(draft.source_memory_ids),
                 created_tick=tick,
+                source_event_ids=list(draft.source_event_ids),
             )
             mind.reflections.append(reflection)
             mutations.append(
                 MindMutation(
                     "ReflectionCreated",
                     asdict(reflection),
+                    source_event_ids=draft.source_event_ids,
                     source_memory_ids=draft.source_memory_ids,
                 )
             )
