@@ -17,6 +17,7 @@ from .chronicle import (
 )
 from .cognition import GenerativeCognitionPool, OllamaCognition, RoutedCognition
 from .event_store import EventStore
+from .live import LiveSupervisor
 from .observer import ObserverServer
 from .simulation import NewlandSimulation
 from .world import replay
@@ -91,6 +92,25 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="process at most one pending batch and exit",
     )
+    live_parser = subparsers.add_parser(
+        "live", help="run autonomous minds, Chronicle, Observer, and WebGL UI"
+    )
+    live_parser.add_argument("--host", default="127.0.0.1")
+    live_parser.add_argument("--port", type=int, default=8765)
+    live_parser.add_argument(
+        "--ui-dist", type=Path, default=Path("ui/dist"), help="built WebGL UI"
+    )
+    live_parser.add_argument("--chronicle-db", type=Path)
+    live_parser.add_argument("--model", action="append", dest="models")
+    live_parser.add_argument(
+        "--reflective-model", action="append", dest="reflective_models"
+    )
+    live_parser.add_argument(
+        "--chronicle-model", action="append", dest="chronicle_models"
+    )
+    live_parser.add_argument("--agent-weight", type=int, default=8)
+    live_parser.add_argument("--batch-size", type=int, default=20)
+    live_parser.add_argument("--poll-interval", type=float, default=2.0)
     return parser
 
 
@@ -171,6 +191,33 @@ def main(argv: list[str] | None = None) -> int:
                 return 0
             if entry is None:
                 time.sleep(args.poll_interval)
+
+    if args.command == "live":
+        supervisor = LiveSupervisor(
+            args.db,
+            chronicle_database_path=args.chronicle_db,
+            static_directory=args.ui_dist,
+            host=args.host,
+            port=args.port,
+            models=tuple(args.models or ["qwen3:8b"]),
+            reflective_models=tuple(args.reflective_models or ()),
+            chronicle_models=tuple(args.chronicle_models or ()),
+            agent_weight=args.agent_weight,
+            batch_size=args.batch_size,
+            poll_interval=args.poll_interval,
+            emit=_print_events,
+        )
+        try:
+            supervisor.start()
+            address = supervisor.address
+            if address is not None:
+                print(f"Newland live: http://{address[0]}:{address[1]}")
+            supervisor.wait()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            supervisor.shutdown()
+        return 0
 
     with EventStore(args.db) as store:
         events = store.events()

@@ -29,6 +29,14 @@ class CliTests(unittest.TestCase):
         self.assertFalse(finite.continuous)
         self.assertTrue(continuous.continuous)
 
+    def test_live_mode_defaults_to_agent_first_supervision(self) -> None:
+        args = build_parser().parse_args(["live"])
+
+        self.assertEqual("live", args.command)
+        self.assertEqual(8, args.agent_weight)
+        self.assertEqual("127.0.0.1", args.host)
+        self.assertEqual(8765, args.port)
+
     def test_continuous_runner_stops_between_complete_activations(self) -> None:
         simulation = FakeContinuousSimulation()
         emitted: list[list[object]] = []
