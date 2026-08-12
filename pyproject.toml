@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "newland-engine"
+version = "0.1.0"
+description = "Event-driven runtime for autonomous minds in Newland"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+newland = "newland_engine.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["engine/newland_engine"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["engine"]
