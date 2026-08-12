@@ -73,3 +73,13 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Aggiunto `TerritoryConfigured` per migrare e ricostruire via replay i mondi creati prima del territorio esteso.
 - Limitato il contesto Ollama della cognizione ordinaria per evitare occupazione GPU e timeout non necessari, senza ridurre il vocabolario decisionale.
 - Verificato con `qwen3:4b`: Elia ha scelto autonomamente `esaminare_edifici`, accettato dall'arbitro con conseguenza fisica e costo energetico.
+
+## [2026-08-12] implementation | Milestone 3 - Arrivi, Lingue, Competenze e Famiglie
+- Introdotto `ArrivalService` per registrare singoli e gruppi familiari come transazioni atomiche, senza generare persone o destini sociali dal codice.
+- Aggiunti lingua madre, proficienze linguistiche, competenze pratiche e appartenenza familiare allo stato materiale replayable.
+- Ogni nuovo Newlander riceve `TransitionRemembered`, evento privato contenente l'esperienza della propria soglia; i residenti percepiscono soltanto l'arrivo osservabile.
+- Il parlato conserva lingua e testo originali senza traduzione automatica; comprensione, incomprensione ed empatia sono lasciate alla cognizione generativa.
+- Le attività verificano capacità ed energia e possono incrementare esperienza, ma nessun ruolo comunitario viene assegnato dal runtime.
+- Aggiunte migrazioni event-sourced per capacità, attività e ricordi iniziali, preservando risorse già consumate nei mondi esistenti.
+- Semplificata la provenienza LLM in `source_ids`, riclassificata e validata dal runtime contro soli eventi percepiti e memorie possedute.
+- Verificato con Ollama `qwen3:4b`: Elia ha integrato lingua, competenze e memoria della transizione e ha scelto autonomamente di esplorare il bosco.

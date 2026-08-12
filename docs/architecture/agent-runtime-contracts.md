@@ -38,6 +38,9 @@ Ogni evento persistito contiene:
 - [EVT-005] `MemoryEncoded` è privato e registra l'acquisizione soggettiva di un'esperienza.
 - [EVT-006] `TerritoryConfigured` evolve in modo replayable topologia, risorse e attività di un mondo già persistito.
 - [EVT-007] `ResourceGathered`, `ResourceConsumed` e `ActivityPerformed` registrano conseguenze materiali osservabili localmente.
+- [EVT-008] `AgentArrived` rende visibile una nuova presenza; `TransitionRemembered` conserva privatamente l'esperienza della soglia.
+- [EVT-009] `FamilyGroupUpdated` registra legami familiari dichiarati senza assegnare ruoli sociali.
+- [EVT-010] `AgentCapabilitiesConfigured` e `TerritoryActivitiesConfigured` migrano identità e attività preesistenti senza riscrivere la storia.
 
 ## 3. Contratto `AgentMind`
 
@@ -51,6 +54,7 @@ La baseline persiste:
 - [MND-006] cursore dell'ultimo evento percepito;
 - [MND-007] memorie episodiche con salienza, tono emotivo e provenienza.
 - [MND-008] prossima attivazione scelta dalla mente, con tick e motivazione.
+- [MND-009] lingua madre, lingue parlate, competenze pratiche e appartenenza familiare come fatti situati distinti dalle interpretazioni sociali.
 
 Salienza soggettiva, tono emotivo, convinzioni, interpretazione delle relazioni e riflessioni sono output generativi della mente. Il runtime ne valida intervalli e riferimenti agli eventi percepiti, ma non li assegna con tabelle o euristiche statiche.
 
@@ -82,6 +86,8 @@ La mente non contiene lo stato globale e non può leggere direttamente il databa
 - [PER-004] Un agente non riceve prompt, memorie, motivazioni private o deliberazioni di un altro agente.
 - [PER-005] La percezione può generare una memoria soggettiva, ma non modifica il fatto canonico.
 - [PER-006] Il contesto cognitivo espone soltanto uscite adiacenti, risorse presenti e attività disponibili nella posizione corrente.
+- [PER-007] Il parlato conserva testo e lingua originali; il runtime non traduce né assegna automaticamente comprensione.
+- [PER-008] La memoria della transizione è percepibile esclusivamente dalla persona che l'ha vissuta.
 
 ## 5. Intenzione e arbitraggio
 
@@ -93,8 +99,17 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [ACT-004] Il testo libero può diventare dialogo o motivazione, ma non una mutazione arbitraria dello stato.
 - [ACT-005] Movimento, raccolta, consumo e attività vengono scelti dalla mente; il mondo verifica adiacenza, presenza, quantità, capacità d'inventario ed energia.
 - [ACT-006] Le conseguenze fisiche aggiornano risorse, inventario e corpo soltanto tramite eventi canonici riducibili.
+- [ACT-007] Per parlare, la mente sceglie testo e lingua; l'arbitro verifica soltanto che il parlante conosca quella lingua.
+- [ACT-008] Le attività possono richiedere una competenza minima e produrre esperienza incrementale; il runtime non deriva da ciò un ruolo comunitario.
 
-## 6. Scheduling
+## 6. Arrivi e identità sociali
+
+- [ARR-001] Un arrivo è un input esterno esplicito: il runtime non inventa autonomamente nuove persone o famiglie.
+- [ARR-002] Registrazione del corpo, evento d'arrivo, memoria privata e snapshot mentali vengono committati atomicamente anche per gruppi familiari.
+- [ARR-003] Residenti e nuovi arrivati vengono riattivati dall'evento, ma accoglienza, fiducia, cooperazione e conflitto restano decisioni generative individuali.
+- [ARR-004] Lingua madre e capacità sono caratteristiche della persona; mediatore, costruttore, saggio o protettore sono significati sociali emergenti e non campi assegnati dal motore.
+
+## 7. Scheduling
 
 - [SCH-001] Gli agenti vengono attivati da stimoli, soglie di bisogno, incontri, impegni o riflessioni pianificate.
 - [SCH-002] I processi fisici e fisiologici deterministici avanzano senza chiamate LLM; nessun processo deterministico sceglie un'intenzione per un abitante.
@@ -112,7 +127,7 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [BDY-003] Il superamento di una soglia può interrompere e riattivare la cognizione, ma non seleziona riposo, cibo, movimento o alcuna altra risposta.
 - [BDY-004] La risposta al corpo resta un'intenzione generativa dell'agente e attraversa il normale arbitraggio del mondo.
 
-## 7. Replay e test
+## 8. Replay e test
 
 - [TST-001] Riducendo gli eventi dall'inizio si deve ricostruire lo stesso stato materiale.
 - [TST-002] Un evento privato non deve comparire nella percezione di un altro agente.
