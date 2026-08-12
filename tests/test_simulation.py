@@ -9,6 +9,7 @@ from helpers import (
     GeneratedAgendaTestCognition,
     GeneratedMentalStateTestCognition,
     GeneratedReflectionTestCognition,
+    GeneratedRoleInterpretationTestCognition,
     InvalidAppraisalTestCognition,
     InvalidCommitmentTestCognition,
     ScriptedTestCognition,
@@ -22,6 +23,55 @@ from newland_engine.world import replay
 
 
 class SimulationTests(unittest.TestCase):
+    def test_roles_exist_only_after_private_generative_interpretation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=GeneratedRoleInterpretationTestCognition()
+            ) as simulation:
+                simulation.initialize()
+                self.assertEqual({}, simulation.minds["nwl-001"].role_interpretations)
+                self.assertIn("mediazione", simulation.state.agents["nwl-002"].skills)
+                produced = simulation.run(max_activations=1)
+                roles = simulation.minds["nwl-001"].role_interpretations
+
+            self.assertEqual(
+                {
+                    "amina_presenza_di_soglia",
+                    "elia_ascoltatore_del_luogo",
+                },
+                set(roles),
+            )
+            self.assertEqual(
+                "custode delle soglie incerte",
+                roles["amina_presenza_di_soglia"].role_label,
+            )
+            role_events = [
+                event
+                for event in produced
+                if event.event_type == "RoleInterpretationRevised"
+            ]
+            self.assertEqual(2, len(role_events))
+            self.assertTrue(
+                all(
+                    event.visibility == "private"
+                    and event.recipient_ids == ("nwl-001",)
+                    and event.payload["cognition"]["model"]
+                    == "generated-role-interpretation-fixture"
+                    for event in role_events
+                )
+            )
+
+            with NewlandSimulation(
+                path, cognition=GeneratedRoleInterpretationTestCognition()
+            ) as restarted:
+                self.assertEqual(
+                    "ascoltatore del luogo vuoto",
+                    restarted.minds["nwl-001"]
+                    .role_interpretations["elia_ascoltatore_del_luogo"]
+                    .role_label,
+                )
+
     def test_generated_social_actions_complete_a_replayable_cooperation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "newland.db"

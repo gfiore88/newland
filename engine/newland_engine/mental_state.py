@@ -5,7 +5,14 @@ from typing import Any
 from uuid import uuid4
 
 from .cognition import MentalUpdates
-from .models import AgentMind, Belief, Commitment, Plan, Reflection
+from .models import (
+    AgentMind,
+    Belief,
+    Commitment,
+    Plan,
+    Reflection,
+    RoleInterpretation,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -234,6 +241,53 @@ class MentalStateApplier:
                     MindMutation(
                         "CommitmentRevised",
                         {"operation": revision.operation, **asdict(commitment)},
+                        revision.source_event_ids,
+                        revision.source_memory_ids,
+                    )
+                )
+
+        for revision in updates.role_interpretations:
+            role = mind.role_interpretations.get(revision.interpretation_key)
+            if revision.operation == "upsert":
+                if role is None:
+                    role = RoleInterpretation(
+                        interpretation_key=revision.interpretation_key,
+                        subject_agent_id=revision.subject_agent_id,
+                        role_label=revision.role_label,
+                        interpretation=revision.interpretation,
+                        confidence=revision.confidence,
+                        created_tick=tick,
+                        updated_tick=tick,
+                        source_event_ids=list(revision.source_event_ids),
+                        source_memory_ids=list(revision.source_memory_ids),
+                    )
+                    mind.role_interpretations[revision.interpretation_key] = role
+                else:
+                    role.subject_agent_id = revision.subject_agent_id
+                    role.role_label = revision.role_label
+                    role.interpretation = revision.interpretation
+                    role.confidence = revision.confidence
+                    role.updated_tick = tick
+                    self._extend_unique(
+                        role.source_event_ids, revision.source_event_ids
+                    )
+                    self._extend_unique(
+                        role.source_memory_ids, revision.source_memory_ids
+                    )
+                mutations.append(
+                    MindMutation(
+                        "RoleInterpretationRevised",
+                        {"operation": revision.operation, **asdict(role)},
+                        revision.source_event_ids,
+                        revision.source_memory_ids,
+                    )
+                )
+            elif role is not None:
+                removed = mind.role_interpretations.pop(revision.interpretation_key)
+                mutations.append(
+                    MindMutation(
+                        "RoleInterpretationRevised",
+                        {"operation": revision.operation, **asdict(removed)},
                         revision.source_event_ids,
                         revision.source_memory_ids,
                     )

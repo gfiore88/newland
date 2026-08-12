@@ -157,7 +157,6 @@ class WorldAdjudicatorTests(unittest.TestCase):
             "nwl-001",
             Intention(
                 action_type="perform_activity",
-                target_id="irrelevant-model-field",
                 activity_id="inspect_houses",
                 duration_minutes=20,
             ),

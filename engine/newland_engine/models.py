@@ -20,6 +20,28 @@ ActionType = Literal[
     "open_dispute",
     "respond_dispute",
 ]
+ACTION_ARGUMENTS: dict[str, frozenset[str]] = {
+    "speak": frozenset({"target_id", "spoken_content", "language"}),
+    "move": frozenset({"destination"}),
+    "rest": frozenset(),
+    "offer_help": frozenset({"target_id"}),
+    "gather": frozenset({"resource_id", "quantity"}),
+    "consume": frozenset({"resource_id", "quantity"}),
+    "perform_activity": frozenset({"activity_id"}),
+    "propose_cooperation": frozenset(
+        {"target_id", "spoken_content", "language", "activity_id"}
+    ),
+    "respond_cooperation": frozenset(
+        {"spoken_content", "language", "proposal_id", "response"}
+    ),
+    "perform_cooperation": frozenset({"proposal_id"}),
+    "open_dispute": frozenset(
+        {"target_id", "spoken_content", "language", "subject_event_id"}
+    ),
+    "respond_dispute": frozenset(
+        {"spoken_content", "language", "dispute_id", "response"}
+    ),
+}
 
 
 def world_time_for_tick(tick: int) -> str:
@@ -128,6 +150,19 @@ class Commitment:
 
 
 @dataclass(slots=True)
+class RoleInterpretation:
+    interpretation_key: str
+    subject_agent_id: str
+    role_label: str
+    interpretation: str
+    confidence: float
+    created_tick: int
+    updated_tick: int
+    source_event_ids: list[str] = field(default_factory=list)
+    source_memory_ids: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
 class AgentMind:
     agent_id: str
     name: str
@@ -144,6 +179,7 @@ class AgentMind:
     goals: list[str] = field(default_factory=list)
     plans: dict[str, Plan] = field(default_factory=dict)
     commitments: dict[str, Commitment] = field(default_factory=dict)
+    role_interpretations: dict[str, RoleInterpretation] = field(default_factory=dict)
     memories: list[Memory] = field(default_factory=list)
     reflections: list[Reflection] = field(default_factory=list)
     last_perceived_sequence: int = 0
@@ -214,6 +250,14 @@ class AgentMind:
             if isinstance(commitments, dict)
             else {}
         )
+        normalized["role_interpretations"] = {
+            key: (
+                value
+                if isinstance(value, RoleInterpretation)
+                else RoleInterpretation(**value)
+            )
+            for key, value in data.get("role_interpretations", {}).items()
+        }
         return cls(**normalized)
 
     def relationship_with(self, other_id: str) -> Relationship:
@@ -292,6 +336,29 @@ class Intention:
         ):
             raise ValueError(
                 "respond_dispute requires dispute_id and a supported response"
+            )
+        allowed_fields = ACTION_ARGUMENTS[self.action_type]
+        optional_values = {
+            "target_id": self.target_id,
+            "destination": self.destination,
+            "spoken_content": self.spoken_content,
+            "language": self.language,
+            "resource_id": self.resource_id,
+            "quantity": self.quantity,
+            "activity_id": self.activity_id,
+            "proposal_id": self.proposal_id,
+            "dispute_id": self.dispute_id,
+            "subject_event_id": self.subject_event_id,
+            "response": self.response,
+        }
+        extraneous = sorted(
+            field_name
+            for field_name, value in optional_values.items()
+            if value is not None and field_name not in allowed_fields
+        )
+        if extraneous:
+            raise ValueError(
+                f"{self.action_type} contains fields for another action: {extraneous}"
             )
 
     def to_dict(self) -> dict[str, Any]:

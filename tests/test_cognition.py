@@ -10,6 +10,7 @@ from newland_engine.cognition import (
     GenerativeCognitionPool,
     MentalUpdates,
     OllamaCognition,
+    RoleInterpretationRevision,
     validate_cognition_result,
 )
 from newland_engine.models import (
@@ -46,6 +47,94 @@ def context() -> CognitionContext:
 
 
 class GenerativeCognitionPoolTests(unittest.TestCase):
+    def test_intention_rejects_invented_parameters_from_other_actions(self) -> None:
+        with self.assertRaisesRegex(ValueError, "fields for another action"):
+            Intention(
+                action_type="speak",
+                target_id="nwl-other",
+                spoken_content="Ti vedo.",
+                language="it",
+                activity_id="conversation_invented_by_model",
+            )
+
+    def test_ollama_parser_discards_only_irrelevant_schema_filler(self) -> None:
+        intention = OllamaCognition._parse_intention(
+            {
+                "action_type": "propose_cooperation",
+                "target_id": "nwl-other",
+                "destination": "invented-place",
+                "duration_minutes": 10,
+                "spoken_content": "Vuoi osservare il luogo insieme?",
+                "language": "it",
+                "resource_id": "invented-resource",
+                "quantity": 1,
+                "activity_id": "observed-activity",
+                "proposal_id": "irrelevant-proposal",
+                "dispute_id": "irrelevant-dispute",
+                "subject_event_id": "irrelevant-event",
+                "response": "accept",
+                "motivation_summary": "Condividere una scelta.",
+                "confidence": 0.8,
+            }
+        )
+
+        self.assertEqual("propose_cooperation", intention.action_type)
+        self.assertEqual("nwl-other", intention.target_id)
+        self.assertEqual("observed-activity", intention.activity_id)
+        self.assertIsNone(intention.destination)
+        self.assertIsNone(intention.resource_id)
+        self.assertIsNone(intention.proposal_id)
+
+    def test_role_labels_are_free_text_not_a_runtime_taxonomy(self) -> None:
+        role_schema = OllamaCognition._schema()["properties"]["mental_updates"][
+            "properties"
+        ]["role_interpretations"]["items"]["properties"]["role_label"]
+        self.assertNotIn("enum", role_schema)
+
+    def test_generated_role_cannot_describe_an_unknown_agent(self) -> None:
+        cognition_context = context()
+        observed = EventEnvelope(
+            event_type="AgentArrived",
+            world_tick=1,
+            world_time=world_time_for_tick(1),
+            event_id="event-visible",
+            actor_ids=("nwl-other",),
+            recipient_ids=("nwl-test",),
+            visibility="local",
+        )
+        cognition_context = CognitionContext(
+            mind=cognition_context.mind,
+            material_state=cognition_context.material_state,
+            observations=(Observation(observed),),
+            nearby_agents=cognition_context.nearby_agents,
+            activation_reason=cognition_context.activation_reason,
+        )
+        result = CognitionResult(
+            intention=Intention(action_type="rest"),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                role_interpretations=(
+                    RoleInterpretationRevision(
+                        operation="upsert",
+                        interpretation_key="invented_person_role",
+                        subject_agent_id="nwl-invented",
+                        role_label="figura mai incontrata",
+                        interpretation="Una lettura senza alcuna esperienza.",
+                        confidence=0.5,
+                        source_event_ids=(observed.event_id,),
+                    ),
+                )
+            ),
+            attention_schedule=AttentionSchedule(4, "Riesaminare la situazione."),
+            provider="test-double",
+            model="invalid-role-subject-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        with self.assertRaisesRegex(ValueError, "unknown agent"):
+            validate_cognition_result(result, cognition_context)
+
     def test_generated_social_references_must_come_from_agent_context(self) -> None:
         result = CognitionResult(
             intention=Intention(

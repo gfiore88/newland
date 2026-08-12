@@ -16,6 +16,7 @@ from newland_engine.cognition import (
     PlanRevision,
     ReflectionDraft,
     RelationshipRevision,
+    RoleInterpretationRevision,
 )
 from newland_engine.models import Intention
 
@@ -192,6 +193,57 @@ class GeneratedMentalStateTestCognition:
             ),
             provider="test-double",
             model="generated-mental-state-fixture",
+            inference_id=str(uuid4()),
+            attempts=1,
+        )
+
+
+class GeneratedRoleInterpretationTestCognition:
+    def decide(self, context: CognitionContext) -> CognitionResult:
+        source_event_id = context.observations[-1].event.event_id
+        other_id = context.nearby_agents[0][0]
+        return CognitionResult(
+            intention=Intention(
+                action_type="rest",
+                duration_minutes=5,
+                motivation_summary="Lasciare sedimentare una lettura sociale personale.",
+                confidence=0.78,
+            ),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                role_interpretations=(
+                    RoleInterpretationRevision(
+                        operation="upsert",
+                        interpretation_key="amina_presenza_di_soglia",
+                        subject_agent_id=other_id,
+                        role_label="custode delle soglie incerte",
+                        interpretation=(
+                            "La sua prudenza mi appare capace di proteggere i passaggi "
+                            "che nessuno comprende ancora."
+                        ),
+                        confidence=0.73,
+                        source_event_ids=(source_event_id,),
+                    ),
+                    RoleInterpretationRevision(
+                        operation="upsert",
+                        interpretation_key="elia_ascoltatore_del_luogo",
+                        subject_agent_id=context.mind.agent_id,
+                        role_label="ascoltatore del luogo vuoto",
+                        interpretation=(
+                            "Mi riconosco, per ora, nella disposizione ad ascoltare "
+                            "prima di decidere cosa costruire."
+                        ),
+                        confidence=0.69,
+                        source_event_ids=(source_event_id,),
+                    ),
+                )
+            ),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=10,
+                reason="Verificare se queste interpretazioni resistono all'esperienza.",
+            ),
+            provider="test-double",
+            model="generated-role-interpretation-fixture",
             inference_id=str(uuid4()),
             attempts=1,
         )

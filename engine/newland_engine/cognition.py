@@ -7,7 +7,7 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
-from .models import AgentMind, Intention, MaterialAgentState
+from .models import ACTION_ARGUMENTS, AgentMind, Intention, MaterialAgentState
 from .perception import Observation
 
 
@@ -167,6 +167,26 @@ class CommitmentRevision:
 
 
 @dataclass(frozen=True, slots=True)
+class RoleInterpretationRevision:
+    operation: Literal["upsert", "remove"]
+    interpretation_key: str
+    subject_agent_id: str
+    role_label: str
+    interpretation: str
+    confidence: float
+    source_event_ids: tuple[str, ...] = ()
+    source_memory_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not 0.0 <= self.confidence <= 1.0:
+            raise ValueError("role interpretation confidence must be between 0 and 1")
+        if not self.interpretation_key.strip():
+            raise ValueError("role interpretation key is required")
+        if not self.role_label.strip():
+            raise ValueError("role label is required")
+
+
+@dataclass(frozen=True, slots=True)
 class AttentionSchedule:
     next_activation_in_ticks: int
     reason: str
@@ -187,6 +207,7 @@ class MentalUpdates:
     goals: tuple[GoalRevision, ...] = ()
     plans: tuple[PlanRevision, ...] = ()
     commitments: tuple[CommitmentRevision, ...] = ()
+    role_interpretations: tuple[RoleInterpretationRevision, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -199,7 +220,7 @@ class CognitionResult:
     model: str
     inference_id: str
     attempts: int
-    prompt_version: str = "agent-cognition-v2"
+    prompt_version: str = "agent-cognition-v3"
 
     def provenance(self) -> dict[str, Any]:
         return {
@@ -227,7 +248,7 @@ class OllamaCognition:
         model: str = "qwen3:4b",
         endpoint: str = "http://127.0.0.1:11434/api/chat",
         timeout_seconds: float = 120.0,
-        max_attempts: int = 2,
+        max_attempts: int = 3,
     ) -> None:
         self.model = model
         self.endpoint = endpoint
@@ -250,7 +271,7 @@ class OllamaCognition:
             try:
                 content = self._request(messages)
                 parsed = json.loads(content)
-                intention = Intention(**parsed["intention"])
+                intention = self._parse_intention(parsed["intention"])
                 appraisals = tuple(
                     MemoryAppraisal(**item) for item in parsed["memory_appraisals"]
                 )
@@ -286,6 +307,23 @@ class OllamaCognition:
                     ]
                 )
         raise CognitionUnavailable(failures)
+
+    @staticmethod
+    def _parse_intention(data: dict[str, Any]) -> Intention:
+        """Discard schema filler without changing the generated action semantics."""
+        action_type = data.get("action_type")
+        if action_type not in ACTION_ARGUMENTS:
+            raise ValueError(f"unsupported generated action: {action_type}")
+        common = {
+            "action_type",
+            "duration_minutes",
+            "motivation_summary",
+            "confidence",
+        }
+        relevant = common | ACTION_ARGUMENTS[action_type]
+        return Intention(
+            **{key: value for key, value in data.items() if key in relevant}
+        )
 
     def _request(self, messages: list[dict[str, str]]) -> str:
         payload = {
@@ -324,13 +362,18 @@ class OllamaCognition:
             "Sei una mente abitante di Newland, non un narratore onnisciente. "
             "Decidi una sola azione usando esclusivamente identità, memoria e osservazioni fornite. "
             "Interpreta soggettivamente soltanto gli eventi osservati e usa i loro event_id nelle memory_appraisals; "
-            "puoi scegliere di non memorizzare un evento. Beliefs, relazioni, affetti, riflessioni e obiettivi "
+            "puoi scegliere di non memorizzare un evento. Beliefs, relazioni, affetti, riflessioni, obiettivi e ruoli interpretati "
             "cambiano soltanto se tu produci un mental_update con source_ids non vuoto, composto esclusivamente "
             "da event_id osservati o memory_id posseduti; usa array vuoti se nulla cambia. "
+            "Puoi interpretare te stesso o una persona conosciuta con un ruolo emergente: genera liberamente role_label, "
+            "senza scegliere da una tassonomia e senza trattarlo come un incarico ufficiale assegnato dal mondo. "
+            "Per creare o cambiare una tua interpretazione di ruolo usa operation=upsert; usa operation=remove soltanto "
+            "con un interpretation_key già presente in role_interpretations. Se non esistono ruoli interpretati, non puoi rimuoverne. "
             "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
             "Puoi usare soltanto destination, resource_id e activity_id elencati nelle affordance locali; "
             "la loro presenza non ti obbliga a usarli. "
             "Usa proposal_id e dispute_id soltanto dalle affordance sociali fornite. "
+            "Nei campi intention non pertinenti all'action_type scelto restituisci null. "
             "Se parli, scegli una lingua che conosci e scrivi spoken_content in quella lingua; "
             "interpreta le lingue altrui attraverso la tua esperienza, il contesto e l'empatia, senza fingere conoscenze. "
             "Non inventare oggetti, persone, luoghi o conoscenze. "
@@ -388,6 +431,12 @@ class OllamaCognition:
                 CommitmentRevision(**OllamaCognition._classify_sources(item, context))
                 for item in data["commitments"]
             ),
+            role_interpretations=tuple(
+                RoleInterpretationRevision(
+                    **OllamaCognition._classify_sources(item, context)
+                )
+                for item in data["role_interpretations"]
+            ),
         )
 
     @staticmethod
@@ -442,6 +491,7 @@ class OllamaCognition:
             *updates.goals,
             *updates.plans,
             *updates.commitments,
+            *updates.role_interpretations,
         ]
         if updates.affect is not None:
             sourced_updates.append(updates.affect)
@@ -457,6 +507,15 @@ class OllamaCognition:
         for relationship in updates.relationships:
             if relationship.other_agent_id not in known_agents:
                 raise ValueError("relationship update references an unknown agent")
+        role_subjects = known_agents | {context.mind.agent_id}
+        for role in updates.role_interpretations:
+            if role.subject_agent_id not in role_subjects:
+                raise ValueError("role interpretation references an unknown agent")
+            if (
+                role.operation == "remove"
+                and role.interpretation_key not in context.mind.role_interpretations
+            ):
+                raise ValueError("role revision references an unknown interpretation")
         for plan in updates.plans:
             if plan.operation != "upsert" and plan.plan_key not in context.mind.plans:
                 raise ValueError("plan revision references an unknown plan")
@@ -650,6 +709,16 @@ class OllamaCognition:
                     "tension": relationship.tension,
                 }
                 for relationship in context.mind.relationships.values()
+            ],
+            "role_interpretations": [
+                {
+                    "interpretation_key": role.interpretation_key,
+                    "subject_agent_id": role.subject_agent_id,
+                    "role_label": role.role_label,
+                    "interpretation": role.interpretation,
+                    "confidence": role.confidence,
+                }
+                for role in context.mind.role_interpretations.values()
             ],
             "reflections": [
                 {
@@ -1005,6 +1074,59 @@ class OllamaCognition:
                                 "additionalProperties": False,
                             },
                         },
+                        "role_interpretations": {
+                            "type": "array",
+                            "description": (
+                                "Interpretazioni soggettive opzionali. Usare remove solo "
+                                "per interpretation_key già presenti nel contesto privato."
+                            ),
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "operation": {
+                                        "type": "string",
+                                        "enum": ["upsert", "remove"],
+                                    },
+                                    "interpretation_key": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                        "description": (
+                                            "Chiave stabile scelta dalla mente per upsert, oppure "
+                                            "chiave esistente esatta per remove."
+                                        ),
+                                    },
+                                    "subject_agent_id": {"type": "string"},
+                                    "role_label": {
+                                        "type": "string",
+                                        "maxLength": 160,
+                                    },
+                                    "interpretation": {
+                                        "type": "string",
+                                        "maxLength": 600,
+                                    },
+                                    "confidence": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "maximum": 1,
+                                    },
+                                    "source_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                        "minItems": 1,
+                                    },
+                                },
+                                "required": [
+                                    "operation",
+                                    "interpretation_key",
+                                    "subject_agent_id",
+                                    "role_label",
+                                    "interpretation",
+                                    "confidence",
+                                    "source_ids",
+                                ],
+                                "additionalProperties": False,
+                            },
+                        },
                     },
                     "required": [
                         "beliefs",
@@ -1014,6 +1136,7 @@ class OllamaCognition:
                         "goals",
                         "plans",
                         "commitments",
+                        "role_interpretations",
                     ],
                     "additionalProperties": False,
                 },
