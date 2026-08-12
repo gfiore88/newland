@@ -28,6 +28,12 @@ uv run newland --db data/newland.db serve
 # http://127.0.0.1:8765/api/snapshot
 # http://127.0.0.1:8765/api/stream
 
+# In un secondo terminale: UI WebGL locale
+cd ui
+npm install
+npm run dev
+# http://127.0.0.1:5173
+
 # Test degli invarianti
 uv run python -m unittest discover -s tests -v
 ```
@@ -63,6 +69,7 @@ newland/
 │   └── agents/                    <-- Specifiche degli Agenti
 ├── engine/newland_engine/         <-- Runtime agentico Python
 ├── tests/                         <-- Test di replay, percezione e arbitraggio
+├── ui/                            <-- Observer Vite + PixiJS WebGL e pannelli DOM
 ├── pyproject.toml                 <-- Packaging e comando `newland`
 └── skills/                        <-- Agent Skills (Standard Addy Osmani)
     ├── create-architectural-decision-record/

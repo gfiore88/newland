@@ -117,3 +117,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Limitato CORS alle sole origini loopback per impedire a pagine esterne di leggere lo stato privato della Console dell'Architetto.
 - Aggiunto il comando `newland serve`, bindato per default a `127.0.0.1:8765`.
 - Verificati replay, riservatezza locale, ripresa SSE e non-interferenza con 70 test automatici.
+
+## [2026-08-12] implementation | Milestone 4 - Mappa WebGL
+- Creato il client locale Vite/TypeScript con store Observer, bootstrap da snapshot, stream `newland-event`, deduplicazione delle sequenze e refresh canonico.
+- Implementata la scena PixiJS in modalità WebGL con proiezione deterministica del grafo, terreno, percorsi, luoghi, risorse, nodi di risonanza e Newlander.
+- Aggiunti pan, zoom, selezione canvas e un percorso DOM equivalente per ispezionare ogni abitante senza produrre comandi o eventi.
+- La Console dell'Architetto espone corpo e snapshot mentale privilegiato; il registro mostra envelope canonici e visibilità senza inventare prosa.
+- Verificati store e layout con 4 test frontend, build TypeScript/Vite di produzione e integrazione HTTP col database reale; la QA visiva nel browser resta da completare appena è disponibile un'istanza browser collegata.
