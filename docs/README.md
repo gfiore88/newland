@@ -19,7 +19,9 @@ docs/
 │   ├── adr-0002-karpathy-llm-wiki-rag-architecture.md  <-- ADR-0002 (Karpathy LLM-Wiki Pattern)
 │   ├── adr-0003-silent-chronicler-observer-architecture.md <-- ADR-0003 (Architettura dell'Osservatore)
 │   ├── adr-0004-autonomous-character-auto-annealing.md     <-- ADR-0004 (Auto-Annealing Personaggi 100% Autonomo)
-│   └── adr-0005-technical-engine-local-llm-architecture.md  <-- ADR-0005 (Stack Tecnico & Modelli LLM Locali Ollama)
+│   ├── adr-0005-technical-engine-local-llm-architecture.md  <-- ADR-0005 (Stack Tecnico & Modelli LLM Locali Ollama)
+│   ├── adr-0006-observer-engine-2d-webgl-architecture.md   <-- ADR-0006 (Engine Grafico 2.5D WebGL / PixiJS)
+│   └── adr-0007-autonomous-agent-mind-and-world-runtime.md <-- ADR-0007 (Runtime Agenti Autonomi & World Adjudicator)
 ├── agents/                                  <-- Specifiche ed Agenti
 │   └── templates/                           <-- Template Schede Personaggio (.agent.md)
 │       └── character-template.agent.md
@@ -39,6 +41,8 @@ docs/
 | **Governance ADR-0002** | [adr-0002-karpathy-llm-wiki-rag-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0002-karpathy-llm-wiki-rag-architecture.md) | ADR Nygard: Karpathy LLM-Wiki Pattern per la gestione del RAG. |
 | **Governance ADR-0003** | [adr-0003-silent-chronicler-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0003-silent-chronicler-observer-architecture.md) | ADR Nygard: Architettura dell'Osservatore Integrato (Diario del Cronista + Console Architetto). |
 | **Governance ADR-0004** | [adr-0004-autonomous-character-auto-annealing.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0004-autonomous-character-auto-annealing.md) | ADR Nygard: Auto-Annealing Personaggi 100% Autonomo senza approvazione umana. |
-| **Governance ADR-0005** | [adr-0005-technical-engine-local-llm-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0005-technical-engine-local-llm-architecture.md) | ADR Nygard: Stack Tecnico Ibrido e Modelli LLM Locali (Ollama / Llama 3 / Qwen) per cicli a costo zero. |
+| **Governance ADR-0005** | [adr-0005-technical-engine-local-llm-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0005-technical-engine-local-llm-architecture.md) | ADR Nygard: Stack Tecnico Ibrido e Modelli LLM Locali (Ollama / Llama 3 / Qwen) su M1 Max 64GB. |
+| **Governance ADR-0006** | [adr-0006-observer-engine-2d-webgl-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0006-observer-engine-2d-webgl-architecture.md) | ADR Nygard: Visual Observer Engine 2.5D WebGL (PixiJS) con mappa interattiva zoomabile e SSE. |
+| **Governance ADR-0007** | [adr-0007-autonomous-agent-mind-and-world-runtime.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0007-autonomous-agent-mind-and-world-runtime.md) | ADR Nygard: Cognizione Agenti (`AgentMind`), Event-Driven Architecture, SQLite Adjudicator. |
 | **Template Personaggi** | [character-template.agent.md](file:///Users/giovannifiore/Desktop/newland/docs/agents/templates/character-template.agent.md) | Template di base per la scheda agentica (.agent.md) di ogni Newlander. |
 | **Skill Auto-Annealing** | [character-auto-annealing/SKILL.md](file:///Users/giovannifiore/Desktop/newland/skills/character-auto-annealing/SKILL.md) | Skill Addy Osmani per l'evoluzione ed auto-commit dei personaggi. |

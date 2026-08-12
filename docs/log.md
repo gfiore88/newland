@@ -19,4 +19,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 
 ## [2026-08-12] adr | Registrazione ADR-0005 - Stack Tecnico & Modelli LLM Locali (Ollama)
 - Registrato ADR-0005 `docs/adr/adr-0005-technical-engine-local-llm-architecture.md`.
-- Definizione dello stack tecnico: Runtime Python/Node per la simulazione continua dei tick, Ollama (`localhost:11434` con Llama 3 / Qwen 2.5) per l'inferenza locale a costo zero token, e Web Application (Vite / HTML5 / Glassmorphism) per lo streaming SSE del Diario del Cronista e la Console dell'Architetto.
+
+## [2026-08-12] adr | Registrazione ADR-0006 - Narrative-First 2.5D WebGL Observer Engine Architecture
+- Registrato ADR-0006 `docs/adr/adr-0006-observer-engine-2d-webgl-architecture.md`.
+- Definizione dell'engine visuale 2.5D basato su PixiJS con mappa zoomabile semantica, streaming eventi SSE e pannelli DOM/CSS per il Cronista e la Console.
+
+## [2026-08-12] adr | Registrazione ADR-0007 - Autonomous Agent Minds and Event-Driven World Runtime
+- Registrato ADR-0007 `docs/adr/adr-0007-autonomous-agent-mind-and-world-runtime.md`.
+- Definizione dell'architettura cognitiva degli agenti (`AgentMind`), scomposizione tra percezione soggettiva ed intenzione strutturata, World Adjudicator deterministico con persistenza canonica su SQLite (Event Sourcing) e proiezioni su file Markdown.

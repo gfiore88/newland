@@ -14,7 +14,7 @@
 - [src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md) - *Brainstorming 05: Singolarità del "Modo", Flashback, Nodi Geografici e la Scelta di Vivere Senza Capire.*
 - [src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md) - *Brainstorming 06: Transizione Invisibile Quotidiana, la Cittadina Iniziale ed l'Esplorazione Emergente.*
 - [src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md) - *Brainstorming 07: Conflitti Primordiali, Accoglienza Melanconica ed Architettura Rurale.*
-- [src-brainstorming-08-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-08-observer-architecture.md) - *Brainstorming 08 & ADR-0003: Architettura dell'Osservatore Integrato (Diario del Cronista + Console dell'Architetto).*
+- [src-brainstorming-08-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-08-observer-architecture.md) - *Brainstorming 08 & ADR-0003: Architettura dell'Osservatore Integrato.*
 
 ---
 
@@ -50,6 +50,11 @@
 
 ---
 
-## 🔬 Sintesi & Analisi (`docs/wiki/synthesis/`)
-
-- *Nessuna sintesi derivata al momento.*
+## 🏛️ Decisioni Architetturali (ADRs `docs/adr/`)
+- [adr-0001-agentic-governance-and-adr-workflow.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0001-agentic-governance-and-adr-workflow.md) - *ADR-0001: Governance Agentica e Workflow ADR Obbligatorio.*
+- [adr-0002-karpathy-llm-wiki-rag-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0002-karpathy-llm-wiki-rag-architecture.md) - *ADR-0002: Karpathy LLM-Wiki RAG Architecture.*
+- [adr-0003-silent-chronicler-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0003-silent-chronicler-observer-architecture.md) - *ADR-0003: Silent Chronicler & Inspector Console Observer Architecture.*
+- [adr-0004-autonomous-character-auto-annealing.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0004-autonomous-character-auto-annealing.md) - *ADR-0004: Fully Autonomous Character Auto-Annealing.*
+- [adr-0005-technical-engine-local-llm-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0005-technical-engine-local-llm-architecture.md) - *ADR-0005: Technical Engine & Hybrid Local-LLM Architecture (M1 Max 64GB).*
+- [adr-0006-observer-engine-2d-webgl-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0006-observer-engine-2d-webgl-architecture.md) - *ADR-0006: Narrative-First 2.5D WebGL Observer Engine Architecture (PixiJS).*
+- [adr-0007-autonomous-agent-mind-and-world-runtime.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0007-autonomous-agent-mind-and-world-runtime.md) - *ADR-0007: Autonomous Agent Minds and Event-Driven World Runtime (SQLite Adjudicator).*
