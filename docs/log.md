@@ -15,50 +15,31 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 
 ## [2026-08-12] ingest | Brainstorming 01 - Topologia Circolare e De-Distrazione
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-01-closed-world-and-anti-consumerism.md`.
-- Creata la sintesi fonte `src-brainstorming-01-closed-world-and-anti-consumerism.md`.
-- Compilate le entità `ent-topologia-circolare.md` ed `ent-de-distrazione-cognitiva.md`.
-- Compilato il concetto `cnc-assenza-moneta-proprieta.md`.
 
 ## [2026-08-12] ingest | Brainstorming 02 - Amnesia Primordiale e Grande Oblio
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-02-primordial-amnesia-and-cognitive-forgetting.md`.
-- Creata la sintesi fonte `src-brainstorming-02-primordial-amnesia-and-cognitive-forgetting.md`.
-- Compilata l'entità `ent-amnesia-primordiale.md`.
-- Compilato il concetto `cnc-tabula-rasa-cognitiva.md`.
 
 ## [2026-08-12] ingest | Brainstorming 03 - Il Ricordo dell'Arrivo
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-03-memory-of-arrival.md`.
-- Creata la sintesi fonte `src-brainstorming-03-memory-of-arrival.md`.
-- Compilata l'entità `ent-memoria-dell-arrivo.md`.
-- Compilato il concetto `cnc-mito-fondativo-newlander.md`.
 
 ## [2026-08-12] ingest | Brainstorming 04 - L'Anamnesi e la Ricerca del Modo
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-04-anamnesis-and-the-way-of-newland.md`.
-- Creata la sintesi fonte `src-brainstorming-04-anamnesis-and-the-way-of-newland.md`.
-- Compilata l'entità `ent-il-modo-di-newland.md`.
-- Compilato il concetto `cnc-ricerca-anamnesi.md`.
 
 ## [2026-08-12] ingest | Brainstorming 05 - Singolarità del Modo, Flashback e Scelta di Vivere
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md`.
-- Creata la sintesi fonte `src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md`.
-- Compilata l'entità `ent-nodi-di-risonanza.md`.
-- Compilato il concetto `cnc-scelta-del-presente.md`.
 
 ## [2026-08-12] ingest | Brainstorming 06 - Transizione Invisibile, Cittadina Iniziale ed Esplorazione Emergente
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md`.
-- Creata la sintesi fonte `src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md`.
-- Compilate le entità `ent-la-cittadina-iniziale.md` ed `ent-soglia-invisibile.md`.
-- Compilato il concetto `cnc-esplorazione-emergente.md`.
 
 ## [2026-08-12] ingest | Brainstorming 07 - Conflitti Primordiali, Accoglienza Melanconica ed Architettura Rurale
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md`.
-- Creata la sintesi fonte `src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md`.
-- Compilate le entità `ent-accoglienza-melanconica.md` ed `ent-architettura-rurale.md`.
-- Compilato il concetto `cnc-gestione-primordiale-conflitti.md`.
 
 ## [2026-08-12] ingest | Brainstorming 08 & ADR-0003 - Architettura dell'Osservatore Integrato
 - Ingerita fonte grezza `docs/raw/raw-brainstorming-08-observer-architecture.md`.
 - Registrato ADR-0003 `docs/adr/adr-0003-silent-chronicler-observer-architecture.md`.
-- Creata la sintesi fonte `src-brainstorming-08-observer-architecture.md`.
-- Compilata l'entità `ent-cronista-silenzioso.md`.
-- Compilato il concetto `cnc-console-dell-architetto.md`.
-- Aggiornato l'indice generale `docs/index.md`.
+
+## [2026-08-12] adr | Registrazione ADR-0004 - Auto-Annealing Personaggi 100% Autonomo
+- Registrato ADR-0004 `docs/adr/adr-0004-autonomous-character-auto-annealing.md`.
+- Distinzione tra direttive di sistema (approvazione umana) e schede personaggio `.agent.md` (Auto-Annealing 100% autonomo).
+- Creata la skill Addy Osmani `skills/character-auto-annealing/SKILL.md`.
+- Creato il template personaggio `docs/agents/templates/character-template.agent.md`.
