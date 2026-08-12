@@ -2,8 +2,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
+import time
 from pathlib import Path
 
+from .chronicle import (
+    ChronicleUnavailable,
+    ChronicleWorker,
+    GenerativeChroniclerPool,
+    OllamaChronicler,
+    default_chronicle_path,
+)
 from .cognition import GenerativeCognitionPool, OllamaCognition, RoutedCognition
 from .event_store import EventStore
 from .observer import ObserverServer
@@ -45,6 +54,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     serve_parser.add_argument("--host", default="127.0.0.1")
     serve_parser.add_argument("--port", type=int, default=8765)
+    chronicle_parser = subparsers.add_parser(
+        "chronicle", help="generate the non-interfering Silent Chronicler diary"
+    )
+    chronicle_parser.add_argument(
+        "--chronicle-db",
+        type=Path,
+        help="derived chronicle database (default: next to the canonical database)",
+    )
+    chronicle_parser.add_argument(
+        "--model",
+        action="append",
+        dest="models",
+        help="Ollama model; repeat for generative failover (default: qwen3:8b)",
+    )
+    chronicle_parser.add_argument("--batch-size", type=int, default=20)
+    chronicle_parser.add_argument("--poll-interval", type=float, default=2.0)
+    chronicle_parser.add_argument(
+        "--once",
+        action="store_true",
+        help="process at most one pending batch and exit",
+    )
     return parser
 
 
@@ -79,6 +109,41 @@ def main(argv: list[str] | None = None) -> int:
         finally:
             server.shutdown()
         return 0
+
+    if args.command == "chronicle":
+        if args.poll_interval <= 0:
+            raise ValueError("poll_interval must be positive")
+        models = args.models or ["qwen3:8b"]
+        chronicler = GenerativeChroniclerPool(
+            [OllamaChronicler(model=model) for model in models]
+        )
+        worker = ChronicleWorker(
+            args.db,
+            args.chronicle_db or default_chronicle_path(args.db),
+            chronicler,
+            batch_size=args.batch_size,
+        )
+        while True:
+            try:
+                entry = worker.run_once()
+            except ChronicleUnavailable as error:
+                print(
+                    json.dumps(
+                        {"status": "chronicle_deferred", "failures": error.failures},
+                        ensure_ascii=False,
+                    ),
+                    file=sys.stderr,
+                )
+                if args.once:
+                    return 2
+                time.sleep(args.poll_interval)
+                continue
+            if entry is not None:
+                print(json.dumps(entry.to_dict(), ensure_ascii=False))
+            if args.once:
+                return 0
+            if entry is None:
+                time.sleep(args.poll_interval)
 
     with EventStore(args.db) as store:
         events = store.events()
