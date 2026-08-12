@@ -124,3 +124,12 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Aggiunti pan, zoom, selezione canvas e un percorso DOM equivalente per ispezionare ogni abitante senza produrre comandi o eventi.
 - La Console dell'Architetto espone corpo e snapshot mentale privilegiato; il registro mostra envelope canonici e visibilità senza inventare prosa.
 - Verificati store e layout con 4 test frontend, build TypeScript/Vite di produzione e integrazione HTTP col database reale; la QA visiva nel browser resta da completare appena è disponibile un'istanza browser collegata.
+
+## [2026-08-12] implementation | Milestone 4 - Cronista e Console
+- Implementato il Cronista Silenzioso come agente generativo extradiegetico: legge batch di eventi committati e non può agire, essere percepito o fermare il runtime.
+- Persistite le voci in un database derivato separato, con provenienza passaggio per passaggio, modello, inference id, tentativi e range canonico osservato.
+- Il generatore non dispone di prosa statica: usa retry e failover fra provider generativi; un fallimento lascia il batch pendente senza produrre testo sostitutivo.
+- Aggiunta una revisione generativa di grounding e una validazione che respinge inferenze d'assenza prive di un esplicito evento negativo.
+- Esposti query e stream SSE `chronicle-entry` read-only; la UI visualizza direttamente titolo e prosa persistiti insieme alla provenienza.
+- Verificato end-to-end con `qwen3:8b`: una prima bozza non conforme è stata respinta e la voce accettata è stata generata al secondo tentativo.
+- Suite complessiva: 78 test Python, 5 test frontend e build Vite di produzione.

@@ -34,6 +34,9 @@ npm install
 npm run dev
 # http://127.0.0.1:5173
 
+# In un terzo terminale: Diario generativo continuo, sempre derivato
+uv run newland --db data/newland.db chronicle --model qwen3:8b
+
 # Test degli invarianti
 uv run python -m unittest discover -s tests -v
 ```

@@ -72,6 +72,20 @@ data: {"sequence":43,"event_type":"AgentMoved",...}
 - [SSE-004] Il server accetta sia `after_sequence` sia l'header standard `Last-Event-ID`, scegliendo il cursore più avanzato per evitare duplicazioni alla riconnessione.
 - [SSE-005] In assenza di nuovi eventi vengono inviati heartbeat commentati, che non modificano lo stato dell'Observer.
 
+### `GET /api/chronicle?after_sequence=N&limit=L`
+
+Restituisce voci generate del Cronista da un archivio derivato separato. Ogni voce include prosa, range delle sequenze canoniche osservate, `source_event_ids`, modello, inference id, numero di tentativi e versione del prompt.
+
+- [CHR-001] Una voce non è un evento del mondo e non compare nelle percezioni dei Newlander.
+- [CHR-002] L'assenza o il fallimento del Cronista non rallenta e non modifica la simulazione.
+- [CHR-003] Il testo viene prodotto in tempo reale da un modello generativo; il frontend non usa template narrativi.
+- [CHR-004] Ogni passaggio richiede provenienza verso eventi canonici del batch e supera una revisione generativa di aderenza prima della persistenza.
+- [CHR-005] L'archivio predefinito è `data/newland.chronicle.db`, distinto da `data/newland.db`.
+
+### `GET /api/chronicle-stream?after_sequence=N`
+
+Stream SSE delle nuove voci sul canale stabile `chronicle-entry`. Il suo cursore è indipendente dalla sequenza degli eventi canonici e supporta `Last-Event-ID`.
+
 ## Bootstrap del client
 
 1. Richiedere `/api/snapshot`.
@@ -79,6 +93,7 @@ data: {"sequence":43,"event_type":"AgentMoved",...}
 3. Aprire `/api/stream?after_sequence=<last_sequence>`.
 4. Applicare in ordine soltanto eventi con sequenza maggiore del cursore locale.
 5. In caso di discontinuità o incompatibilità di schema, richiedere un nuovo snapshot.
+6. Caricare `/api/chronicle` e aprire `/api/chronicle-stream` usando il cursore dell'ultima voce.
 
 ## Verifica
 
