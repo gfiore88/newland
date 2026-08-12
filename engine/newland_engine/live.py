@@ -174,6 +174,9 @@ class LiveSupervisor:
                 self._booted.set()
                 while not self.stop_event.is_set():
                     events = simulation.run(max_activations=1)
+                    if not events:
+                        self.stop_event.wait(0.05)
+                        continue
                     self.emit(list(events))
                     with self._lock:
                         if any(
@@ -183,6 +186,9 @@ class LiveSupervisor:
                         else:
                             self._successful_activations += 1
         except BaseException as error:
+            if self.stop_event.is_set():
+                self._set_component("agent_loop", "stopped")
+                return
             self._record_failure("agent_loop", error)
             self._set_component("agent_loop", "failed")
             self._booted.set()

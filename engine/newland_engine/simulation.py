@@ -180,6 +180,7 @@ class NewlandSimulation:
             self._ensure_territory()
             self._ensure_initial_capabilities()
             self._ensure_initial_arrival_memories()
+            self._rebuild_agenda()
             return
 
         minds = {
@@ -418,7 +419,7 @@ class NewlandSimulation:
                     )
 
     def run(self, *, max_activations: int = 8) -> list[EventEnvelope]:
-        self.seed_initial_encounter()
+        self.initialize()
         produced: list[EventEnvelope] = []
         activations = 0
         while self.scheduler and activations < max_activations:

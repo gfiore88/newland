@@ -188,6 +188,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=CooperativeCycleTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=3)
                 social_types = [
                     event.event_type
@@ -286,6 +287,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=ScriptedTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 simulation.run(max_activations=2)
                 first_memory_counts = {
                     agent_id: len(mind.memories)
@@ -318,6 +320,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=UnavailableTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
 
             types = [event.event_type for event in produced]
@@ -350,6 +353,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=InvalidAppraisalTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
 
             types = [event.event_type for event in produced]
@@ -362,6 +366,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=GeneratedMentalStateTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
                 mind = simulation.minds["nwl-001"]
 
@@ -403,6 +408,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=GeneratedReflectionTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
                 reflections = simulation.minds["nwl-001"].reflections
 
@@ -421,6 +427,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=GeneratedAgendaTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
                 mind = simulation.minds["nwl-001"]
                 self.assertEqual("active", mind.plans["incontro_cauto"].status)
@@ -475,6 +482,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=InvalidCommitmentTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
 
             event_types = {event.event_type for event in produced}
@@ -487,6 +495,7 @@ class SimulationTests(unittest.TestCase):
             path = Path(directory) / "newland.db"
             cognition = SituatedActivityTestCognition()
             with NewlandSimulation(path, cognition=cognition) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
 
             context = cognition.contexts[0]

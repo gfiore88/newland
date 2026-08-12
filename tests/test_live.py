@@ -53,10 +53,11 @@ class LiveSupervisorTests(unittest.TestCase):
                 chronicler=GeneratedTestChronicler(),
                 emit=lambda events: activation.set(),
             )
+            from newland_engine.simulation import DEFAULT_INITIAL_PROFILES
             with NewlandSimulation(
                 root / "newland.db", cognition=ScriptedTestCognition()
             ) as sim:
-                sim.seed_initial_encounter()
+                sim.admit_arrivals(DEFAULT_INITIAL_PROFILES)
             try:
                 supervisor.start()
                 self.assertTrue(activation.wait(timeout=2))
