@@ -176,4 +176,8 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - L'Observer serve `ui/dist/` sullo stesso endpoint loopback ed espone health operativo separato dallo stato canonico.
 - Health distingue attivazioni riuscite, `CognitionDeferred`, cursore canonico, cursore narrato e backlog derivato.
 - Il supervisore non scarica modelli o processi Ollama estranei; un fallimento del Cronista viene registrato e ritentato senza fermare gli abitanti.
-- Verifica completata con 89 test Python, 6 test frontend e build Vite di produzione.
+- Verifica completata con 90 test Python, 6 test frontend e build Vite di produzione.
+- Smoke test reale con `qwen3:8b`: UI e health hanno mostrato i tre componenti attivi, una deliberazione agente in corso e il Cronista correttamente accodato.
+- La deliberazione ha esaurito tre riparazioni generative per provenienza di anamnesi non valida ed è diventata `CognitionDeferred`; nessuna azione o esperienza statica ha sostituito la mente.
+- Lo smoke ha rivelato che un job già accodato poteva partire durante lo shutdown; l'ammissione ora entra in stato chiuso, lascia terminare soltanto la chiamata attiva e rifiuta quelle in attesa.
+- Il modello Ollama caricato dallo smoke è stato arrestato; al termine non risultano processi LLM attivi.
