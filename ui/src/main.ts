@@ -354,15 +354,15 @@ function renderInspector(snapshot: ObserverSnapshot, active: Selection | null): 
       </div>
       <div class="vitals">
         ${meter("energia", agent.energy, false)}
-        ${meter("fame", agent.hunger, true)}
-        ${meter("sete", agent.thirst, true)}
+        ${meter("fame", agent.hunger, false)}
+        ${meter("sete", agent.thirst, false)}
       </div>
       ${tagSection("Valori", mind?.values ?? [])}
       ${tagSection("Temperamento", mind?.temperament ?? [])}
       ${listSection("Obiettivi correnti", mind?.goals ?? [])}
       ${detailRow("Prossima attenzione", mind?.next_activation_tick == null ? "non fissata" : `tick ${mind.next_activation_tick}`)}
-      ${detailRow("Memorie", String(mind?.memories.length ?? 0))}
-      ${detailRow("Riflessioni", String(mind?.reflections.length ?? 0))}
+      ${expandableListSection("Memorie", (mind?.memories ?? []).map((m: any) => m.description))}
+      ${expandableListSection("Riflessioni", (mind?.reflections ?? []).map((r: any) => r.statement))}
       ${
         snapshot.is_live
           ? ""
@@ -450,6 +450,22 @@ function listSection(label: string, values: string[]): string {
 
 function detailRow(label: string, value: string): string {
   return `<div class="detail-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+}
+
+function expandableListSection(title: string, items: string[]): string {
+  if (items.length === 0) {
+    return detailRow(title, "0");
+  }
+  const listItems = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  return `
+    <details class="inspector-details">
+      <summary class="detail-row">
+        <span>${title}</span>
+        <span class="count-badge">${items.length} ▾</span>
+      </summary>
+      <ul class="expandable-list">${listItems}</ul>
+    </details>
+  `;
 }
 
 function splitEventType(value: string): string {

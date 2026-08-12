@@ -652,3 +652,42 @@ button {
     scroll-behavior: auto !important;
   }
 }
+
+.inspector-details {
+  margin-top: 0.5rem;
+}
+
+.inspector-details summary {
+  cursor: pointer;
+  list-style: none; /* Hide default arrow */
+}
+
+.inspector-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.inspector-details .count-badge {
+  color: var(--moss);
+  background: rgb(215 165 140 / 12%);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.2rem;
+  font-size: 0.7rem;
+}
+
+.expandable-list {
+  margin: 0.5rem 0 0.5rem 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+  color: #c0bfae;
+  border-left: 1px solid var(--line);
+  padding-left: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.expandable-list li {
+  line-height: 1.45;
+  font-family: Georgia, "Times New Roman", serif;
+}

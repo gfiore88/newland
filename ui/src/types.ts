@@ -91,6 +91,21 @@ export interface ObserverWorld {
   disputes: Record<string, DisputeState>;
 }
 
+export interface Memory {
+  memory_id: string;
+  description: string;
+  emotional_valence: number;
+  importance: number;
+  created_tick: number;
+}
+
+export interface Reflection {
+  reflection_id: string;
+  statement: string;
+  confidence: number;
+  created_tick: number;
+}
+
 export interface AgentMindSnapshot {
   agent_id: string;
   name: string;
@@ -106,8 +121,8 @@ export interface AgentMindSnapshot {
   role_interpretations: Record<string, unknown>;
   anamnesis_fragments: Record<string, unknown>;
   resonance_orientation: Record<string, unknown> | null;
-  memories: unknown[];
-  reflections: unknown[];
+  memories: Memory[];
+  reflections: Reflection[];
   last_perceived_sequence: number;
   next_activation_tick: number | null;
   next_activation_reason: string;
