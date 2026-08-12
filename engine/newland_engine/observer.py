@@ -6,6 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import sys
 from pathlib import Path
 from threading import Event
 from typing import Any
@@ -15,6 +16,18 @@ from .chronicle import ChronicleStore, default_chronicle_path
 from .event_store import EventStore
 from .projections import event_projection, world_projection
 from .world import replay
+
+
+class QuietThreadingHTTPServer(ThreadingHTTPServer):
+    """ThreadingHTTPServer that suppresses benign client disconnect tracebacks."""
+
+    def handle_error(self, request: Any, client_address: Any) -> None:
+        exctype, _, _ = sys.exc_info()
+        if exctype is not None and issubclass(
+            exctype, (ConnectionResetError, BrokenPipeError, ConnectionAbortedError)
+        ):
+            return
+        super().handle_error(request, client_address)
 
 
 class ObserverReadModel:
@@ -116,7 +129,7 @@ class ObserverServer:
             raise ValueError("static_directory must contain index.html")
         self.operational_health = operational_health
         handler = self._handler_type()
-        self.httpd = ThreadingHTTPServer((host, port), handler)
+        self.httpd = QuietThreadingHTTPServer((host, port), handler)
         self.httpd.daemon_threads = True
 
     @property
