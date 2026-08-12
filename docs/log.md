@@ -27,3 +27,25 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 ## [2026-08-12] adr | Registrazione ADR-0007 - Autonomous Agent Minds and Event-Driven World Runtime
 - Registrato ADR-0007 `docs/adr/adr-0007-autonomous-agent-mind-and-world-runtime.md`.
 - Definizione dell'architettura cognitiva degli agenti (`AgentMind`), scomposizione tra percezione soggettiva ed intenzione strutturata, World Adjudicator deterministico con persistenza canonica su SQLite (Event Sourcing) e proiezioni su file Markdown.
+
+## [2026-08-12] implementation | Milestone 1 - Vertical Slice Agentico
+- Creati i contratti implementativi e la roadmap sotto `docs/architecture/`.
+- Implementato il runtime Python con event store SQLite, replay, `AgentMind` persistenti, percezione privata, memorie auditate, scheduler event-driven e `WorldAdjudicator`.
+- Implementati fallback deterministico e adattatore Ollama con intenzioni validate tramite JSON Schema.
+- Verificata una conversazione autonoma fra due Newlander sia offline sia con `qwen3:4b` locale.
+- Aggiunti test per persistenza, isolamento percettivo, anti-ricorsione della memoria, replay e rifiuto delle azioni impossibili.
+
+## [2026-08-12] adr | Accettazione ADR-0008 - Zero Decisioni Statiche
+- Registrato e accettato ADR-0008 `docs/adr/adr-0008-zero-static-agent-decisions.md` su esplicita direttiva di Giovanni Fiore.
+- Rimosso il fallback decisionale deterministico dal runtime di produzione e dalla CLI.
+- Stabilito che fisica e validazione possono essere deterministiche, mentre intenzioni, parole, priorità e riflessioni appartengono esclusivamente alla cognizione generativa privata degli agenti.
+- In caso di indisponibilità: riparazione generativa, failover verso altro modello generativo o evento `CognitionDeferred`, senza azione materiale sostitutiva.
+- Esteso lo stesso vincolo alla vita interiore: salienza, tono emotivo e riassunto soggettivo delle memorie sono prodotti dalla mente generativa, non dal `PerceptionService`.
+- Aggiunta validazione della provenienza: una mente non può formare una memoria riferita a un evento che non ha percepito.
+
+## [2026-08-12] implementation | Milestone 2 - Consolidamento Mentale Generativo
+- Esteso il contratto cognitivo con revisioni generative di beliefs, relazioni, affetto, obiettivi e riflessioni.
+- Introdotto `MentalStateApplier`, responsabile unicamente di validare limiti e applicare output già scelti dalla mente.
+- Persistiti gli eventi privati `BeliefUpdated`, `RelationshipUpdated`, `AffectUpdated`, `GoalRevised` e `ReflectionCreated` con fonti e provenienza del modello.
+- Verificata la persistenza su riavvio e il vincolo che una riflessione possa citare solo memorie realmente possedute.
+- Verificato il contratto completo con Ollama `qwen3:4b`: memoria soggettiva, aggiornamento affettivo e azione autonoma prodotti nello stesso ciclo cognitivo.

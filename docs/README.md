@@ -21,10 +21,14 @@ docs/
 │   ├── adr-0004-autonomous-character-auto-annealing.md     <-- ADR-0004 (Auto-Annealing Personaggi 100% Autonomo)
 │   ├── adr-0005-technical-engine-local-llm-architecture.md  <-- ADR-0005 (Stack Tecnico & Modelli LLM Locali Ollama)
 │   ├── adr-0006-observer-engine-2d-webgl-architecture.md   <-- ADR-0006 (Engine Grafico 2.5D WebGL / PixiJS)
-│   └── adr-0007-autonomous-agent-mind-and-world-runtime.md <-- ADR-0007 (Runtime Agenti Autonomi & World Adjudicator)
+│   ├── adr-0007-autonomous-agent-mind-and-world-runtime.md <-- ADR-0007 (Runtime Agenti Autonomi & World Adjudicator)
+│   └── adr-0008-zero-static-agent-decisions.md             <-- ADR-0008 (Zero Decisioni Statiche)
 ├── agents/                                  <-- Specifiche ed Agenti
 │   └── templates/                           <-- Template Schede Personaggio (.agent.md)
 │       └── character-template.agent.md
+├── architecture/                            <-- Contratti eseguibili e roadmap
+│   ├── agent-runtime-contracts.md            <-- Eventi, mente, percezione, azioni e scheduler
+│   └── implementation-roadmap.md             <-- Milestone engine, società e UI WebGL
 ├── domain/                                  <-- Documenti di Dominio Grezzi / Capitolato
 │   └── newland-universe-spec.md             <-- Specifica Primordiale Universo Parallelo
 ├── raw/                                     <-- Deposito Fonti Grezze Immutabili
@@ -44,5 +48,8 @@ docs/
 | **Governance ADR-0005** | [adr-0005-technical-engine-local-llm-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0005-technical-engine-local-llm-architecture.md) | ADR Nygard: Stack Tecnico Ibrido e Modelli LLM Locali (Ollama / Llama 3 / Qwen) su M1 Max 64GB. |
 | **Governance ADR-0006** | [adr-0006-observer-engine-2d-webgl-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0006-observer-engine-2d-webgl-architecture.md) | ADR Nygard: Visual Observer Engine 2.5D WebGL (PixiJS) con mappa interattiva zoomabile e SSE. |
 | **Governance ADR-0007** | [adr-0007-autonomous-agent-mind-and-world-runtime.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0007-autonomous-agent-mind-and-world-runtime.md) | ADR Nygard: Cognizione Agenti (`AgentMind`), Event-Driven Architecture, SQLite Adjudicator. |
+| **Governance ADR-0008** | [adr-0008-zero-static-agent-decisions.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0008-zero-static-agent-decisions.md) | ADR Nygard: nessuna decisione statica o fallback comportamentale; retry/failover generativo o differimento cognitivo. |
+| **Contratti Runtime** | [agent-runtime-contracts.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/agent-runtime-contracts.md) | Contratti implementativi per eventi canonici, `AgentMind`, percezione, intenzioni, arbitraggio, scheduling e replay. |
+| **Roadmap Engine** | [implementation-roadmap.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/implementation-roadmap.md) | Milestone dal vertical slice agentico alla UI WebGL obbligatoria. |
 | **Template Personaggi** | [character-template.agent.md](file:///Users/giovannifiore/Desktop/newland/docs/agents/templates/character-template.agent.md) | Template di base per la scheda agentica (.agent.md) di ogni Newlander. |
 | **Skill Auto-Annealing** | [character-auto-annealing/SKILL.md](file:///Users/giovannifiore/Desktop/newland/skills/character-auto-annealing/SKILL.md) | Skill Addy Osmani per l'evoluzione ed auto-commit dei personaggi. |

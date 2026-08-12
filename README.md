@@ -2,6 +2,27 @@
 
 > **Newland** è un progetto a lungo termine dedicato alla concettualizzazione, formalizzazione e simulazione di un universo parallelo speculare nello stato primordiale di *Tabula Rasa* (popolazione = 0), governato da un sistema di regole etiche, fisiche ed agentiche rigorose.
 
+## Primo vertical slice eseguibile
+
+Il repository contiene un runtime Python event-driven con due menti persistenti, percezione privata, memoria episodica soggettiva, beliefs, relazioni, affetti, riflessioni, obiettivi, intenzioni generative strutturate, arbitraggio delle azioni ed event store SQLite. Ollama è obbligatorio per le decisioni dei Newlander: il codice non sostituisce mai una mente con pattern statici. Tutti i cambiamenti psicologici vengono generati dalla mente dell'agente e validati contro ciò che ha realmente percepito o ricordato.
+
+```bash
+# Setup e run agentico in tempo reale
+uv sync
+uv run newland --db data/newland.db run
+
+# Failover fra modelli generativi, senza fallback statico
+uv run newland --db data/newland.db run \
+  --model qwen3:4b --model qwen3:8b
+
+# Ispezione della verità canonica
+uv run newland --db data/newland.db events
+uv run newland --db data/newland.db state
+
+# Test degli invarianti
+uv run python -m unittest discover -s tests -v
+```
+
 ---
 
 ## 🌟 Architettura e Governance Agentica
@@ -31,6 +52,9 @@ newland/
 │   │   └── newland-universe-spec.md
 │   ├── architecture/              <-- Documentazione Architetturale
 │   └── agents/                    <-- Specifiche degli Agenti
+├── engine/newland_engine/         <-- Runtime agentico Python
+├── tests/                         <-- Test di replay, percezione e arbitraggio
+├── pyproject.toml                 <-- Packaging e comando `newland`
 └── skills/                        <-- Agent Skills (Standard Addy Osmani)
     ├── create-architectural-decision-record/
     ├── adr-creator/
@@ -44,3 +68,5 @@ newland/
 - 📄 **[Indice RAG Principal](docs/README.md)**
 - 📄 **[ADR-0001: Governance Agentica & Workflow ADR](docs/adr/adr-0001-agentic-governance-and-adr-workflow.md)**
 - 📄 **[Specifica Universo Parallelo Newland](docs/domain/newland-universe-spec.md)**
+- 📄 **[Contratti del Runtime Agentico](docs/architecture/agent-runtime-contracts.md)**
+- 📄 **[Roadmap Implementativa](docs/architecture/implementation-roadmap.md)**

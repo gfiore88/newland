@@ -58,3 +58,11 @@
 - [adr-0005-technical-engine-local-llm-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0005-technical-engine-local-llm-architecture.md) - *ADR-0005: Technical Engine & Hybrid Local-LLM Architecture (M1 Max 64GB).*
 - [adr-0006-observer-engine-2d-webgl-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0006-observer-engine-2d-webgl-architecture.md) - *ADR-0006: Narrative-First 2.5D WebGL Observer Engine Architecture (PixiJS).*
 - [adr-0007-autonomous-agent-mind-and-world-runtime.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0007-autonomous-agent-mind-and-world-runtime.md) - *ADR-0007: Autonomous Agent Minds and Event-Driven World Runtime (SQLite Adjudicator).*
+- [adr-0008-zero-static-agent-decisions.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0008-zero-static-agent-decisions.md) - *ADR-0008: ogni decisione dei Newlander nasce in tempo reale dalla cognizione generativa; nessun fallback statico.*
+
+---
+
+## ⚙️ Specifiche Implementative (`docs/architecture/`)
+
+- [Agent Runtime Contracts](file:///Users/giovannifiore/Desktop/newland/docs/architecture/agent-runtime-contracts.md) - *Envelope eventi, confini della mente, percezione, intenzioni, arbitraggio, scheduling e invarianti di replay.*
+- [Implementation Roadmap](file:///Users/giovannifiore/Desktop/newland/docs/architecture/implementation-roadmap.md) - *Milestone dal primo vertical slice al territorio sociale e all'observer WebGL.*
