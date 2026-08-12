@@ -54,4 +54,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Creata la sintesi fonte `src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md`.
 - Compilate le entità `ent-accoglienza-melanconica.md` ed `ent-architettura-rurale.md`.
 - Compilato il concetto `cnc-gestione-primordiale-conflitti.md`.
+
+## [2026-08-12] ingest | Brainstorming 08 & ADR-0003 - Architettura dell'Osservatore Integrato
+- Ingerita fonte grezza `docs/raw/raw-brainstorming-08-observer-architecture.md`.
+- Registrato ADR-0003 `docs/adr/adr-0003-silent-chronicler-observer-architecture.md`.
+- Creata la sintesi fonte `src-brainstorming-08-observer-architecture.md`.
+- Compilata l'entità `ent-cronista-silenzioso.md`.
+- Compilato il concetto `cnc-console-dell-architetto.md`.
 - Aggiornato l'indice generale `docs/index.md`.

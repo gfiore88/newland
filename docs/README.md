@@ -16,14 +16,15 @@ docs/
 ├── adr/                                     <-- Architecture Decision Records (Nygard Rules)
 │   ├── 0000-adr-template.md                 <-- Template Nygard Standard
 │   ├── adr-0001-agentic-governance-and-adr-workflow.md <-- ADR-0001 (Governance & Self-Annealing)
-│   └── adr-0002-karpathy-llm-wiki-rag-architecture.md  <-- ADR-0002 (Karpathy LLM-Wiki Pattern)
+│   ├── adr-0002-karpathy-llm-wiki-rag-architecture.md  <-- ADR-0002 (Karpathy LLM-Wiki Pattern)
+│   └── adr-0003-silent-chronicler-observer-architecture.md <-- ADR-0003 (Architettura dell'Osservatore)
 ├── domain/                                  <-- Documenti di Dominio Grezzi / Capitolato
 │   └── newland-universe-spec.md             <-- Specifica Primordiale Universo Parallelo
 ├── raw/                                     <-- Deposito Fonti Grezze Immutabili
 └── wiki/                                    <-- Compilazione Interconnessa Mantenuta dalla LLM
     ├── sources/                             <-- Sintesi Analitiche delle Fonti Ingerite
-    ├── entities/                            <-- Pagine Entità (Leggi, biomi, parametri fisici)
-    ├── concepts/                            <-- Modelli teorici e sistemi
+    ├── entities/                            <-- Pagine Entità (Leggi, biomi, cronista, parametri)
+    ├── concepts/                            <-- Modelli teorici e sistemi (Console architetto, ecc.)
     └── synthesis/                           <-- Analisi complesse e risposte a query persistenti
 ```
 
@@ -35,6 +36,7 @@ docs/
 |---|---|---|
 | **Governance ADR-0001** | [adr-0001-agentic-governance-and-adr-workflow.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0001-agentic-governance-and-adr-workflow.md) | ADR Nygard: Regola dell'ADR obbligatorio, RAG in `docs/`, Self-Annealing. |
 | **Governance ADR-0002** | [adr-0002-karpathy-llm-wiki-rag-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0002-karpathy-llm-wiki-rag-architecture.md) | ADR Nygard: Karpathy LLM-Wiki Pattern per la gestione del RAG. |
+| **Governance ADR-0003** | [adr-0003-silent-chronicler-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0003-silent-chronicler-observer-architecture.md) | ADR Nygard: Architettura dell'Osservatore Integrato (Diario del Cronista + Console Architetto). |
 | **Catalogo Wiki** | [index.md](file:///Users/giovannifiore/Desktop/newland/docs/index.md) | Indice di tutte le pagine fonti, entità e concetti compilati dalla LLM. |
 | **Registro Attività** | [log.md](file:///Users/giovannifiore/Desktop/newland/docs/log.md) | Log append-only degli Ingest, Query e Lint. |
 | **Direttiva Wiki** | [wiki-schema.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki-schema.md) | Direttiva operativa per Ingest, Query e Lint. |
