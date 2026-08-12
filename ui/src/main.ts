@@ -1,27 +1,299 @@
 import "./style.css";
 
+import { displayName } from "./layout";
+import { NewlandMapScene, type Selection } from "./map-scene";
 import { ObserverStore } from "./observer-store";
+import type { EventEnvelope, ObserverSnapshot } from "./types";
 
 const root = document.querySelector<HTMLDivElement>("#app");
 if (!root) throw new Error("Missing #app root");
 
 root.innerHTML = `
-  <main class="boot-shell">
-    <p class="eyebrow">NEWLAND / OSSERVATORE LOCALE</p>
-    <h1>In ascolto del territorio</h1>
-    <p id="boot-status">Connessione alla memoria canonica…</p>
+  <main class="observer-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">NEWLAND / OSSERVATORE</p>
+        <h1>Il territorio respira.</h1>
+      </div>
+      <div class="world-clock" aria-live="polite">
+        <span id="world-date">Tempo non disponibile</span>
+        <span id="world-tick">tick —</span>
+      </div>
+      <div class="connection" id="connection" data-state="connecting">
+        <span class="connection-dot"></span>
+        <span id="connection-label">connessione</span>
+      </div>
+    </header>
+
+    <section class="map-panel" aria-label="Territorio osservabile">
+      <div class="map-atmosphere"></div>
+      <div id="world-stage" class="world-stage"></div>
+      <div class="map-guidance">trascina per muovere · rotella per avvicinare</div>
+      <div id="map-error" class="map-error" hidden></div>
+    </section>
+
+    <aside class="side-panel">
+      <section class="panel-block inhabitants-block">
+        <div class="section-heading">
+          <p class="eyebrow">PRESENZE</p>
+          <span id="inhabitant-count">0</span>
+        </div>
+        <div id="inhabitants" class="inhabitants" aria-label="Newlander osservabili"></div>
+      </section>
+
+      <section class="panel-block inspector-block" aria-live="polite">
+        <p class="eyebrow">CONSOLE DELL'ARCHITETTO</p>
+        <div id="inspector" class="inspector empty-state">
+          Seleziona una presenza, un luogo o una traccia materiale. L'osservazione non produce effetti nel mondo.
+        </div>
+      </section>
+
+      <section class="panel-block event-block">
+        <div class="section-heading">
+          <p class="eyebrow">REGISTRO CANONICO</p>
+          <span id="event-sequence">#—</span>
+        </div>
+        <ol id="event-list" class="event-list"></ol>
+      </section>
+    </aside>
   </main>
 `;
 
+const stage = requiredElement<HTMLDivElement>("#world-stage");
 const apiBase = import.meta.env.VITE_OBSERVER_API ?? "http://127.0.0.1:8765";
 const store = new ObserverStore(apiBase);
+let selection: Selection | null = null;
+let lastRenderedSequence = -1;
+let mapScene: NewlandMapScene | null = null;
+
+try {
+  mapScene = await NewlandMapScene.create(stage, (nextSelection) => {
+    selection = nextSelection;
+    const snapshot = store.state.snapshot;
+    if (snapshot) {
+      renderInspector(snapshot, selection);
+      renderInhabitants(snapshot, selection);
+    }
+  });
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  const mapError = requiredElement<HTMLDivElement>("#map-error");
+  mapError.hidden = false;
+  mapError.textContent = `WebGL non disponibile: ${message}`;
+}
+
 store.subscribe(() => {
-  const status = document.querySelector<HTMLParagraphElement>("#boot-status");
-  if (!status) return;
-  if (store.state.error) {
-    status.textContent = `Observer non raggiungibile: ${store.state.error}`;
+  renderConnection();
+  const snapshot = store.state.snapshot;
+  if (!snapshot) return;
+  renderClock(snapshot);
+  renderInhabitants(snapshot, selection);
+  renderInspector(snapshot, selection);
+  renderEvents(store.state.events);
+  if (snapshot.last_sequence !== lastRenderedSequence) {
+    mapScene?.render(snapshot.world);
+    lastRenderedSequence = snapshot.last_sequence;
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  store.stop();
+  mapScene?.destroy();
+});
+
+void store.start();
+
+function renderConnection(): void {
+  const indicator = requiredElement<HTMLDivElement>("#connection");
+  const label = requiredElement<HTMLSpanElement>("#connection-label");
+  indicator.dataset.state = store.state.connection;
+  label.textContent = store.state.error ? "non raggiungibile" : store.state.connection;
+  indicator.title = store.state.error ?? "Flusso Observer locale";
+}
+
+function renderClock(snapshot: ObserverSnapshot): void {
+  requiredElement<HTMLSpanElement>("#world-date").textContent = formatWorldTime(
+    snapshot.world.world_time,
+  );
+  requiredElement<HTMLSpanElement>("#world-tick").textContent = `tick ${snapshot.world.tick}`;
+  requiredElement<HTMLSpanElement>("#event-sequence").textContent =
+    `#${store.state.liveSequence}`;
+}
+
+function renderInhabitants(snapshot: ObserverSnapshot, active: Selection | null): void {
+  const agents = Object.values(snapshot.world.agents).sort((left, right) =>
+    left.name.localeCompare(right.name),
+  );
+  requiredElement<HTMLSpanElement>("#inhabitant-count").textContent = String(agents.length);
+  const container = requiredElement<HTMLDivElement>("#inhabitants");
+  container.replaceChildren(
+    ...agents.map((agent) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "inhabitant-card";
+      button.dataset.active = String(active?.kind === "agent" && active.id === agent.agent_id);
+      button.innerHTML = `
+        <span class="inhabitant-mark">${escapeHtml(initials(agent.name))}</span>
+        <span>
+          <strong>${escapeHtml(agent.name)}</strong>
+          <small>${escapeHtml(displayName(agent.location))}</small>
+        </span>
+        <span class="energy-glyph" title="Energia ${Math.round(agent.energy * 100)}%">
+          <i style="--level:${agent.energy}"></i>
+        </span>
+      `;
+      button.addEventListener("click", () => {
+        selection = { kind: "agent", id: agent.agent_id };
+        renderInspector(snapshot, selection);
+        renderInhabitants(snapshot, selection);
+        mapScene?.focus(selection, snapshot.world);
+      });
+      return button;
+    }),
+  );
+}
+
+function renderInspector(snapshot: ObserverSnapshot, active: Selection | null): void {
+  const inspector = requiredElement<HTMLDivElement>("#inspector");
+  if (!active) {
+    inspector.className = "inspector empty-state";
+    inspector.textContent =
+      "Seleziona una presenza, un luogo o una traccia materiale. L'osservazione non produce effetti nel mondo.";
     return;
   }
-  status.textContent = `Stato: ${store.state.connection}`;
-});
-void store.start();
+  inspector.className = "inspector";
+  if (active.kind === "agent") {
+    const agent = snapshot.world.agents[active.id];
+    const mind = snapshot.minds[active.id];
+    if (!agent) return;
+    inspector.innerHTML = `
+      <div class="inspector-title">
+        <span class="inhabitant-mark large">${escapeHtml(initials(agent.name))}</span>
+        <div><h2>${escapeHtml(agent.name)}</h2><p>${escapeHtml(displayName(agent.location))}</p></div>
+      </div>
+      <div class="vitals">
+        ${meter("energia", agent.energy, false)}
+        ${meter("fame", agent.hunger, true)}
+        ${meter("sete", agent.thirst, true)}
+      </div>
+      ${tagSection("Valori", mind?.values ?? [])}
+      ${tagSection("Temperamento", mind?.temperament ?? [])}
+      ${listSection("Obiettivi correnti", mind?.goals ?? [])}
+      ${detailRow("Prossima attenzione", mind?.next_activation_tick == null ? "non fissata" : `tick ${mind.next_activation_tick}`)}
+      ${detailRow("Memorie", String(mind?.memories.length ?? 0))}
+      ${detailRow("Riflessioni", String(mind?.reflections.length ?? 0))}
+    `;
+    return;
+  }
+  if (active.kind === "location") {
+    const occupants = Object.values(snapshot.world.agents).filter(
+      (agent) => agent.location === active.id,
+    );
+    const resources = Object.values(snapshot.world.resources).filter(
+      (resource) => resource.location === active.id,
+    );
+    inspector.innerHTML = `
+      <h2>${escapeHtml(displayName(active.id))}</h2>
+      ${detailRow("Collegamenti", String(snapshot.world.locations[active.id]?.length ?? 0))}
+      ${listSection("Presenze", occupants.map((agent) => agent.name))}
+      ${listSection("Risorse", resources.map((resource) => `${resource.label}: ${resource.quantity} ${resource.unit}`))}
+    `;
+    return;
+  }
+  if (active.kind === "resource") {
+    const resource = snapshot.world.resources[active.id];
+    if (!resource) return;
+    inspector.innerHTML = `
+      <h2>${escapeHtml(resource.label)}</h2>
+      ${detailRow("Luogo", displayName(resource.location))}
+      ${detailRow("Quantità", `${resource.quantity} ${resource.unit}`)}
+      ${detailRow("Rinnovabile", resource.renewable ? "sì" : "no")}
+    `;
+    return;
+  }
+  const node = snapshot.world.resonance_nodes[active.id];
+  if (!node) return;
+  inspector.innerHTML = `
+    <h2>${escapeHtml(node.label)}</h2>
+    ${detailRow("Luogo", displayName(node.location))}
+    ${detailRow("Intensità fisica", `${Math.round(node.intensity * 100)}%`)}
+    <p class="privacy-note">Il significato non appartiene al nodo: nasce, se nasce, nella mente di chi lo percepisce.</p>
+  `;
+}
+
+function renderEvents(events: readonly EventEnvelope[]): void {
+  const list = requiredElement<HTMLOListElement>("#event-list");
+  const recent = [...events].reverse().slice(0, 24);
+  list.replaceChildren(
+    ...recent.map((event) => {
+      const item = document.createElement("li");
+      item.className = "event-entry";
+      item.dataset.visibility = event.visibility;
+      const actors = event.actor_ids.length > 0 ? event.actor_ids.join(", ") : "mondo";
+      item.innerHTML = `
+        <span class="event-index">${event.sequence}</span>
+        <span class="event-body">
+          <strong>${escapeHtml(splitEventType(event.event_type))}</strong>
+          <small>${escapeHtml(actors)} · ${escapeHtml(event.location ? displayName(event.location) : "senza luogo")}</small>
+        </span>
+        <span class="visibility-mark" title="Visibilità: ${event.visibility}"></span>
+      `;
+      return item;
+    }),
+  );
+}
+
+function meter(label: string, value: number, inverse: boolean): string {
+  const displayValue = Math.round(value * 100);
+  const normalized = inverse ? 1 - value : value;
+  return `<div class="meter"><span>${label}</span><i><b style="--level:${normalized}"></b></i><em>${displayValue}%</em></div>`;
+}
+
+function tagSection(label: string, values: string[]): string {
+  if (values.length === 0) return "";
+  return `<section class="inspect-section"><h3>${escapeHtml(label)}</h3><div class="tags">${values.map((value) => `<span>${escapeHtml(value)}</span>`).join("")}</div></section>`;
+}
+
+function listSection(label: string, values: string[]): string {
+  if (values.length === 0) return "";
+  return `<section class="inspect-section"><h3>${escapeHtml(label)}</h3><ul>${values.map((value) => `<li>${escapeHtml(value)}</li>`).join("")}</ul></section>`;
+}
+
+function detailRow(label: string, value: string): string {
+  return `<div class="detail-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`;
+}
+
+function splitEventType(value: string): string {
+  return value.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0] ?? "")
+    .join("")
+    .toUpperCase();
+}
+
+function formatWorldTime(value: string): string {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!match) return value;
+  return `giorno ${Number(match[3])} · ${match[4]}:${match[5]}`;
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[
+        character
+      ] ?? character,
+  );
+}
+
+function requiredElement<T extends Element>(selector: string): T {
+  const element = document.querySelector<T>(selector);
+  if (!element) throw new Error(`Missing ${selector}`);
+  return element;
+}
