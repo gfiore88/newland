@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from .cognition import GenerativeCognitionPool, OllamaCognition
+from .cognition import GenerativeCognitionPool, OllamaCognition, RoutedCognition
 from .event_store import EventStore
 from .simulation import NewlandSimulation
 from .world import replay
@@ -27,6 +27,15 @@ def build_parser() -> argparse.ArgumentParser:
         dest="models",
         help="Ollama model; repeat for generative failover (default: qwen3:8b)",
     )
+    run_parser.add_argument(
+        "--reflective-model",
+        action="append",
+        dest="reflective_models",
+        help=(
+            "Ollama model for resonance and active disputes; repeat for "
+            "generative failover (default: same pool as --model)"
+        ),
+    )
 
     subparsers.add_parser("events", help="print the canonical event log")
     subparsers.add_parser("state", help="print materialized world state")
@@ -37,9 +46,17 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "run":
         models = args.models or ["qwen3:8b"]
-        cognition = GenerativeCognitionPool(
+        ordinary = GenerativeCognitionPool(
             [OllamaCognition(model=model) for model in models]
         )
+        reflective = (
+            GenerativeCognitionPool(
+                [OllamaCognition(model=model) for model in args.reflective_models]
+            )
+            if args.reflective_models
+            else ordinary
+        )
+        cognition = RoutedCognition(ordinary, reflective)
         with NewlandSimulation(args.db, cognition=cognition) as simulation:
             events = simulation.run(max_activations=args.activations)
             _print_events(events)

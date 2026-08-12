@@ -9,11 +9,13 @@ from newland_engine.cognition import (
     AttentionSchedule,
     CognitionContext,
     CognitionResult,
+    DisputeAffordance,
     GenerativeCognitionPool,
     MentalUpdates,
     OllamaCognition,
     ResonanceNodeAffordance,
     RoleInterpretationRevision,
+    RoutedCognition,
     validate_cognition_result,
 )
 from newland_engine.models import (
@@ -25,6 +27,28 @@ from newland_engine.models import (
     world_time_for_tick,
 )
 from newland_engine.perception import Observation
+
+
+class RecordingCognition:
+    def __init__(self, model: str) -> None:
+        self.model = model
+        self.contexts: list[CognitionContext] = []
+
+    def decide(self, cognition_context: CognitionContext) -> CognitionResult:
+        self.contexts.append(cognition_context)
+        return CognitionResult(
+            intention=Intention(
+                action_type="rest",
+                motivation_summary=f"Decisione generata da {self.model}.",
+            ),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(4, "Riesaminare la situazione."),
+            provider="recording-test-double",
+            model=self.model,
+            inference_id=f"inference-{self.model}",
+            attempts=1,
+        )
 
 
 def context() -> CognitionContext:
@@ -50,6 +74,78 @@ def context() -> CognitionContext:
 
 
 class GenerativeCognitionPoolTests(unittest.TestCase):
+    def test_router_changes_only_model_tier_and_records_route(self) -> None:
+        ordinary = RecordingCognition("ordinary-model")
+        reflective = RecordingCognition("reflective-model")
+        router = RoutedCognition(ordinary, reflective)
+        ordinary_context = context()
+
+        ordinary_result = router.decide(ordinary_context)
+
+        self.assertEqual("ordinary-model", ordinary_result.model)
+        self.assertEqual("rest", ordinary_result.intention.action_type)
+        self.assertEqual("ordinary", ordinary_result.provenance()["route"])
+        self.assertIs(ordinary_context, ordinary.contexts[0])
+        self.assertEqual([], reflective.contexts)
+
+        signal = EventEnvelope(
+            event_type="ResonanceSignalReceived",
+            world_tick=1,
+            world_time=world_time_for_tick(1),
+            actor_ids=("nwl-test",),
+            payload={
+                "node_id": "local-node",
+                "intensity": 0.5,
+                "exposure_mode": "arrival",
+            },
+            visibility="private",
+            recipient_ids=("nwl-test",),
+        )
+        reflective_context = CognitionContext(
+            mind=ordinary_context.mind,
+            material_state=ordinary_context.material_state,
+            observations=(Observation(signal),),
+            nearby_agents=ordinary_context.nearby_agents,
+            activation_reason="segnale percepito",
+        )
+
+        reflective_result = router.decide(reflective_context)
+
+        self.assertEqual("reflective-model", reflective_result.model)
+        self.assertEqual("rest", reflective_result.intention.action_type)
+        self.assertEqual("reflective", reflective_result.provenance()["route"])
+        self.assertIs(reflective_context, reflective.contexts[0])
+
+    def test_active_dispute_uses_reflective_tier_without_global_context(self) -> None:
+        ordinary = RecordingCognition("ordinary-model")
+        reflective = RecordingCognition("reflective-model")
+        router = RoutedCognition(ordinary, reflective)
+        base = context()
+        dispute_context = CognitionContext(
+            mind=base.mind,
+            material_state=base.material_state,
+            observations=(),
+            nearby_agents=base.nearby_agents,
+            activation_reason="conflitto attivo",
+            active_disputes=(
+                DisputeAffordance(
+                    dispute_id="dispute-1",
+                    opener_id="nwl-test",
+                    target_id="nwl-other",
+                    subject_event_id="event-1",
+                    status="open",
+                    resolution_offered_by=None,
+                ),
+            ),
+        )
+
+        result = router.decide(dispute_context)
+
+        self.assertEqual("reflective", result.route)
+        self.assertEqual("reflective-model", result.model)
+        self.assertEqual([], ordinary.contexts)
+        self.assertEqual([dispute_context], reflective.contexts)
+
     def test_intense_generated_affect_is_valid(self) -> None:
         revision = AffectRevision(
             calm_delta=-0.8,
