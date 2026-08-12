@@ -163,6 +163,17 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [SCH-013] Ctrl-C chiude il processo tra transazioni; non genera azioni, pensieri o eventi canonici di arresto attribuiti ai Newlander.
 - [SCH-014] Gli eventi di ogni attivazione vengono emessi su standard output soltanto dopo il commit atomico di evento e snapshot mentale.
 
+### Supervisione e inferenza condivisa
+
+- [OPS-001] `newland live` avvia in un unico processo il ciclo autonomo, il Cronista, l'Observer e la build statica WebGL.
+- [OPS-002] Una sola ammissione seriale protegge Ollama: le menti usano la classe `agent`, il Cronista usa `chronicle` e nessuna richiesta in corso viene interrotta.
+- [OPS-003] Quando entrambe le classi restano in attesa, le menti vincono i pareggi e ricevono inizialmente otto turni per ogni turno del Cronista.
+- [OPS-004] Il peso è configurazione operativa e non entra in prompt, percezioni, memorie o storia canonica.
+- [OPS-005] Fallimento o ritardo del Cronista lascia il batch derivato ripetibile; non ferma il ciclo agentico e non produce prosa sostitutiva.
+- [OPS-006] Ctrl-C ferma nuove ammissioni e attende la fine della transazione attiva prima di chiudere database e servizi.
+- [OPS-007] `/api/health` distingue componenti, code, workload in corso, attivazioni riuscite, differimenti cognitivi e backlog del Cronista.
+- [OPS-008] Il supervisore registra i modelli configurati ma non arresta né scarica processi Ollama che non ha avviato.
+
 ### Bisogni corporei
 
 - [BDY-001] Energia, fame e sete appartengono allo stato materiale canonico, non alla narrazione del modello.

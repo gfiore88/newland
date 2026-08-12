@@ -169,3 +169,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Lo stato di `docs/adr/adr-0009-supervised-runtime-and-inference-priority.md` è passato da `Proposed` ad `Accepted`.
 - È autorizzata l'implementazione incrementale del supervisore locale, dell'ammissione inferenza agent-first e della telemetria operativa non diegetica.
 - ADR-0010 resta separatamente in stato `Proposed` e non autorizza ancora modifiche al modello corporeo.
+
+## [2026-08-12] implementation | ADR-0009 - Runtime supervisionato agent-first
+- Aggiunta un'ammissione Ollama seriale condivisa con priorità alle menti, turno pesato del Cronista, nessuna preemption e telemetria di code, attese e fallimenti.
+- Introdotto `newland live` per eseguire ciclo agentico, Cronista, Observer API e build WebGL sotto un unico lifecycle con shutdown coordinato.
+- L'Observer serve `ui/dist/` sullo stesso endpoint loopback ed espone health operativo separato dallo stato canonico.
+- Health distingue attivazioni riuscite, `CognitionDeferred`, cursore canonico, cursore narrato e backlog derivato.
+- Il supervisore non scarica modelli o processi Ollama estranei; un fallimento del Cronista viene registrato e ritentato senza fermare gli abitanti.
+- Verifica completata con 89 test Python, 6 test frontend e build Vite di produzione.

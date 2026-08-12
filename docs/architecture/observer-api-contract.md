@@ -26,17 +26,23 @@ uv run newland --db data/newland.db serve
 
 # Porta alternativa, sempre locale
 uv run newland --db data/newland.db serve --port 9000
+
+# Runtime completo con build WebGL servita dallo stesso endpoint
+npm run build --prefix ui
+uv run newland --db data/newland.db live
 ```
 
 ## Endpoint
 
 ### `GET /api/health`
 
-Conferma che il database è leggibile e restituisce l'ultima sequenza canonica.
+Conferma che il database è leggibile e restituisce l'ultima sequenza canonica. In modalità `live` aggiunge sotto `runtime` soltanto telemetria operativa non canonica: stato dei componenti, code di inferenza, workload in corso, contatori di attivazione/differimento e backlog del Cronista.
 
 ```json
 {"last_sequence": 42, "status": "ok"}
 ```
+
+La modalità `live` serve inoltre `ui/dist/index.html` su `/` e gli asset compilati sullo stesso host loopback. I file statici non ottengono endpoint di scrittura e non modificano il confine read-only dell'Observer.
 
 ### `GET /api/snapshot`
 

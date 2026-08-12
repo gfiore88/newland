@@ -14,6 +14,11 @@ uv run newland --db data/newland.db run
 # Mondo autonomo continuo; Ctrl-C arresta tra transazioni integre
 uv run newland --db data/newland.db run --continuous --model qwen3:8b
 
+# Esperienza completa: menti, Cronista, API e UI WebGL con inferenza agent-first
+npm run build --prefix ui
+uv run newland --db data/newland.db live --model qwen3:8b
+# http://127.0.0.1:8765
+
 # Failover fra modelli generativi, senza fallback statico
 uv run newland --db data/newland.db run \
   --model qwen3:8b --model qwen3:4b
