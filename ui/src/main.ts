@@ -227,7 +227,7 @@ function renderChronicle(throughSequence: number): void {
     sequence.textContent = "voce —";
     container.className = "chronicle-entry empty-state";
     container.textContent =
-      "Il Cronista è in ascolto. Nessuna voce generativa è ancora stata persistita.";
+      "Il Cronista Silenzioso è in ascolto e sta elaborando la prosa generativa della storia dal vivo...";
     return;
   }
   sequence.textContent = `voce ${entry.sequence}`;

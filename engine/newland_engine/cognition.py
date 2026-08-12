@@ -403,7 +403,7 @@ class OllamaCognition:
             "format": self._schema(),
             "options": {
                 "temperature": 0.7,
-                "num_ctx": 16384,
+                "num_ctx": 8192,
                 "num_predict": 2048,
             },
             "messages": messages,
