@@ -65,6 +65,16 @@ class EventStore:
             self._upsert_mind(mind)
             return persisted
 
+    def append_many_with_minds(
+        self, events: Iterable[EventEnvelope], minds: Iterable[AgentMind]
+    ) -> list[EventEnvelope]:
+        """Atomically persist a multi-inhabitant transition and all mind snapshots."""
+        with self.connection:
+            persisted = self._insert_events(events)
+            for mind in minds:
+                self._upsert_mind(mind)
+            return persisted
+
     def events(self, *, after_sequence: int = 0) -> list[EventEnvelope]:
         rows = self.connection.execute(
             "SELECT * FROM events WHERE sequence > ? ORDER BY sequence",

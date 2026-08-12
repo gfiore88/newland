@@ -24,6 +24,8 @@ class ResourceAffordance:
 class ActivityAffordance:
     activity_id: str
     label: str
+    practiced_skill: str | None
+    minimum_proficiency: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -231,7 +233,9 @@ class OllamaCognition:
                 appraisals = tuple(
                     MemoryAppraisal(**item) for item in parsed["memory_appraisals"]
                 )
-                mental_updates = self._parse_mental_updates(parsed["mental_updates"])
+                mental_updates = self._parse_mental_updates(
+                    parsed["mental_updates"], context
+                )
                 attention_schedule = AttentionSchedule(**parsed["attention_schedule"])
                 result = CognitionResult(
                     intention=intention,
@@ -300,10 +304,13 @@ class OllamaCognition:
             "Decidi una sola azione usando esclusivamente identità, memoria e osservazioni fornite. "
             "Interpreta soggettivamente soltanto gli eventi osservati e usa i loro event_id nelle memory_appraisals; "
             "puoi scegliere di non memorizzare un evento. Beliefs, relazioni, affetti, riflessioni e obiettivi "
-            "cambiano soltanto se tu produci un mental_update con fonti valide; usa array vuoti se nulla cambia. "
+            "cambiano soltanto se tu produci un mental_update con source_ids non vuoto, composto esclusivamente "
+            "da event_id osservati o memory_id posseduti; usa array vuoti se nulla cambia. "
             "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
             "Puoi usare soltanto destination, resource_id e activity_id elencati nelle affordance locali; "
             "la loro presenza non ti obbliga a usarli. "
+            "Se parli, scegli una lingua che conosci e scrivi spoken_content in quella lingua; "
+            "interpreta le lingue altrui attraverso la tua esperienza, il contesto e l'empatia, senza fingere conoscenze. "
             "Non inventare oggetti, persone, luoghi o conoscenze. "
             "Restituisci soltanto il JSON richiesto. "
             "motivation_summary deve essere una motivazione breve e dichiarabile, non ragionamento nascosto."
@@ -326,21 +333,63 @@ class OllamaCognition:
             raise ValueError("memory appraisals contain duplicate source events")
 
     @staticmethod
-    def _parse_mental_updates(data: dict[str, Any]) -> MentalUpdates:
+    def _parse_mental_updates(
+        data: dict[str, Any], context: CognitionContext
+    ) -> MentalUpdates:
         affect_data = data.get("affect")
         return MentalUpdates(
-            beliefs=tuple(BeliefRevision(**item) for item in data["beliefs"]),
-            relationships=tuple(
-                RelationshipRevision(**item) for item in data["relationships"]
+            beliefs=tuple(
+                BeliefRevision(**OllamaCognition._classify_sources(item, context))
+                for item in data["beliefs"]
             ),
-            affect=AffectRevision(**affect_data) if affect_data is not None else None,
+            relationships=tuple(
+                RelationshipRevision(**OllamaCognition._classify_sources(item, context))
+                for item in data["relationships"]
+            ),
+            affect=(
+                AffectRevision(
+                    **OllamaCognition._classify_sources(affect_data, context)
+                )
+                if affect_data is not None
+                else None
+            ),
             reflections=tuple(ReflectionDraft(**item) for item in data["reflections"]),
-            goals=tuple(GoalRevision(**item) for item in data["goals"]),
-            plans=tuple(PlanRevision(**item) for item in data["plans"]),
+            goals=tuple(
+                GoalRevision(**OllamaCognition._classify_sources(item, context))
+                for item in data["goals"]
+            ),
+            plans=tuple(
+                PlanRevision(**OllamaCognition._classify_sources(item, context))
+                for item in data["plans"]
+            ),
             commitments=tuple(
-                CommitmentRevision(**item) for item in data["commitments"]
+                CommitmentRevision(**OllamaCognition._classify_sources(item, context))
+                for item in data["commitments"]
             ),
         )
+
+    @staticmethod
+    def _classify_sources(
+        data: dict[str, Any], context: CognitionContext
+    ) -> dict[str, Any]:
+        normalized = dict(data)
+        source_ids = tuple(normalized.pop("source_ids"))
+        visible_ids = {
+            observation.event.event_id for observation in context.observations
+        }
+        memory_ids = {memory.memory_id for memory in context.mind.memories}
+        normalized["source_event_ids"] = tuple(
+            source_id for source_id in source_ids if source_id in visible_ids
+        )
+        normalized["source_memory_ids"] = tuple(
+            source_id for source_id in source_ids if source_id in memory_ids
+        )
+        unknown = set(source_ids) - visible_ids - memory_ids
+        if unknown:
+            raise ValueError(
+                f"mental update references unknown sources: {sorted(unknown)}"
+            )
+        return normalized
 
     @staticmethod
     def _validate_mental_updates(
@@ -445,6 +494,10 @@ class OllamaCognition:
                 ],
                 "inventory": context.material_state.inventory,
                 "inventory_capacity": context.material_state.inventory_capacity,
+                "native_language": context.material_state.native_language,
+                "language_proficiencies": context.material_state.language_proficiencies,
+                "skills": context.material_state.skills,
+                "family_group_id": context.material_state.family_group_id,
                 "location": context.material_state.location,
             },
             "local_affordances": {
@@ -463,6 +516,8 @@ class OllamaCognition:
                     {
                         "activity_id": activity.activity_id,
                         "label": activity.label,
+                        "practiced_skill": activity.practiced_skill,
+                        "minimum_proficiency": activity.minimum_proficiency,
                     }
                     for activity in context.available_activities
                 ],
@@ -548,6 +603,7 @@ class OllamaCognition:
                             "maximum": 240,
                         },
                         "spoken_content": {"type": ["string", "null"]},
+                        "language": {"type": ["string", "null"]},
                         "resource_id": {"type": ["string", "null"]},
                         "quantity": {
                             "type": ["number", "null"],
@@ -563,6 +619,7 @@ class OllamaCognition:
                         "destination",
                         "duration_minutes",
                         "spoken_content",
+                        "language",
                         "resource_id",
                         "quantity",
                         "activity_id",
@@ -611,21 +668,17 @@ class OllamaCognition:
                                         "minimum": 0,
                                         "maximum": 1,
                                     },
-                                    "source_event_ids": {
+                                    "source_ids": {
                                         "type": "array",
                                         "items": {"type": "string"},
-                                    },
-                                    "source_memory_ids": {
-                                        "type": "array",
-                                        "items": {"type": "string"},
+                                        "minItems": 1,
                                     },
                                 },
                                 "required": [
                                     "key",
                                     "statement",
                                     "confidence",
-                                    "source_event_ids",
-                                    "source_memory_ids",
+                                    "source_ids",
                                 ],
                                 "additionalProperties": False,
                             },
@@ -660,13 +713,10 @@ class OllamaCognition:
                                         "type": "string",
                                         "maxLength": 500,
                                     },
-                                    "source_event_ids": {
+                                    "source_ids": {
                                         "type": "array",
                                         "items": {"type": "string"},
-                                    },
-                                    "source_memory_ids": {
-                                        "type": "array",
-                                        "items": {"type": "string"},
+                                        "minItems": 1,
                                     },
                                 },
                                 "required": [
@@ -676,8 +726,7 @@ class OllamaCognition:
                                     "warmth_delta",
                                     "tension_delta",
                                     "interpretation",
-                                    "source_event_ids",
-                                    "source_memory_ids",
+                                    "source_ids",
                                 ],
                                 "additionalProperties": False,
                             },
@@ -701,13 +750,10 @@ class OllamaCognition:
                                     "maximum": 0.25,
                                 },
                                 "interpretation": {"type": "string", "maxLength": 500},
-                                "source_event_ids": {
+                                "source_ids": {
                                     "type": "array",
                                     "items": {"type": "string"},
-                                },
-                                "source_memory_ids": {
-                                    "type": "array",
-                                    "items": {"type": "string"},
+                                    "minItems": 1,
                                 },
                             },
                             "required": [
@@ -715,8 +761,7 @@ class OllamaCognition:
                                 "curiosity_delta",
                                 "melancholy_delta",
                                 "interpretation",
-                                "source_event_ids",
-                                "source_memory_ids",
+                                "source_ids",
                             ],
                             "additionalProperties": False,
                         },
@@ -756,21 +801,17 @@ class OllamaCognition:
                                     },
                                     "goal": {"type": "string", "maxLength": 300},
                                     "reason": {"type": "string", "maxLength": 500},
-                                    "source_event_ids": {
+                                    "source_ids": {
                                         "type": "array",
                                         "items": {"type": "string"},
-                                    },
-                                    "source_memory_ids": {
-                                        "type": "array",
-                                        "items": {"type": "string"},
+                                        "minItems": 1,
                                     },
                                 },
                                 "required": [
                                     "operation",
                                     "goal",
                                     "reason",
-                                    "source_event_ids",
-                                    "source_memory_ids",
+                                    "source_ids",
                                 ],
                                 "additionalProperties": False,
                             },
@@ -790,13 +831,10 @@ class OllamaCognition:
                                         "type": "array",
                                         "items": {"type": "string", "maxLength": 300},
                                     },
-                                    "source_event_ids": {
+                                    "source_ids": {
                                         "type": "array",
                                         "items": {"type": "string"},
-                                    },
-                                    "source_memory_ids": {
-                                        "type": "array",
-                                        "items": {"type": "string"},
+                                        "minItems": 1,
                                     },
                                 },
                                 "required": [
@@ -804,8 +842,7 @@ class OllamaCognition:
                                     "plan_key",
                                     "description",
                                     "steps",
-                                    "source_event_ids",
-                                    "source_memory_ids",
+                                    "source_ids",
                                 ],
                                 "additionalProperties": False,
                             },
@@ -829,13 +866,10 @@ class OllamaCognition:
                                         "type": "array",
                                         "items": {"type": "string"},
                                     },
-                                    "source_event_ids": {
+                                    "source_ids": {
                                         "type": "array",
                                         "items": {"type": "string"},
-                                    },
-                                    "source_memory_ids": {
-                                        "type": "array",
-                                        "items": {"type": "string"},
+                                        "minItems": 1,
                                     },
                                 },
                                 "required": [
@@ -844,8 +878,7 @@ class OllamaCognition:
                                     "description",
                                     "due_tick",
                                     "involved_agent_ids",
-                                    "source_event_ids",
-                                    "source_memory_ids",
+                                    "source_ids",
                                 ],
                                 "additionalProperties": False,
                             },

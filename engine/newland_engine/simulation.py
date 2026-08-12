@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Self
 
+from .arrivals import ArrivalProfile, ArrivalService
 from .cognition import (
     ActivityAffordance,
     CognitionContext,
@@ -41,6 +42,32 @@ DEFAULT_AGENTS = (
         goals=["trovare un ritmo sicuro nel nuovo luogo"],
     ),
 )
+
+INITIAL_AGENT_BODIES = {
+    "nwl-001": {
+        "native_language": "it",
+        "language_proficiencies": {"it": 1.0},
+        "skills": {"osservazione": 0.55, "cura_materiali": 0.45},
+        "family_group_id": None,
+    },
+    "nwl-002": {
+        "native_language": "ar",
+        "language_proficiencies": {"ar": 1.0},
+        "skills": {"osservazione": 0.45, "orientamento": 0.6, "mediazione": 0.5},
+        "family_group_id": None,
+    },
+}
+
+INITIAL_ARRIVAL_MEMORIES = {
+    "nwl-001": (
+        "Ricordo una strada secondaria diventata gradualmente silenziosa, "
+        "fino all'ingresso nella cittadina."
+    ),
+    "nwl-002": (
+        "Ricordo una deviazione ordinaria, l'aria cambiata senza una soglia visibile "
+        "e l'impossibilità di ritrovare la strada percorsa."
+    ),
+}
 
 INITIAL_TERRITORY = {
     "locations": {
@@ -84,21 +111,33 @@ INITIAL_TERRITORY = {
             "label": "esaminare gli edifici silenziosi",
             "location": "cittadina_iniziale",
             "energy_cost": 0.01,
+            "practiced_skill": "osservazione",
+            "minimum_proficiency": 0.2,
+            "skill_gain": 0.01,
         },
         "osservare_terreno": {
             "label": "osservare il terreno del campo",
             "location": "campo_nord",
             "energy_cost": 0.02,
+            "practiced_skill": "osservazione",
+            "minimum_proficiency": 0.2,
+            "skill_gain": 0.01,
         },
         "esplorare_sottobosco": {
             "label": "esplorare il sottobosco",
             "location": "bosco_est",
             "energy_cost": 0.04,
+            "practiced_skill": "orientamento",
+            "minimum_proficiency": 0.25,
+            "skill_gain": 0.015,
         },
         "ascoltare_sorgente": {
             "label": "ascoltare e osservare la sorgente",
             "location": "sorgente_chiara",
             "energy_cost": 0.01,
+            "practiced_skill": "osservazione",
+            "minimum_proficiency": 0.1,
+            "skill_gain": 0.005,
         },
     },
 }
@@ -116,6 +155,7 @@ class NewlandSimulation:
         self.mental_state = MentalStateApplier()
         self.physiology = PhysiologySystem()
         self.adjudicator = WorldAdjudicator()
+        self.arrivals = ArrivalService()
         self.scheduler = ActivationScheduler()
         self.state = replay(self.store.events())
         self.minds = self.store.load_minds()
@@ -127,6 +167,8 @@ class NewlandSimulation:
                     "event store contains a world but no persisted minds"
                 )
             self._ensure_territory()
+            self._ensure_initial_capabilities()
+            self._ensure_initial_arrival_memories()
             return
 
         minds = {
@@ -146,6 +188,7 @@ class NewlandSimulation:
             )
         ]
         for mind in minds.values():
+            body = INITIAL_AGENT_BODIES[mind.agent_id]
             events.extend(
                 [
                     EventEnvelope(
@@ -161,6 +204,7 @@ class NewlandSimulation:
                             "hunger": 0.1,
                             "thirst": 0.1,
                             "inventory_capacity": 20.0,
+                            **body,
                         },
                         visibility="private",
                         recipient_ids=(mind.agent_id,),
@@ -175,6 +219,16 @@ class NewlandSimulation:
                         visibility="local",
                         recipient_ids=all_agents,
                     ),
+                    EventEnvelope(
+                        event_type="TransitionRemembered",
+                        world_tick=tick,
+                        world_time=world_time,
+                        actor_ids=(mind.agent_id,),
+                        location=location,
+                        payload={"experience": INITIAL_ARRIVAL_MEMORIES[mind.agent_id]},
+                        visibility="private",
+                        recipient_ids=(mind.agent_id,),
+                    ),
                 ]
             )
         persisted = self.store.append_many(events)
@@ -184,16 +238,74 @@ class NewlandSimulation:
             self.store.save_mind(mind)
 
     def _ensure_territory(self) -> None:
-        if self.state.resources and self.state.activities:
+        if not self.state.resources or not self.state.activities:
+            event = EventEnvelope(
+                event_type="TerritoryConfigured",
+                world_tick=self.state.tick,
+                world_time=world_time_for_tick(self.state.tick),
+                payload=INITIAL_TERRITORY,
+            )
+        elif all(
+            activity.practiced_skill is not None
+            for activity in self.state.activities.values()
+        ):
             return
-        event = EventEnvelope(
-            event_type="TerritoryConfigured",
-            world_tick=self.state.tick,
-            world_time=world_time_for_tick(self.state.tick),
-            payload=INITIAL_TERRITORY,
-        )
+        else:
+            event = EventEnvelope(
+                event_type="TerritoryActivitiesConfigured",
+                world_tick=self.state.tick,
+                world_time=world_time_for_tick(self.state.tick),
+                payload={"activities": INITIAL_TERRITORY["activities"]},
+            )
         persisted = self.store.append(event)
         reduce_event(self.state, persisted)
+
+    def _ensure_initial_capabilities(self) -> None:
+        events: list[EventEnvelope] = []
+        for agent_id, body in INITIAL_AGENT_BODIES.items():
+            agent = self.state.agents.get(agent_id)
+            if agent is None or agent.native_language != "und":
+                continue
+            events.append(
+                EventEnvelope(
+                    event_type="AgentCapabilitiesConfigured",
+                    world_tick=self.state.tick,
+                    world_time=world_time_for_tick(self.state.tick),
+                    actor_ids=(agent_id,),
+                    location=agent.location,
+                    payload=body,
+                    visibility="private",
+                    recipient_ids=(agent_id,),
+                )
+            )
+        if not events:
+            return
+        persisted = self.store.append_many(events)
+        for event in persisted:
+            reduce_event(self.state, event)
+
+    def _ensure_initial_arrival_memories(self) -> None:
+        remembered_ids = {
+            event.actor_ids[0]
+            for event in self.store.events()
+            if event.event_type == "TransitionRemembered" and event.actor_ids
+        }
+        events = [
+            EventEnvelope(
+                event_type="TransitionRemembered",
+                world_tick=self.state.tick,
+                world_time=world_time_for_tick(self.state.tick),
+                actor_ids=(agent_id,),
+                location=self.state.agents[agent_id].location,
+                payload={"experience": experience},
+                visibility="private",
+                recipient_ids=(agent_id,),
+            )
+            for agent_id, experience in INITIAL_ARRIVAL_MEMORIES.items()
+            if agent_id in self.state.agents and agent_id not in remembered_ids
+        ]
+        if events:
+            self.store.append_many(events)
 
     def seed_initial_encounter(self) -> None:
         self.initialize()
@@ -208,6 +320,41 @@ class NewlandSimulation:
                 reason="prima percezione cosciente nella cittadina",
                 priority=10,
             )
+
+    def admit_arrivals(
+        self, profiles: tuple[ArrivalProfile, ...], *, tick: int | None = None
+    ) -> list[EventEnvelope]:
+        self.initialize()
+        arrival_tick = self.state.tick if tick is None else tick
+        events = self.arrivals.prepare(self.state, profiles, tick=arrival_tick)
+        minds = tuple(
+            AgentMind.from_dict(profile.mind.to_dict()) for profile in profiles
+        )
+        persisted = self.store.append_many_with_minds(events, minds)
+        for event in persisted:
+            reduce_event(self.state, event)
+        for mind in minds:
+            self.minds[mind.agent_id] = mind
+            self.scheduler.schedule(
+                mind.agent_id,
+                tick=max(1, arrival_tick + 1),
+                reason="esperienza privata della transizione e nuovo ambiente",
+                priority=5,
+            )
+        new_ids = {mind.agent_id for mind in minds}
+        for event in persisted:
+            if event.event_type != "AgentArrived":
+                continue
+            for observer_id in event.recipient_ids:
+                if observer_id in new_ids:
+                    continue
+                self.scheduler.schedule(
+                    observer_id,
+                    tick=max(1, arrival_tick + 1),
+                    reason=f"nuovo arrivo osservato: {event.actor_ids[0]}",
+                    priority=15,
+                )
+        return persisted
 
     def _rebuild_agenda(self) -> None:
         for agent_id, mind in self.minds.items():
@@ -308,6 +455,8 @@ class NewlandSimulation:
                 ActivityAffordance(
                     activity_id=activity.activity_id,
                     label=activity.label,
+                    practiced_skill=activity.practiced_skill,
+                    minimum_proficiency=activity.minimum_proficiency,
                 )
                 for activity in self.state.activities_at(material.location)
             ),

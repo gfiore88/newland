@@ -23,6 +23,9 @@ class WorldAdjudicatorTests(unittest.TestCase):
                     "village",
                     hunger=0.8,
                     thirst=0.8,
+                    native_language="it",
+                    language_proficiencies={"it": 1.0},
+                    skills={"observation": 0.5},
                     inventory={"water": 1.0},
                 ),
                 "nwl-002": MaterialAgentState("nwl-002", "Amina", "field"),
@@ -41,7 +44,13 @@ class WorldAdjudicatorTests(unittest.TestCase):
             },
             activities={
                 "inspect_houses": ActivityDefinition(
-                    "inspect_houses", "inspect the houses", "village", 0.05
+                    "inspect_houses",
+                    "inspect the houses",
+                    "village",
+                    0.05,
+                    practiced_skill="observation",
+                    minimum_proficiency=0.4,
+                    skill_gain=0.02,
                 )
             },
         )
@@ -52,7 +61,10 @@ class WorldAdjudicatorTests(unittest.TestCase):
             self.state,
             "nwl-001",
             Intention(
-                action_type="speak", target_id="nwl-002", spoken_content="Amina?"
+                action_type="speak",
+                target_id="nwl-002",
+                spoken_content="Amina?",
+                language="it",
             ),
             tick=1,
         )
@@ -156,6 +168,41 @@ class WorldAdjudicatorTests(unittest.TestCase):
 
         reduce_event(self.state, performed)
         self.assertAlmostEqual(0.7, self.state.agents["nwl-001"].energy)
+        self.assertAlmostEqual(0.52, self.state.agents["nwl-001"].skills["observation"])
+
+    def test_rejects_language_the_speaker_does_not_know(self) -> None:
+        events = self.adjudicator.adjudicate(
+            self.state,
+            "nwl-001",
+            Intention(
+                action_type="speak",
+                target_id="nwl-001",
+                spoken_content="مرحبا",
+                language="ar",
+            ),
+            tick=1,
+        )
+        self.assertEqual("ActionRejected", events[-1].event_type)
+        self.assertEqual(
+            "actor cannot speak the selected language", events[-1].payload["reason"]
+        )
+
+    def test_rejects_activity_without_required_skill(self) -> None:
+        self.state.agents["nwl-001"].skills["observation"] = 0.2
+        events = self.adjudicator.adjudicate(
+            self.state,
+            "nwl-001",
+            Intention(
+                action_type="perform_activity",
+                activity_id="inspect_houses",
+            ),
+            tick=1,
+        )
+        self.assertEqual("ActionRejected", events[-1].event_type)
+        self.assertEqual(
+            "actor lacks the required skill proficiency",
+            events[-1].payload["reason"],
+        )
 
 
 if __name__ == "__main__":

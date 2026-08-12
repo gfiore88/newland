@@ -30,11 +30,13 @@ class ScriptedTestCognition:
             if observation.event.event_type == "SpeechUttered"
             and observation.event.payload.get("target_id") == context.mind.agent_id
         ]
+        language = context.material_state.native_language
         if incoming:
             intention = Intention(
                 action_type="speak",
                 target_id=incoming[-1].actor_ids[0],
-                spoken_content="Risposta generata dal test double.",
+                spoken_content=self._line(language, reply=True),
+                language=language,
                 motivation_summary="Verificare il ciclo di reazione.",
                 confidence=0.9,
             )
@@ -43,7 +45,8 @@ class ScriptedTestCognition:
             intention = Intention(
                 action_type="speak",
                 target_id=target_id,
-                spoken_content="Saluto generato dal test double.",
+                spoken_content=self._line(language, reply=False),
+                language=language,
                 motivation_summary="Verificare l'inizio dell'interazione.",
                 confidence=0.9,
             )
@@ -69,6 +72,27 @@ class ScriptedTestCognition:
             inference_id=str(uuid4()),
             attempts=1,
         )
+
+    @staticmethod
+    def _line(language: str, *, reply: bool) -> str:
+        lines = {
+            "ar": (
+                "إجابة مولدة من نموذج الاختبار."
+                if reply
+                else "تحية مولدة من نموذج الاختبار."
+            ),
+            "es": (
+                "Respuesta generada por el doble de prueba."
+                if reply
+                else "Saludo generado por el doble de prueba."
+            ),
+            "it": (
+                "Risposta generata dal test double."
+                if reply
+                else "Saluto generato dal test double."
+            ),
+        }
+        return lines.get(language, lines["it"])
 
 
 class UnavailableTestCognition:

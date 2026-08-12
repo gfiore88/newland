@@ -77,6 +77,25 @@ class EventStoreTests(unittest.TestCase):
                 self.assertEqual(1, store.event_count())
                 self.assertEqual({}, store.load_minds())
 
+    def test_multi_mind_transition_rolls_back_as_one_unit(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            duplicate = EventEnvelope(
+                event_type="AgentArrived",
+                world_tick=1,
+                world_time=world_time_for_tick(1),
+                event_id="duplicate-arrival",
+            )
+            minds = (
+                AgentMind("nwl-a", "A", ["cura"], ["vigile"]),
+                AgentMind("nwl-b", "B", ["cura"], ["vigile"]),
+            )
+            with EventStore(path) as store:
+                with self.assertRaises(sqlite3.IntegrityError):
+                    store.append_many_with_minds([duplicate, duplicate], minds)
+                self.assertEqual(0, store.event_count())
+                self.assertEqual({}, store.load_minds())
+
 
 if __name__ == "__main__":
     unittest.main()

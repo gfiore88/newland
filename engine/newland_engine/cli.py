@@ -75,6 +75,9 @@ def main(argv: list[str] | None = None) -> int:
                                 "label": value.label,
                                 "location": value.location,
                                 "energy_cost": value.energy_cost,
+                                "practiced_skill": value.practiced_skill,
+                                "minimum_proficiency": value.minimum_proficiency,
+                                "skill_gain": value.skill_gain,
                             }
                             for key, value in state.activities.items()
                         },
@@ -87,8 +90,16 @@ def main(argv: list[str] | None = None) -> int:
                                 "thirst": value.thirst,
                                 "inventory": value.inventory,
                                 "inventory_capacity": value.inventory_capacity,
+                                "native_language": value.native_language,
+                                "language_proficiencies": value.language_proficiencies,
+                                "skills": value.skills,
+                                "family_group_id": value.family_group_id,
                             }
                             for key, value in state.agents.items()
+                        },
+                        "family_groups": {
+                            key: sorted(value)
+                            for key, value in state.family_groups.items()
                         },
                     },
                     ensure_ascii=False,

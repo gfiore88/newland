@@ -66,6 +66,28 @@ class PerceptionTests(unittest.TestCase):
         self.assertEqual([gathered], [item.event for item in perceived])
         self.assertEqual([], self.service.perceive("nwl-003", [gathered]))
 
+    def test_foreign_speech_preserves_language_without_runtime_translation(
+        self,
+    ) -> None:
+        speech = EventEnvelope(
+            event_type="SpeechUttered",
+            world_tick=5,
+            world_time=world_time_for_tick(5),
+            actor_ids=("nwl-002",),
+            location="village",
+            payload={
+                "target_id": "nwl-001",
+                "content": "أنا هنا معك.",
+                "language": "ar",
+            },
+            visibility="local",
+            recipient_ids=("nwl-001", "nwl-002"),
+        )
+        perceived = self.service.perceive("nwl-001", [speech])[0].event
+        self.assertEqual("ar", perceived.payload["language"])
+        self.assertEqual("أنا هنا معك.", perceived.payload["content"])
+        self.assertNotIn("translation", perceived.payload)
+
 
 if __name__ == "__main__":
     unittest.main()

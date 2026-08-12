@@ -224,6 +224,7 @@ class Intention:
     destination: str | None = None
     duration_minutes: int = 10
     spoken_content: str | None = None
+    language: str | None = None
     resource_id: str | None = None
     quantity: float | None = None
     activity_id: str | None = None
@@ -237,6 +238,8 @@ class Intention:
             raise ValueError("confidence must be between 0 and 1")
         if self.action_type == "speak" and not self.spoken_content:
             raise ValueError("speak requires spoken_content")
+        if self.action_type == "speak" and not self.language:
+            raise ValueError("speak requires language")
         if self.action_type == "move" and not self.destination:
             raise ValueError("move requires destination")
         if self.action_type in {"gather", "consume"}:
@@ -259,6 +262,10 @@ class MaterialAgentState:
     energy: float = 0.8
     hunger: float = 0.1
     thirst: float = 0.1
+    native_language: str = "und"
+    language_proficiencies: dict[str, float] = field(default_factory=dict)
+    skills: dict[str, float] = field(default_factory=dict)
+    family_group_id: str | None = None
     inventory: dict[str, float] = field(default_factory=dict)
     inventory_capacity: float = 20.0
     active: bool = True
@@ -281,6 +288,9 @@ class ActivityDefinition:
     label: str
     location: str
     energy_cost: float = 0.0
+    practiced_skill: str | None = None
+    minimum_proficiency: float = 0.0
+    skill_gain: float = 0.0
 
 
 @dataclass(slots=True)
@@ -292,6 +302,7 @@ class WorldState:
     resources: dict[str, ResourceNode] = field(default_factory=dict)
     resource_effects: dict[str, dict[str, float]] = field(default_factory=dict)
     activities: dict[str, ActivityDefinition] = field(default_factory=dict)
+    family_groups: dict[str, set[str]] = field(default_factory=dict)
 
     def agents_at(self, location: str) -> tuple[str, ...]:
         return tuple(

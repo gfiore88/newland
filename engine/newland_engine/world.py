@@ -17,10 +17,21 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
     state.tick = max(state.tick, event.world_tick)
     state.world_time = event.world_time
 
-    if event.event_type in {"WorldInitialized", "TerritoryConfigured"}:
+    if event.event_type in {
+        "WorldInitialized",
+        "TerritoryConfigured",
+        "TerritoryActivitiesConfigured",
+    }:
         _configure_territory(state, event.payload)
     elif event.event_type == "AgentRegistered":
         agent_id = event.actor_ids[0]
+        native_language = str(event.payload.get("native_language", "und"))
+        language_proficiencies = {
+            key: float(value)
+            for key, value in event.payload.get("language_proficiencies", {}).items()
+        }
+        if native_language != "und":
+            language_proficiencies[native_language] = 1.0
         state.agents[agent_id] = MaterialAgentState(
             agent_id=agent_id,
             name=event.payload["name"],
@@ -28,12 +39,35 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
             energy=float(event.payload.get("energy", 0.8)),
             hunger=float(event.payload.get("hunger", 0.1)),
             thirst=float(event.payload.get("thirst", 0.1)),
+            native_language=native_language,
+            language_proficiencies=language_proficiencies,
+            skills={
+                key: float(value)
+                for key, value in event.payload.get("skills", {}).items()
+            },
+            family_group_id=event.payload.get("family_group_id"),
             inventory={
                 key: float(value)
                 for key, value in event.payload.get("inventory", {}).items()
             },
             inventory_capacity=float(event.payload.get("inventory_capacity", 20.0)),
         )
+    elif event.event_type in {"FamilyGroupRegistered", "FamilyGroupUpdated"}:
+        group_id = event.payload["family_group_id"]
+        state.family_groups[group_id] = set(
+            event.payload.get("member_ids", event.actor_ids)
+        )
+    elif event.event_type == "AgentCapabilitiesConfigured":
+        agent = state.agents[event.actor_ids[0]]
+        agent.native_language = event.payload["native_language"]
+        agent.language_proficiencies = {
+            key: float(value)
+            for key, value in event.payload["language_proficiencies"].items()
+        }
+        agent.skills = {
+            key: float(value) for key, value in event.payload["skills"].items()
+        }
+        agent.family_group_id = event.payload.get("family_group_id")
     elif event.event_type == "NeedsChanged":
         agent = state.agents[event.actor_ids[0]]
         agent.energy = float(event.payload["current"]["energy"])
@@ -71,25 +105,37 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         agent.energy = max(
             0.0, agent.energy - float(event.payload.get("energy_spent", 0.0))
         )
+        practiced_skill = event.payload.get("practiced_skill")
+        if practiced_skill:
+            agent.skills[practiced_skill] = min(
+                1.0,
+                agent.skills.get(practiced_skill, 0.0)
+                + float(event.payload.get("skill_gain", 0.0)),
+            )
     return state
 
 
 def _configure_territory(state: WorldState, payload: dict[str, Any]) -> None:
-    state.locations = {
-        name: set(neighbors) for name, neighbors in payload.get("locations", {}).items()
-    }
-    state.resources = {
-        resource_id: ResourceNode(resource_id=resource_id, **definition)
-        for resource_id, definition in payload.get("resources", {}).items()
-    }
-    state.resource_effects = {
-        kind: {name: float(value) for name, value in effects.items()}
-        for kind, effects in payload.get("resource_effects", {}).items()
-    }
-    state.activities = {
-        activity_id: ActivityDefinition(activity_id=activity_id, **definition)
-        for activity_id, definition in payload.get("activities", {}).items()
-    }
+    if "locations" in payload:
+        state.locations = {
+            name: set(neighbors)
+            for name, neighbors in payload.get("locations", {}).items()
+        }
+    if "resources" in payload:
+        state.resources = {
+            resource_id: ResourceNode(resource_id=resource_id, **definition)
+            for resource_id, definition in payload.get("resources", {}).items()
+        }
+    if "resource_effects" in payload:
+        state.resource_effects = {
+            kind: {name: float(value) for name, value in effects.items()}
+            for kind, effects in payload.get("resource_effects", {}).items()
+        }
+    if "activities" in payload:
+        state.activities = {
+            activity_id: ActivityDefinition(activity_id=activity_id, **definition)
+            for activity_id, definition in payload.get("activities", {}).items()
+        }
 
 
 def replay(events: list[EventEnvelope]) -> WorldState:
@@ -180,6 +226,12 @@ class WorldAdjudicator:
                 return "destination is not adjacent"
         if intention.action_type == "speak" and not intention.target_id:
             return "speech requires a target"
+        if intention.action_type == "speak":
+            proficiency = actor.language_proficiencies.get(
+                intention.language or "", 0.0
+            )
+            if proficiency <= 0.0:
+                return "actor cannot speak the selected language"
         if intention.action_type == "offer_help" and not intention.target_id:
             return "help requires a target"
         if intention.action_type == "gather":
@@ -208,6 +260,10 @@ class WorldAdjudicator:
             energy_cost = activity.energy_cost * (intention.duration_minutes / 10.0)
             if energy_cost > actor.energy:
                 return "actor does not have enough energy for activity"
+            if activity.practiced_skill:
+                proficiency = actor.skills.get(activity.practiced_skill, 0.0)
+                if proficiency < activity.minimum_proficiency:
+                    return "actor lacks the required skill proficiency"
         return None
 
     @staticmethod
@@ -238,6 +294,7 @@ class WorldAdjudicator:
                     payload={
                         "target_id": intention.target_id,
                         "content": intention.spoken_content,
+                        "language": intention.language,
                     },
                     **common,
                 )
@@ -327,6 +384,8 @@ class WorldAdjudicator:
                             1.0,
                             activity.energy_cost * (intention.duration_minutes / 10.0),
                         ),
+                        "practiced_skill": activity.practiced_skill,
+                        "skill_gain": activity.skill_gain,
                     },
                     **common,
                 )

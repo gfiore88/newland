@@ -298,7 +298,7 @@ class SimulationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "newland.db"
             legacy_mind = AgentMind(
-                agent_id="nwl-legacy",
+                agent_id="nwl-001",
                 name="Legacy Newlander",
                 values=["continuità"],
                 temperament=["vigile"],
@@ -338,13 +338,91 @@ class SimulationTests(unittest.TestCase):
                 simulation.initialize()
                 self.assertIn("vena_sorgente", simulation.state.resources)
                 self.assertEqual(
-                    "TerritoryConfigured", simulation.store.events()[-1].event_type
+                    "it", simulation.state.agents["nwl-001"].native_language
+                )
+                self.assertEqual(
+                    [
+                        "TerritoryConfigured",
+                        "AgentCapabilitiesConfigured",
+                        "TransitionRemembered",
+                    ],
+                    [event.event_type for event in simulation.store.events()[-3:]],
                 )
 
             with EventStore(path) as store:
                 reconstructed = replay(store.events())
             self.assertIn("bosco_est", reconstructed.locations)
             self.assertIn("esplorare_sottobosco", reconstructed.activities)
+
+    def test_activity_migration_preserves_existing_resource_quantities(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            legacy_mind = AgentMind(
+                agent_id="nwl-legacy",
+                name="Legacy Newlander",
+                values=["continuità"],
+                temperament=["vigile"],
+            )
+            with EventStore(path) as store:
+                store.append_many(
+                    [
+                        EventEnvelope(
+                            event_type="WorldInitialized",
+                            world_tick=0,
+                            world_time=world_time_for_tick(0),
+                            payload={
+                                "locations": {"cittadina_iniziale": []},
+                                "resources": {
+                                    "risorsa_esistente": {
+                                        "kind": "bacche",
+                                        "label": "risorsa già modificata",
+                                        "location": "cittadina_iniziale",
+                                        "quantity": 7.0,
+                                        "unit": "kg",
+                                        "renewable": True,
+                                    }
+                                },
+                                "activities": {
+                                    "attivita_legacy": {
+                                        "label": "attività senza competenza",
+                                        "location": "cittadina_iniziale",
+                                        "energy_cost": 0.0,
+                                    }
+                                },
+                            },
+                        ),
+                        EventEnvelope(
+                            event_type="AgentRegistered",
+                            world_tick=0,
+                            world_time=world_time_for_tick(0),
+                            actor_ids=(legacy_mind.agent_id,),
+                            location="cittadina_iniziale",
+                            payload={
+                                "name": legacy_mind.name,
+                                "location": "cittadina_iniziale",
+                            },
+                            visibility="private",
+                            recipient_ids=(legacy_mind.agent_id,),
+                        ),
+                    ]
+                )
+                store.save_mind(legacy_mind)
+
+            with NewlandSimulation(
+                path, cognition=ScriptedTestCognition()
+            ) as simulation:
+                simulation.initialize()
+                self.assertEqual(
+                    7.0, simulation.state.resources["risorsa_esistente"].quantity
+                )
+                self.assertEqual(
+                    "TerritoryActivitiesConfigured",
+                    simulation.store.events()[-1].event_type,
+                )
+                self.assertEqual(
+                    "osservazione",
+                    simulation.state.activities["esaminare_edifici"].practiced_skill,
+                )
 
 
 if __name__ == "__main__":

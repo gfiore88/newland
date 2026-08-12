@@ -15,6 +15,8 @@ PERCEPTIBLE_EVENT_TYPES = {
     "ResourceGathered",
     "ResourceConsumed",
     "ActivityPerformed",
+    "TransitionRemembered",
+    "FamilyGroupUpdated",
 }
 
 
