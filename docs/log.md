@@ -155,3 +155,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - La decisione evita che il Cronista downstream competa senza controllo con le menti dei Newlander sullo stesso Ollama locale.
 - Proposta una coda seriale agent-first con rapporto iniziale almeno `8:1`, health operativo separato dal mondo, servizio statico della UI e shutdown coordinato.
 - Implementazione sospesa in attesa dell'approvazione esplicita di Giovanni Fiore, come richiesto dalla governance ADR.
+
+## [2026-08-12] adr | Proposta ADR-0010 - Capacità di carico corporea dinamica
+- Proposto ADR-0010 `docs/adr/adr-0010-dynamic-embodied-carrying-capacity.md`.
+- Individuato il valore universale `inventory_capacity = 20.0` nello stato materiale, nel bootstrap, negli arrivi e nel replay legacy.
+- Proposto un profilo corporeo obbligatorio importato dalla scheda agentica e uno stato fisico event-sourced che separa età, somatotipo, massa, forza, condizionamento, mobilità, fatica, lesioni e malattia.
+- La capacità effettiva sarà derivata da una policy fisica versionata; l'LLM continuerà a decidere ogni tentativo e ogni reazione, senza poter riscrivere i limiti materiali.
+- La migrazione di Elia e Amina non inventerà dati mancanti e richiederà profili corporei espliciti prima dell'implementazione completa.
+- Implementazione sospesa in attesa dell'approvazione esplicita di Giovanni Fiore, come richiesto dalla governance ADR.
