@@ -262,6 +262,8 @@ class NewlandSimulation:
 
     def _rebuild_agenda(self) -> None:
         for agent_id, mind in self.minds.items():
+            if self.state.agents[agent_id].is_dead:
+                continue
             unseen = self.store.events(after_sequence=mind.last_perceived_sequence)
             if self.perception.perceive(
                 agent_id,
@@ -316,6 +318,8 @@ class NewlandSimulation:
             activation = self.scheduler.pop()
             if activation is None:
                 break
+            if self.state.agents[activation.agent_id].is_dead:
+                continue
             produced.extend(
                 self._advance_physiology(
                     to_tick=activation.tick,

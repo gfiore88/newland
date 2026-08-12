@@ -45,6 +45,30 @@ class PhysiologySystem:
             crossed = self._crossed_thresholds(previous, current)
             if crossed:
                 interrupted.append(agent_id)
+            
+            # Starvation Logic
+            fatal_condition = current["energy"] == 0.0 or current["hunger"] == 1.0 or current["thirst"] == 1.0
+            if fatal_condition:
+                agent.starvation_ticks += elapsed
+            else:
+                agent.starvation_ticks = 0
+            
+            # se supera 200 tick (circa 20 ore simulate), muore.
+            if agent.starvation_ticks > 200 and not agent.is_dead:
+                events.append(
+                    EventEnvelope(
+                        event_type="AgentDied",
+                        world_tick=to_tick,
+                        world_time=world_time_for_tick(to_tick),
+                        actor_ids=(agent_id,),
+                        location=agent.location,
+                        payload={"reason": "starvation or dehydration"},
+                        visibility="public",
+                        recipient_ids=(),
+                    )
+                )
+                interrupted.append(agent_id)
+
             events.append(
                 EventEnvelope(
                     event_type="NeedsChanged",

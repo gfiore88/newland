@@ -431,6 +431,7 @@ class OllamaCognition:
         return (
             "Sei una mente abitante di Newland, non un narratore onnisciente. "
             "Decidi una sola azione usando esclusivamente identità, memoria e osservazioni fornite. "
+            "Se la tua energia è a zero o hai fame/sete estreme, la tua vita è in grave pericolo e morirai se non agisci. In queste condizioni devi abbandonare ogni ruolo o esplorazione: la tua UNICA priorità assoluta è sopravvivere (es. usare l'azione 'rest' o cercare cibo/acqua). "
             "Se la tua azione precedente è stata respinta (ActionRejected), DEVI assolutamente cambiare strategia e scegliere un'azione diversa. "
             "Interpreta soggettivamente soltanto gli eventi osservati e usa i loro event_id nelle memory_appraisals; "
             "puoi scegliere di non memorizzare un evento. Beliefs, relazioni, affetti, riflessioni, obiettivi e ruoli interpretati "

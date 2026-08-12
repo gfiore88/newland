@@ -13,6 +13,7 @@
 - [M02-001] Consolidamento episodico, beliefs e riflessioni generative. **Implementato.**
 - [M02-002] Emozioni e relazioni dinamiche generate dalla mente. **Implementato.**
 - [M02-002A] Energia, fame e sete come stimoli corporei canonici non prescrittivi. **Implementato.**
+- [M02-002B] Omeostasi estrema: istinto di sopravvivenza e morte permanente per inedia. **Implementato.**
 - [M02-003] Piani, impegni, agenda autonoma persistente e ricostruzione dopo il riavvio. **Implementato.**
 - [M02-004] Routing fra modello rapido e modello riflessivo. **Implementato.**
 

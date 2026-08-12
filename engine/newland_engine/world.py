@@ -81,6 +81,10 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         agent.energy = float(event.payload["current"]["energy"])
         agent.hunger = float(event.payload["current"]["hunger"])
         agent.thirst = float(event.payload["current"]["thirst"])
+    elif event.event_type == "AgentDied":
+        agent = state.agents[event.actor_ids[0]]
+        agent.is_dead = True
+        agent.active = False
     elif event.event_type == "AgentMoved":
         state.agents[event.actor_ids[0]].location = event.payload["destination"]
     elif event.event_type == "AgentRested":

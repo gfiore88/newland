@@ -61,6 +61,7 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 
 ## [2026-08-12] implementation | Milestone 2 - Bisogni Corporei Percettivi
 - Implementato `PhysiologySystem` per l'evoluzione canonica di energia, fame e sete in funzione del tempo del mondo.
+- Introdotta **Morte Permanente (Permadeath)** e **Istinto di Sopravvivenza**: gli agenti con parametri vitali fatali per 20 ore simulate muoiono inesorabilmente. L'istinto è iniettato nel prompt per costringere il LLM a riposare o mangiare.
 - Aggiunto l'evento privato `NeedsChanged` e il relativo replay nello stato materiale.
 - Le soglie corporee producono soltanto un interrupt cognitivo: nessuna risposta o azione viene scelta dal codice.
 - Aggiornato il contesto privato dell'agente affinché la mente generativa percepisca lo stato corrente del proprio corpo.

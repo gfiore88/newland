@@ -339,8 +339,6 @@ class Intention:
             raise ValueError("duration_minutes must be positive")
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError("confidence must be between 0 and 1")
-        communicative = {
-            "speak",
         if self.action_type in {"speak", "propose_cooperation", "open_dispute", "respond_cooperation", "respond_dispute"}:
             if not self.spoken_content:
                 raise ValueError(f"Errore critico: l'azione {self.action_type} richiede il campo spoken_content.")
@@ -427,6 +425,8 @@ class MaterialAgentState:
     inventory: dict[str, float] = field(default_factory=dict)
     inventory_capacity: float = 20.0
     active: bool = True
+    is_dead: bool = False
+    starvation_ticks: int = 0
 
 
 @dataclass(slots=True)
