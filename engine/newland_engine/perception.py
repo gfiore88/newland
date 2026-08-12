@@ -17,6 +17,11 @@ PERCEPTIBLE_EVENT_TYPES = {
     "ActivityPerformed",
     "TransitionRemembered",
     "FamilyGroupUpdated",
+    "CooperationProposed",
+    "CooperationResponded",
+    "CooperationPerformed",
+    "DisputeOpened",
+    "DisputeResponded",
 }
 
 

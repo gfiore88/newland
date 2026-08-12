@@ -4,13 +4,18 @@ import unittest
 
 from helpers import ScriptedTestCognition, UnavailableTestCognition
 from newland_engine.cognition import (
+    AttentionSchedule,
     CognitionContext,
+    CognitionResult,
     GenerativeCognitionPool,
+    MentalUpdates,
     OllamaCognition,
+    validate_cognition_result,
 )
 from newland_engine.models import (
     AgentMind,
     EventEnvelope,
+    Intention,
     MaterialAgentState,
     Memory,
     world_time_for_tick,
@@ -41,6 +46,48 @@ def context() -> CognitionContext:
 
 
 class GenerativeCognitionPoolTests(unittest.TestCase):
+    def test_generated_social_references_must_come_from_agent_context(self) -> None:
+        result = CognitionResult(
+            intention=Intention(
+                action_type="respond_cooperation",
+                proposal_id="proposal-invented",
+                response="accept",
+                spoken_content="Accetto.",
+                language="it",
+            ),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(4, "Riconsiderare l'incontro."),
+            provider="test-double",
+            model="invalid-social-reference-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        with self.assertRaisesRegex(ValueError, "unknown proposal"):
+            validate_cognition_result(result, context())
+
+    def test_generated_dispute_must_reference_a_perceived_event(self) -> None:
+        result = CognitionResult(
+            intention=Intention(
+                action_type="open_dispute",
+                target_id="nwl-other",
+                subject_event_id="event-invented",
+                spoken_content="Contesto ciò che è accaduto.",
+                language="it",
+            ),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(4, "Riconsiderare il conflitto."),
+            provider="test-double",
+            model="invalid-dispute-reference-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        with self.assertRaisesRegex(ValueError, "unknown to the agent"):
+            validate_cognition_result(result, context())
+
     def test_failover_uses_another_generative_provider(self) -> None:
         pool = GenerativeCognitionPool(
             [UnavailableTestCognition(), ScriptedTestCognition()]

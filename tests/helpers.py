@@ -339,3 +339,52 @@ class SituatedActivityTestCognition:
             inference_id=str(uuid4()),
             attempts=1,
         )
+
+
+class CooperativeCycleTestCognition:
+    """Test-only LLM stand-in proving that social transitions follow generated acts."""
+
+    def decide(self, context: CognitionContext) -> CognitionResult:
+        proposal = next(iter(context.social_proposals), None)
+        language = context.material_state.native_language
+        if proposal is None:
+            intention = Intention(
+                action_type="propose_cooperation",
+                target_id=context.nearby_agents[0][0],
+                activity_id=context.available_activities[0].activity_id,
+                spoken_content="Vorrei lavorare insieme su questo luogo.",
+                language=language,
+                motivation_summary="Proporre liberamente un'attività condivisa.",
+                confidence=0.86,
+            )
+        elif proposal.status == "pending":
+            intention = Intention(
+                action_type="respond_cooperation",
+                proposal_id=proposal.proposal_id,
+                response="accept",
+                spoken_content="أقبل أن نعمل معًا.",
+                language=language,
+                motivation_summary="Accettare liberamente la proposta percepita.",
+                confidence=0.84,
+            )
+        else:
+            intention = Intention(
+                action_type="perform_cooperation",
+                proposal_id=proposal.proposal_id,
+                duration_minutes=10,
+                motivation_summary="Dare seguito all'accordo condiviso.",
+                confidence=0.88,
+            )
+        return CognitionResult(
+            intention=intention,
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=12,
+                reason="Riconsiderare autonomamente l'esperienza condivisa.",
+            ),
+            provider="test-double",
+            model="cooperative-cycle-fixture",
+            inference_id=str(uuid4()),
+            attempts=1,
+        )

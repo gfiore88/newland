@@ -29,6 +29,25 @@ class ActivityAffordance:
 
 
 @dataclass(frozen=True, slots=True)
+class CooperationAffordance:
+    proposal_id: str
+    proposer_id: str
+    target_id: str
+    activity_id: str
+    status: str
+
+
+@dataclass(frozen=True, slots=True)
+class DisputeAffordance:
+    dispute_id: str
+    opener_id: str
+    target_id: str
+    subject_event_id: str
+    status: str
+    resolution_offered_by: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class CognitionContext:
     mind: AgentMind
     material_state: MaterialAgentState
@@ -39,6 +58,8 @@ class CognitionContext:
     adjacent_locations: tuple[str, ...] = ()
     local_resources: tuple[ResourceAffordance, ...] = ()
     available_activities: tuple[ActivityAffordance, ...] = ()
+    social_proposals: tuple[CooperationAffordance, ...] = ()
+    active_disputes: tuple[DisputeAffordance, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -309,6 +330,7 @@ class OllamaCognition:
             "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
             "Puoi usare soltanto destination, resource_id e activity_id elencati nelle affordance locali; "
             "la loro presenza non ti obbliga a usarli. "
+            "Usa proposal_id e dispute_id soltanto dalle affordance sociali fornite. "
             "Se parli, scegli una lingua che conosci e scrivi spoken_content in quella lingua; "
             "interpreta le lingue altrui attraverso la tua esperienza, il contesto e l'empatia, senza fingere conoscenze. "
             "Non inventare oggetti, persone, luoghi o conoscenze. "
@@ -459,6 +481,60 @@ class OllamaCognition:
                 raise ValueError("reflection references unknown memories")
 
     @staticmethod
+    def _validate_intention_context(
+        intention: Intention, context: CognitionContext
+    ) -> None:
+        nearby_ids = {agent_id for agent_id, _ in context.nearby_agents}
+        if (
+            intention.action_type
+            in {
+                "speak",
+                "offer_help",
+                "propose_cooperation",
+                "open_dispute",
+            }
+            and intention.target_id not in nearby_ids
+        ):
+            raise ValueError(
+                "social intention targets an agent outside local perception"
+            )
+        if (
+            intention.action_type
+            in {
+                "speak",
+                "propose_cooperation",
+                "respond_cooperation",
+                "open_dispute",
+                "respond_dispute",
+            }
+            and context.material_state.language_proficiencies.get(
+                intention.language or "", 0.0
+            )
+            <= 0.0
+        ):
+            raise ValueError("social intention uses an unknown language")
+
+        proposal_ids = {proposal.proposal_id for proposal in context.social_proposals}
+        if (
+            intention.action_type in {"respond_cooperation", "perform_cooperation"}
+            and intention.proposal_id not in proposal_ids
+        ):
+            raise ValueError("cooperation intention references an unknown proposal")
+
+        dispute_ids = {dispute.dispute_id for dispute in context.active_disputes}
+        if (
+            intention.action_type == "respond_dispute"
+            and intention.dispute_id not in dispute_ids
+        ):
+            raise ValueError("dispute response references an unknown dispute")
+        if intention.action_type == "open_dispute":
+            known_event_ids = {
+                observation.event.event_id for observation in context.observations
+            } | {memory.source_event_id for memory in context.mind.memories}
+            if intention.subject_event_id not in known_event_ids:
+                raise ValueError("dispute references an event unknown to the agent")
+
+    @staticmethod
     def _private_context(context: CognitionContext) -> dict[str, Any]:
         return {
             "self": {
@@ -520,6 +596,29 @@ class OllamaCognition:
                         "minimum_proficiency": activity.minimum_proficiency,
                     }
                     for activity in context.available_activities
+                ],
+            },
+            "social_affordances": {
+                "cooperations": [
+                    {
+                        "proposal_id": proposal.proposal_id,
+                        "proposer_id": proposal.proposer_id,
+                        "target_id": proposal.target_id,
+                        "activity_id": proposal.activity_id,
+                        "status": proposal.status,
+                    }
+                    for proposal in context.social_proposals
+                ],
+                "disputes": [
+                    {
+                        "dispute_id": dispute.dispute_id,
+                        "opener_id": dispute.opener_id,
+                        "target_id": dispute.target_id,
+                        "subject_event_id": dispute.subject_event_id,
+                        "status": dispute.status,
+                        "resolution_offered_by": dispute.resolution_offered_by,
+                    }
+                    for dispute in context.active_disputes
                 ],
             },
             "world_tick": context.world_tick,
@@ -593,6 +692,11 @@ class OllamaCognition:
                                 "gather",
                                 "consume",
                                 "perform_activity",
+                                "propose_cooperation",
+                                "respond_cooperation",
+                                "perform_cooperation",
+                                "open_dispute",
+                                "respond_dispute",
                             ],
                         },
                         "target_id": {"type": ["string", "null"]},
@@ -610,6 +714,20 @@ class OllamaCognition:
                             "exclusiveMinimum": 0,
                         },
                         "activity_id": {"type": ["string", "null"]},
+                        "proposal_id": {"type": ["string", "null"]},
+                        "dispute_id": {"type": ["string", "null"]},
+                        "subject_event_id": {"type": ["string", "null"]},
+                        "response": {
+                            "type": ["string", "null"],
+                            "enum": [
+                                "accept",
+                                "decline",
+                                "contest",
+                                "offer_resolution",
+                                "accept_resolution",
+                                None,
+                            ],
+                        },
                         "motivation_summary": {"type": "string", "maxLength": 300},
                         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
                     },
@@ -623,6 +741,10 @@ class OllamaCognition:
                         "resource_id",
                         "quantity",
                         "activity_id",
+                        "proposal_id",
+                        "dispute_id",
+                        "subject_event_id",
+                        "response",
                         "motivation_summary",
                         "confidence",
                     ],
@@ -940,3 +1062,4 @@ def validate_cognition_result(
 ) -> None:
     OllamaCognition._validate_appraisals(result.memory_appraisals, context)
     OllamaCognition._validate_mental_updates(result.mental_updates, context)
+    OllamaCognition._validate_intention_context(result.intention, context)

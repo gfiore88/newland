@@ -14,6 +14,11 @@ ActionType = Literal[
     "gather",
     "consume",
     "perform_activity",
+    "propose_cooperation",
+    "respond_cooperation",
+    "perform_cooperation",
+    "open_dispute",
+    "respond_dispute",
 ]
 
 
@@ -228,6 +233,10 @@ class Intention:
     resource_id: str | None = None
     quantity: float | None = None
     activity_id: str | None = None
+    proposal_id: str | None = None
+    dispute_id: str | None = None
+    subject_event_id: str | None = None
+    response: str | None = None
     motivation_summary: str = ""
     confidence: float = 0.5
 
@@ -236,10 +245,17 @@ class Intention:
             raise ValueError("duration_minutes must be positive")
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError("confidence must be between 0 and 1")
-        if self.action_type == "speak" and not self.spoken_content:
-            raise ValueError("speak requires spoken_content")
-        if self.action_type == "speak" and not self.language:
-            raise ValueError("speak requires language")
+        communicative = {
+            "speak",
+            "propose_cooperation",
+            "respond_cooperation",
+            "open_dispute",
+            "respond_dispute",
+        }
+        if self.action_type in communicative and not self.spoken_content:
+            raise ValueError(f"{self.action_type} requires spoken_content")
+        if self.action_type in communicative and not self.language:
+            raise ValueError(f"{self.action_type} requires language")
         if self.action_type == "move" and not self.destination:
             raise ValueError("move requires destination")
         if self.action_type in {"gather", "consume"}:
@@ -249,6 +265,34 @@ class Intention:
                 raise ValueError(f"{self.action_type} requires a positive quantity")
         if self.action_type == "perform_activity" and not self.activity_id:
             raise ValueError("perform_activity requires activity_id")
+        if self.action_type == "propose_cooperation" and (
+            not self.target_id or not self.activity_id
+        ):
+            raise ValueError("propose_cooperation requires target_id and activity_id")
+        if self.action_type == "respond_cooperation" and (
+            not self.proposal_id or self.response not in {"accept", "decline"}
+        ):
+            raise ValueError(
+                "respond_cooperation requires proposal_id and accept/decline"
+            )
+        if self.action_type == "perform_cooperation" and not self.proposal_id:
+            raise ValueError("perform_cooperation requires proposal_id")
+        if self.action_type == "open_dispute" and (
+            not self.target_id or not self.subject_event_id
+        ):
+            raise ValueError("open_dispute requires target_id and subject_event_id")
+        if self.action_type == "respond_dispute" and (
+            not self.dispute_id
+            or self.response
+            not in {
+                "contest",
+                "offer_resolution",
+                "accept_resolution",
+            }
+        ):
+            raise ValueError(
+                "respond_dispute requires dispute_id and a supported response"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -294,6 +338,28 @@ class ActivityDefinition:
 
 
 @dataclass(slots=True)
+class CooperationState:
+    proposal_id: str
+    proposer_id: str
+    target_id: str
+    activity_id: str
+    status: str
+    created_tick: int
+    response_tick: int | None = None
+
+
+@dataclass(slots=True)
+class DisputeState:
+    dispute_id: str
+    opener_id: str
+    target_id: str
+    subject_event_id: str
+    status: str
+    created_tick: int
+    resolution_offered_by: str | None = None
+
+
+@dataclass(slots=True)
 class WorldState:
     tick: int = 0
     world_time: str = field(default_factory=lambda: world_time_for_tick(0))
@@ -303,6 +369,10 @@ class WorldState:
     resource_effects: dict[str, dict[str, float]] = field(default_factory=dict)
     activities: dict[str, ActivityDefinition] = field(default_factory=dict)
     family_groups: dict[str, set[str]] = field(default_factory=dict)
+    cooperations: dict[str, CooperationState] = field(default_factory=dict)
+    disputes: dict[str, DisputeState] = field(default_factory=dict)
+    event_ids: set[str] = field(default_factory=set)
+    event_witnesses: dict[str, set[str]] = field(default_factory=dict)
 
     def agents_at(self, location: str) -> tuple[str, ...]:
         return tuple(

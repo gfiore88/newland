@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from helpers import (
+    CooperativeCycleTestCognition,
     GeneratedAgendaTestCognition,
     GeneratedMentalStateTestCognition,
     GeneratedReflectionTestCognition,
@@ -21,6 +22,57 @@ from newland_engine.world import replay
 
 
 class SimulationTests(unittest.TestCase):
+    def test_generated_social_actions_complete_a_replayable_cooperation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=CooperativeCycleTestCognition()
+            ) as simulation:
+                produced = simulation.run(max_activations=3)
+                social_types = [
+                    event.event_type
+                    for event in produced
+                    if event.event_type.startswith("Cooperation")
+                ]
+                proposal_id = next(
+                    event.event_id
+                    for event in produced
+                    if event.event_type == "CooperationProposed"
+                )
+                expected_energy = {
+                    agent_id: agent.energy
+                    for agent_id, agent in simulation.state.agents.items()
+                }
+
+            self.assertEqual(
+                [
+                    "CooperationProposed",
+                    "CooperationResponded",
+                    "CooperationPerformed",
+                ],
+                social_types,
+            )
+            self.assertTrue(
+                all(
+                    event.payload["cognition"]["model"] == "cooperative-cycle-fixture"
+                    for event in produced
+                    if event.event_type == "ActionProposed"
+                )
+            )
+
+            with EventStore(path) as store:
+                reconstructed = replay(store.events())
+            self.assertEqual(
+                "completed", reconstructed.cooperations[proposal_id].status
+            )
+            self.assertEqual(
+                expected_energy,
+                {
+                    agent_id: agent.energy
+                    for agent_id, agent in reconstructed.agents.items()
+                },
+            )
+
     def test_vertical_slice_produces_two_sided_conversation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "newland.db"

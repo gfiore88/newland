@@ -9,6 +9,8 @@ from .cognition import (
     CognitionContext,
     CognitionProvider,
     CognitionUnavailable,
+    CooperationAffordance,
+    DisputeAffordance,
     MemoryAppraisal,
     ResourceAffordance,
     validate_cognition_result,
@@ -460,6 +462,31 @@ class NewlandSimulation:
                 )
                 for activity in self.state.activities_at(material.location)
             ),
+            social_proposals=tuple(
+                CooperationAffordance(
+                    proposal_id=proposal.proposal_id,
+                    proposer_id=proposal.proposer_id,
+                    target_id=proposal.target_id,
+                    activity_id=proposal.activity_id,
+                    status=proposal.status,
+                )
+                for proposal in self.state.cooperations.values()
+                if agent_id in {proposal.proposer_id, proposal.target_id}
+                and proposal.status in {"pending", "accepted"}
+            ),
+            active_disputes=tuple(
+                DisputeAffordance(
+                    dispute_id=dispute.dispute_id,
+                    opener_id=dispute.opener_id,
+                    target_id=dispute.target_id,
+                    subject_event_id=dispute.subject_event_id,
+                    status=dispute.status,
+                    resolution_offered_by=dispute.resolution_offered_by,
+                )
+                for dispute in self.state.disputes.values()
+                if agent_id in {dispute.opener_id, dispute.target_id}
+                and dispute.status != "resolved"
+            ),
         )
         try:
             cognition_result = self.cognition.decide(context)
@@ -696,12 +723,43 @@ class NewlandSimulation:
                         priority=20,
                     )
                 continue
+            if event.event_type in {
+                "CooperationProposed",
+                "DisputeOpened",
+            }:
+                target_id = event.payload.get("target_id")
+                if target_id and target_id != actor_id:
+                    self.scheduler.schedule(
+                        target_id,
+                        tick=tick + 1,
+                        reason=f"risposta autonoma a {event.event_type}",
+                        priority=15,
+                    )
+                continue
+            if event.event_type in {
+                "CooperationResponded",
+                "DisputeResponded",
+            }:
+                participants = {
+                    event.payload.get("proposer_id"),
+                    event.payload.get("opener_id"),
+                    event.payload.get("target_id"),
+                } - {None, actor_id}
+                for participant_id in participants:
+                    self.scheduler.schedule(
+                        participant_id,
+                        tick=tick + 1,
+                        reason=f"esito sociale percepito: {event.event_type}",
+                        priority=15,
+                    )
+                continue
             if event.event_type not in {
                 "AgentMoved",
                 "AgentRested",
                 "ResourceGathered",
                 "ResourceConsumed",
                 "ActivityPerformed",
+                "CooperationPerformed",
             }:
                 continue
             for observer_id in event.recipient_ids:

@@ -4,6 +4,8 @@ from typing import Any
 
 from .models import (
     ActivityDefinition,
+    CooperationState,
+    DisputeState,
     EventEnvelope,
     Intention,
     MaterialAgentState,
@@ -14,6 +16,10 @@ from .models import (
 
 
 def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
+    state.event_ids.add(event.event_id)
+    state.event_witnesses[event.event_id] = set(event.actor_ids) | set(
+        event.recipient_ids
+    )
     state.tick = max(state.tick, event.world_tick)
     state.world_time = event.world_time
 
@@ -112,6 +118,56 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
                 agent.skills.get(practiced_skill, 0.0)
                 + float(event.payload.get("skill_gain", 0.0)),
             )
+    elif event.event_type == "CooperationProposed":
+        state.cooperations[event.event_id] = CooperationState(
+            proposal_id=event.event_id,
+            proposer_id=event.actor_ids[0],
+            target_id=event.payload["target_id"],
+            activity_id=event.payload["activity_id"],
+            status="pending",
+            created_tick=event.world_tick,
+        )
+    elif event.event_type == "CooperationResponded":
+        cooperation = state.cooperations[event.payload["proposal_id"]]
+        cooperation.status = (
+            "accepted" if event.payload["response"] == "accept" else "declined"
+        )
+        cooperation.response_tick = event.world_tick
+    elif event.event_type == "CooperationPerformed":
+        cooperation = state.cooperations[event.payload["proposal_id"]]
+        cooperation.status = "completed"
+        for agent_id in event.actor_ids:
+            agent = state.agents[agent_id]
+            agent.energy = max(
+                0.0, agent.energy - float(event.payload.get("energy_spent_each", 0.0))
+            )
+            practiced_skill = event.payload.get("practiced_skill")
+            if practiced_skill:
+                agent.skills[practiced_skill] = min(
+                    1.0,
+                    agent.skills.get(practiced_skill, 0.0)
+                    + float(event.payload.get("skill_gain_each", 0.0)),
+                )
+    elif event.event_type == "DisputeOpened":
+        state.disputes[event.event_id] = DisputeState(
+            dispute_id=event.event_id,
+            opener_id=event.actor_ids[0],
+            target_id=event.payload["target_id"],
+            subject_event_id=event.payload["subject_event_id"],
+            status="open",
+            created_tick=event.world_tick,
+        )
+    elif event.event_type == "DisputeResponded":
+        dispute = state.disputes[event.payload["dispute_id"]]
+        response = event.payload["response"]
+        if response == "offer_resolution":
+            dispute.status = "resolution_offered"
+            dispute.resolution_offered_by = event.actor_ids[0]
+        elif response == "accept_resolution":
+            dispute.status = "resolved"
+        else:
+            dispute.status = "open"
+            dispute.resolution_offered_by = None
     return state
 
 
@@ -213,12 +269,20 @@ class WorldAdjudicator:
     @staticmethod
     def _validate(state: WorldState, actor_id: str, intention: Intention) -> str | None:
         actor = state.agents[actor_id]
-        if intention.action_type in {"speak", "offer_help"} and intention.target_id:
+        targeted_actions = {
+            "speak",
+            "offer_help",
+            "propose_cooperation",
+            "open_dispute",
+        }
+        if intention.action_type in targeted_actions and intention.target_id:
             target = state.agents.get(intention.target_id)
             if target is None:
                 return "target does not exist"
             if target.location != actor.location:
                 return "target is not present at actor location"
+            if target.agent_id == actor_id:
+                return "social action cannot target the actor"
         if intention.action_type == "move":
             if intention.destination not in state.locations:
                 return "destination does not exist"
@@ -226,7 +290,14 @@ class WorldAdjudicator:
                 return "destination is not adjacent"
         if intention.action_type == "speak" and not intention.target_id:
             return "speech requires a target"
-        if intention.action_type == "speak":
+        communicative_actions = {
+            "speak",
+            "propose_cooperation",
+            "respond_cooperation",
+            "open_dispute",
+            "respond_dispute",
+        }
+        if intention.action_type in communicative_actions:
             proficiency = actor.language_proficiencies.get(
                 intention.language or "", 0.0
             )
@@ -264,6 +335,83 @@ class WorldAdjudicator:
                 proficiency = actor.skills.get(activity.practiced_skill, 0.0)
                 if proficiency < activity.minimum_proficiency:
                     return "actor lacks the required skill proficiency"
+        if intention.action_type == "propose_cooperation":
+            activity = state.activities.get(intention.activity_id or "")
+            if activity is None:
+                return "cooperative activity does not exist"
+            if activity.location != actor.location:
+                return "cooperative activity is not available at actor location"
+        if intention.action_type == "respond_cooperation":
+            cooperation = state.cooperations.get(intention.proposal_id or "")
+            if cooperation is None:
+                return "cooperation proposal does not exist"
+            if cooperation.status != "pending":
+                return "cooperation proposal is no longer pending"
+            if cooperation.target_id != actor_id:
+                return "only the proposal target may respond"
+            if state.agents[cooperation.proposer_id].location != actor.location:
+                return "cooperation proposer is not present"
+        if intention.action_type == "perform_cooperation":
+            cooperation = state.cooperations.get(intention.proposal_id or "")
+            if cooperation is None:
+                return "cooperation proposal does not exist"
+            if cooperation.status != "accepted":
+                return "cooperation has not been accepted"
+            if actor_id not in {cooperation.proposer_id, cooperation.target_id}:
+                return "only a cooperation participant may initiate the activity"
+            partner_id = (
+                cooperation.target_id
+                if actor_id == cooperation.proposer_id
+                else cooperation.proposer_id
+            )
+            partner = state.agents[partner_id]
+            if partner.location != actor.location:
+                return "cooperation partner is not present"
+            activity = state.activities.get(cooperation.activity_id)
+            if activity is None:
+                return "cooperative activity no longer exists"
+            if activity.location != actor.location:
+                return "cooperative activity is not available at actor location"
+            for participant in (actor, partner):
+                energy_cost = activity.energy_cost * (intention.duration_minutes / 10.0)
+                if energy_cost > participant.energy:
+                    return "a participant does not have enough energy"
+                if (
+                    activity.practiced_skill
+                    and participant.skills.get(activity.practiced_skill, 0.0)
+                    < activity.minimum_proficiency
+                ):
+                    return "a participant lacks the required skill proficiency"
+        if intention.action_type == "open_dispute":
+            if intention.subject_event_id not in state.event_ids:
+                return "dispute subject event does not exist"
+            witnesses = state.event_witnesses.get(
+                intention.subject_event_id or "", set()
+            )
+            if actor_id not in witnesses:
+                return "actor did not perceive the dispute subject event"
+        if intention.action_type == "respond_dispute":
+            dispute = state.disputes.get(intention.dispute_id or "")
+            if dispute is None:
+                return "dispute does not exist"
+            if actor_id not in {dispute.opener_id, dispute.target_id}:
+                return "only dispute participants may respond"
+            counterpart_id = (
+                dispute.target_id
+                if actor_id == dispute.opener_id
+                else dispute.opener_id
+            )
+            if state.agents[counterpart_id].location != actor.location:
+                return "dispute counterpart is not present"
+            if dispute.status == "resolved":
+                return "dispute is already resolved"
+            if intention.response == "offer_resolution" and dispute.status != "open":
+                return "a resolution is already pending"
+            if intention.response == "accept_resolution":
+                if dispute.status != "resolution_offered":
+                    return "no resolution is pending"
+                if dispute.resolution_offered_by == actor_id:
+                    return "an agent cannot accept its own resolution offer"
         return None
 
     @staticmethod
@@ -386,6 +534,96 @@ class WorldAdjudicator:
                         ),
                         "practiced_skill": activity.practiced_skill,
                         "skill_gain": activity.skill_gain,
+                    },
+                    **common,
+                )
+            ]
+        if intention.action_type == "propose_cooperation":
+            return [
+                EventEnvelope(
+                    event_type="CooperationProposed",
+                    payload={
+                        "target_id": intention.target_id,
+                        "activity_id": intention.activity_id,
+                        "content": intention.spoken_content,
+                        "language": intention.language,
+                    },
+                    **common,
+                )
+            ]
+        if intention.action_type == "respond_cooperation":
+            cooperation = state.cooperations[intention.proposal_id or ""]
+            return [
+                EventEnvelope(
+                    event_type="CooperationResponded",
+                    payload={
+                        "proposal_id": cooperation.proposal_id,
+                        "proposer_id": cooperation.proposer_id,
+                        "target_id": cooperation.target_id,
+                        "activity_id": cooperation.activity_id,
+                        "response": intention.response,
+                        "content": intention.spoken_content,
+                        "language": intention.language,
+                    },
+                    **common,
+                )
+            ]
+        if intention.action_type == "perform_cooperation":
+            cooperation = state.cooperations[intention.proposal_id or ""]
+            activity = state.activities[cooperation.activity_id]
+            participant_ids = tuple(
+                sorted((cooperation.proposer_id, cooperation.target_id))
+            )
+            return [
+                EventEnvelope(
+                    event_type="CooperationPerformed",
+                    world_tick=tick,
+                    world_time=world_time,
+                    actor_ids=participant_ids,
+                    location=actor.location,
+                    payload={
+                        "proposal_id": cooperation.proposal_id,
+                        "initiator_id": actor_id,
+                        "activity_id": activity.activity_id,
+                        "label": activity.label,
+                        "duration_minutes": intention.duration_minutes,
+                        "energy_spent_each": min(
+                            1.0,
+                            activity.energy_cost * (intention.duration_minutes / 10.0),
+                        ),
+                        "practiced_skill": activity.practiced_skill,
+                        "skill_gain_each": activity.skill_gain,
+                    },
+                    visibility="local",
+                    recipient_ids=recipients,
+                    causation_id=causation_id,
+                )
+            ]
+        if intention.action_type == "open_dispute":
+            return [
+                EventEnvelope(
+                    event_type="DisputeOpened",
+                    payload={
+                        "target_id": intention.target_id,
+                        "subject_event_id": intention.subject_event_id,
+                        "content": intention.spoken_content,
+                        "language": intention.language,
+                    },
+                    **common,
+                )
+            ]
+        if intention.action_type == "respond_dispute":
+            dispute = state.disputes[intention.dispute_id or ""]
+            return [
+                EventEnvelope(
+                    event_type="DisputeResponded",
+                    payload={
+                        "dispute_id": dispute.dispute_id,
+                        "opener_id": dispute.opener_id,
+                        "target_id": dispute.target_id,
+                        "response": intention.response,
+                        "content": intention.spoken_content,
+                        "language": intention.language,
                     },
                     **common,
                 )

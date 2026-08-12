@@ -171,12 +171,13 @@ class WorldAdjudicatorTests(unittest.TestCase):
         self.assertAlmostEqual(0.52, self.state.agents["nwl-001"].skills["observation"])
 
     def test_rejects_language_the_speaker_does_not_know(self) -> None:
+        self.state.agents["nwl-002"].location = "village"
         events = self.adjudicator.adjudicate(
             self.state,
             "nwl-001",
             Intention(
                 action_type="speak",
-                target_id="nwl-001",
+                target_id="nwl-002",
                 spoken_content="مرحبا",
                 language="ar",
             ),
