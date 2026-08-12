@@ -4,7 +4,9 @@ import argparse
 import json
 import sys
 import time
+from collections.abc import Callable
 from pathlib import Path
+from typing import Protocol
 
 from .chronicle import (
     ChronicleUnavailable,
@@ -20,6 +22,10 @@ from .simulation import NewlandSimulation
 from .world import replay
 
 
+class ContinuousSimulation(Protocol):
+    def run(self, *, max_activations: int = 8) -> list[object]: ...
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="newland", description="Newland autonomous world runtime"
@@ -31,6 +37,11 @@ def build_parser() -> argparse.ArgumentParser:
         "run", help="advance the event-driven vertical slice"
     )
     run_parser.add_argument("--activations", type=int, default=8)
+    run_parser.add_argument(
+        "--continuous",
+        action="store_true",
+        help="keep activating autonomous minds until interrupted",
+    )
     run_parser.add_argument(
         "--model",
         action="append",
@@ -99,8 +110,14 @@ def main(argv: list[str] | None = None) -> int:
         )
         cognition = RoutedCognition(ordinary, reflective)
         with NewlandSimulation(args.db, cognition=cognition) as simulation:
-            events = simulation.run(max_activations=args.activations)
-            _print_events(events)
+            if args.continuous:
+                try:
+                    run_continuously(simulation, emit=_print_events)
+                except KeyboardInterrupt:
+                    pass
+            else:
+                events = simulation.run(max_activations=args.activations)
+                _print_events(events)
         return 0
 
     if args.command == "serve":
@@ -227,6 +244,21 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def run_continuously(
+    simulation: ContinuousSimulation,
+    *,
+    emit: Callable[[list[object]], None],
+    stop_requested: Callable[[], bool] = lambda: False,
+) -> int:
+    """Run scheduled cognition continuously without choosing agent behavior."""
+    activations = 0
+    while not stop_requested():
+        events = simulation.run(max_activations=1)
+        emit(events)
+        activations += 1
+    return activations
+
+
 def _print_events(events: list[object]) -> None:
     for event in events:
         print(
@@ -240,7 +272,8 @@ def _print_events(events: list[object]) -> None:
                     "payload": event.payload,
                 },
                 ensure_ascii=False,
-            )
+            ),
+            flush=True,
         )
 
 
