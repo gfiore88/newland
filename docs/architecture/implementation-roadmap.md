@@ -12,6 +12,7 @@
 
 - [M02-001] Consolidamento episodico, beliefs e riflessioni generative. **Implementato.**
 - [M02-002] Emozioni e relazioni dinamiche generate dalla mente. **Implementato.**
+- [M02-002A] Energia, fame e sete come stimoli corporei canonici non prescrittivi. **Implementato.**
 - [M02-003] Piani, impegni e interrupt.
 - [M02-004] Routing fra modello rapido e modello riflessivo.
 

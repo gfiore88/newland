@@ -93,6 +93,13 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [SCH-004] Un errore di inferenza attiva riparazione generativa, eventuale failover generativo e infine `CognitionDeferred`; non produce mai un'azione statica sostitutiva.
 - [SCH-005] Ogni `ActionProposed` registra provider, modello, inference ID, versione prompt e numero di tentativi.
 
+### Bisogni corporei
+
+- [BDY-001] Energia, fame e sete appartengono allo stato materiale canonico, non alla narrazione del modello.
+- [BDY-002] Il tempo modifica questi valori attraverso `NeedsChanged`, evento privato percepibile esclusivamente dall'abitante interessato.
+- [BDY-003] Il superamento di una soglia può interrompere e riattivare la cognizione, ma non seleziona riposo, cibo, movimento o alcuna altra risposta.
+- [BDY-004] La risposta al corpo resta un'intenzione generativa dell'agente e attraversa il normale arbitraggio del mondo.
+
 ## 7. Replay e test
 
 - [TST-001] Riducendo gli eventi dall'inizio si deve ricostruire lo stesso stato materiale.

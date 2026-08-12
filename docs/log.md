@@ -49,3 +49,9 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Persistiti gli eventi privati `BeliefUpdated`, `RelationshipUpdated`, `AffectUpdated`, `GoalRevised` e `ReflectionCreated` con fonti e provenienza del modello.
 - Verificata la persistenza su riavvio e il vincolo che una riflessione possa citare solo memorie realmente possedute.
 - Verificato il contratto completo con Ollama `qwen3:4b`: memoria soggettiva, aggiornamento affettivo e azione autonoma prodotti nello stesso ciclo cognitivo.
+
+## [2026-08-12] implementation | Milestone 2 - Bisogni Corporei Percettivi
+- Implementato `PhysiologySystem` per l'evoluzione canonica di energia, fame e sete in funzione del tempo del mondo.
+- Aggiunto l'evento privato `NeedsChanged` e il relativo replay nello stato materiale.
+- Le soglie corporee producono soltanto un interrupt cognitivo: nessuna risposta o azione viene scelta dal codice.
+- Aggiornato il contesto privato dell'agente affinché la mente generativa percepisca lo stato corrente del proprio corpo.
