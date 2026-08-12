@@ -136,8 +136,11 @@ class NewlandSimulation:
         self.scheduler = ActivationScheduler()
         self.state = replay(self.store.events())
         self.minds = self.store.load_minds()
+        self._initialized = False
 
     def initialize(self) -> None:
+        if self._initialized:
+            return
         if self.store.event_count() > 0:
             if self.state.agents and not self.minds:
                 raise RuntimeError(
@@ -145,6 +148,7 @@ class NewlandSimulation:
                 )
             self._ensure_territory()
             self._rebuild_agenda()
+            self._initialized = True
             return
 
         tick = 0
@@ -159,6 +163,7 @@ class NewlandSimulation:
         ]
         persisted = self.store.append_many(events)
         self.state = replay(persisted)
+        self._initialized = True
 
     def _ensure_territory(self) -> None:
         if not self.state.resources or not self.state.activities:

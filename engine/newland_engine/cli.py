@@ -50,7 +50,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--model",
         action="append",
         dest="models",
-        help="Ollama model; repeat for generative failover (default: qwen3:8b)",
+        help="Ollama model; repeat for generative failover (default: qwen2.5:3b)",
     )
     run_parser.add_argument(
         "--reflective-model",
@@ -86,7 +86,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--model",
         action="append",
         dest="models",
-        help="Ollama model; repeat for generative failover (default: qwen3:8b)",
+        help="Ollama model; repeat for generative failover (default: qwen2.5:3b)",
     )
     chronicle_parser.add_argument("--batch-size", type=int, default=20)
     chronicle_parser.add_argument("--poll-interval", type=float, default=2.0)
@@ -129,8 +129,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     arrive_parser.add_argument(
         "--model",
-        default="qwen3:8b",
-        help="Ollama model for identity generation (default: qwen3:8b)",
+        default="qwen2.5:3b",
+        help="Ollama model for identity generation (default: qwen2.5:3b)",
     )
     return parser
 
@@ -138,7 +138,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "run":
-        models = args.models or ["qwen3:8b"]
+        models = args.models or ["qwen2.5:3b"]
         ordinary = GenerativeCognitionPool(
             [OllamaCognition(model=model) for model in models]
         )
@@ -181,7 +181,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "chronicle":
         if args.poll_interval <= 0:
             raise ValueError("poll_interval must be positive")
-        models = args.models or ["qwen3:8b"]
+        models = args.models or ["qwen2.5:3b"]
         chronicler = GenerativeChroniclerPool(
             [OllamaChronicler(model=model) for model in models]
         )
@@ -220,7 +220,7 @@ def main(argv: list[str] | None = None) -> int:
             static_directory=args.ui_dist,
             host=args.host,
             port=args.port,
-            models=tuple(args.models or ["qwen3:8b"]),
+            models=tuple(args.models or ["qwen2.5:3b"]),
             reflective_models=tuple(args.reflective_models or ()),
             chronicle_models=tuple(args.chronicle_models or ()),
             agent_weight=args.agent_weight,

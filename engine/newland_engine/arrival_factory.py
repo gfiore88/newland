@@ -47,7 +47,7 @@ class GenerativeArrivalFactory:
 
     def __init__(
         self,
-        model: str = "qwen3:8b",
+        model: str = "qwen2.5:3b",
         endpoint: str = "http://127.0.0.1:11434/api/chat",
         timeout_seconds: float = 120.0,
         max_attempts: int = 3,

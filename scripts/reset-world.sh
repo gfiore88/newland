@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DB_PATH="${1:-data/newland.db}"
-CHRONICLE_PATH="${2:-data/newland_chronicle.db}"
+CHRONICLE_PATH="${2:-data/newland.chronicle.db}"
 
 echo "🌿 Arresto eventuali processi Newland attivi..."
 lsof -ti:8765 | xargs kill -9 2>/dev/null || true

@@ -12,20 +12,20 @@ uv sync
 uv run newland --db data/newland.db run
 
 # Mondo autonomo continuo; Ctrl-C arresta tra transazioni integre
-uv run newland --db data/newland.db run --continuous --model qwen3:8b
+uv run newland --db data/newland.db run --continuous --model qwen2.5:3b
 
 # Esperienza completa: menti, Cronista, API e UI WebGL con inferenza agent-first
 npm run build --prefix ui
-uv run newland --db data/newland.db live --model qwen3:8b
+uv run newland --db data/newland.db live --model qwen2.5:3b
 # http://127.0.0.1:8765
 
 # Failover fra modelli generativi, senza fallback statico
 uv run newland --db data/newland.db run \
-  --model qwen3:8b --model qwen3:4b
+  --model qwen2.5:3b --model qwen2.5:1.5b
 
 # Modello riflessivo opzionale per risonanza e conflitti attivi
 uv run newland --db data/newland.db run \
-  --model qwen3:8b --reflective-model qwen3:30b
+  --model qwen2.5:3b --reflective-model qwen2.5:7b
 
 # Ispezione della verità canonica
 uv run newland --db data/newland.db events
@@ -43,7 +43,7 @@ npm run dev
 # http://127.0.0.1:5173
 
 # In un terzo terminale: Diario generativo continuo, sempre derivato
-uv run newland --db data/newland.db chronicle --model qwen3:8b
+uv run newland --db data/newland.db chronicle --model qwen2.5:3b
 
 # Test degli invarianti
 uv run python -m unittest discover -s tests -v

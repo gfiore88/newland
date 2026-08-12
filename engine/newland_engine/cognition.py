@@ -315,7 +315,7 @@ class RoutedCognition:
 class OllamaCognition:
     def __init__(
         self,
-        model: str = "qwen3:8b",
+        model: str = "qwen2.5:3b",
         endpoint: str = "http://127.0.0.1:11434/api/chat",
         timeout_seconds: float = 120.0,
         max_attempts: int = 3,
@@ -442,6 +442,7 @@ class OllamaCognition:
             "Un ResonanceSignalReceived è soltanto uno stimolo: non sei obbligato a viverlo come flashback. "
             "Se emerge davvero un'immagine, memoria somatica, intuizione o altro fenomeno, formulalo liberamente in anamnesis_fragments, "
             "come esperienza soggettiva incerta e non come verità canonica. Puoi anche non produrre alcun frammento. "
+            "ATTENZIONE: Puoi generare anamnesis_fragments o modificare resonance_orientation ESCLUSIVAMENTE se hai osservato un evento ResonanceSignalReceived nel contesto. In assenza di questo evento, anamnesis_fragments DEVE essere vuoto e resonance_orientation DEVE essere null. "
             "Con resonance_orientation puoi scegliere liberamente se restare ricettivo o chiudere il canale interiore; usa null se non vuoi cambiare scelta. "
             "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
             "Puoi usare soltanto destination, resource_id e activity_id elencati nelle affordance locali; "

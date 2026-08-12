@@ -37,7 +37,7 @@ class LiveSupervisor:
         static_directory: str | Path = "ui/dist",
         host: str = "127.0.0.1",
         port: int = 8765,
-        models: tuple[str, ...] = ("qwen3:8b",),
+        models: tuple[str, ...] = ("qwen2.5:3b",),
         reflective_models: tuple[str, ...] = (),
         chronicle_models: tuple[str, ...] = (),
         agent_weight: int = 8,
