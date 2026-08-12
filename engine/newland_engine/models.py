@@ -198,6 +198,8 @@ class MaterialAgentState:
     name: str
     location: str
     energy: float = 0.8
+    hunger: float = 0.1
+    thirst: float = 0.1
     active: bool = True
 
 

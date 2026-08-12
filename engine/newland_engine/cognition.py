@@ -325,7 +325,11 @@ class OllamaCognition:
                 "name": context.mind.name,
                 "values": context.mind.values,
                 "temperament": context.mind.temperament,
-                "needs": context.mind.needs,
+                "needs": {
+                    "energy": context.material_state.energy,
+                    "hunger": context.material_state.hunger,
+                    "thirst": context.material_state.thirst,
+                },
                 "affect": context.mind.affect,
                 "goals": context.mind.goals,
                 "location": context.material_state.location,

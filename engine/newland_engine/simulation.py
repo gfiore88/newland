@@ -19,6 +19,7 @@ from .models import (
     world_time_for_tick,
 )
 from .perception import Observation, PerceptionService
+from .physiology import PhysiologySystem
 from .scheduler import ActivationScheduler
 from .world import WorldAdjudicator, reduce_event, replay
 
@@ -50,6 +51,7 @@ class NewlandSimulation:
         self.cognition = cognition
         self.perception = PerceptionService()
         self.mental_state = MentalStateApplier()
+        self.physiology = PhysiologySystem()
         self.adjudicator = WorldAdjudicator()
         self.scheduler = ActivationScheduler()
         self.state = replay(self.store.events())
@@ -98,6 +100,8 @@ class NewlandSimulation:
                             "name": mind.name,
                             "location": location,
                             "energy": 0.8,
+                            "hunger": 0.1,
+                            "thirst": 0.1,
                         },
                         visibility="private",
                         recipient_ids=(mind.agent_id,),
@@ -140,10 +144,36 @@ class NewlandSimulation:
             if activation is None:
                 break
             produced.extend(
+                self._advance_physiology(
+                    to_tick=activation.tick,
+                    activating_agent_id=activation.agent_id,
+                )
+            )
+            produced.extend(
                 self._activate(activation.agent_id, activation.tick, activation.reason)
             )
             activations += 1
         return produced
+
+    def _advance_physiology(
+        self, *, to_tick: int, activating_agent_id: str
+    ) -> list[EventEnvelope]:
+        advance = self.physiology.advance(self.state, to_tick=to_tick)
+        if not advance.events:
+            return []
+        persisted = self.store.append_many(advance.events)
+        for event in persisted:
+            reduce_event(self.state, event)
+        for agent_id in advance.interrupted_agent_ids:
+            if agent_id == activating_agent_id:
+                continue
+            self.scheduler.schedule(
+                agent_id,
+                tick=to_tick,
+                reason="segnale corporeo oltre soglia percettiva",
+                priority=0,
+            )
+        return persisted
 
     def _activate(self, agent_id: str, tick: int, reason: str) -> list[EventEnvelope]:
         mind = self.minds[agent_id]

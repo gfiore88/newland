@@ -64,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
                                 "name": value.name,
                                 "location": value.location,
                                 "energy": value.energy,
+                                "hunger": value.hunger,
+                                "thirst": value.thirst,
                             }
                             for key, value in state.agents.items()
                         },

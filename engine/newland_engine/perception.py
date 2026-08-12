@@ -11,6 +11,7 @@ PERCEPTIBLE_EVENT_TYPES = {
     "SpeechUttered",
     "HelpOffered",
     "ActionRejected",
+    "NeedsChanged",
 }
 
 

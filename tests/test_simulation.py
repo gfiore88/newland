@@ -135,7 +135,7 @@ class SimulationTests(unittest.TestCase):
                 produced = simulation.run(max_activations=1)
 
             types = [event.event_type for event in produced]
-            self.assertEqual(["CognitionDeferred"], types)
+            self.assertIn("CognitionDeferred", types)
             self.assertNotIn("ActionProposed", types)
 
     def test_generated_mental_updates_are_applied_and_audited(self) -> None:
