@@ -93,10 +93,19 @@ export interface ObserverWorld {
 
 export interface Memory {
   memory_id: string;
-  description: string;
-  emotional_valence: number;
-  importance: number;
+  source_event_id: string;
+  event_type: string;
+  summary: string;
+  salience: number;
+  emotional_tone: string;
+  confidence: number;
   created_tick: number;
+  participants: string[];
+  location: string | null;
+  metadata: Record<string, unknown>;
+  last_accessed_tick: number | null;
+  access_count: number;
+  consolidated: boolean;
 }
 
 export interface Reflection {

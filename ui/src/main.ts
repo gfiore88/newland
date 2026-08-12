@@ -361,7 +361,7 @@ function renderInspector(snapshot: ObserverSnapshot, active: Selection | null): 
       ${tagSection("Temperamento", mind?.temperament ?? [])}
       ${listSection("Obiettivi correnti", mind?.goals ?? [])}
       ${detailRow("Prossima attenzione", mind?.next_activation_tick == null ? "non fissata" : `tick ${mind.next_activation_tick}`)}
-      ${expandableListSection("Memorie", (mind?.memories ?? []).map((m: any) => m.description))}
+      ${expandableListSection("Memorie", (mind?.memories ?? []).map((m: any) => m.summary))}
       ${expandableListSection("Riflessioni", (mind?.reflections ?? []).map((r: any) => r.statement))}
       ${
         snapshot.is_live
