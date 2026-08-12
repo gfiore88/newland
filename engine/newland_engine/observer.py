@@ -267,7 +267,7 @@ class ObserverServer:
                                 )
                                 block = (
                                     f"id: {sequence}\n"
-                                    f"event: {event['event_type']}\n"
+                                    "event: newland-event\n"
                                     f"data: {payload}\n\n"
                                 )
                                 self.wfile.write(block.encode("utf-8"))

@@ -176,8 +176,10 @@ class ObserverHttpTests(unittest.TestCase):
         connection.close()
 
         self.assertEqual("2", block["id"])
-        self.assertEqual("AgentRegistered", block["event"])
-        self.assertEqual(2, json.loads(block["data"])["sequence"])
+        self.assertEqual("newland-event", block["event"])
+        payload = json.loads(block["data"])
+        self.assertEqual(2, payload["sequence"])
+        self.assertEqual("AgentRegistered", payload["event_type"])
         self.assertEqual(
             before, ObserverReadModelTests._stored_state(self.database_path)
         )

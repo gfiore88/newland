@@ -62,12 +62,12 @@ Mantiene uno stream Server-Sent Events unidirezionale. Ogni blocco usa:
 
 ```text
 id: 43
-event: AgentMoved
+event: newland-event
 data: {"sequence":43,"event_type":"AgentMoved",...}
 ```
 
 - [SSE-001] `id` coincide con la sequenza canonica e abilita la ripresa senza buchi.
-- [SSE-002] `event` coincide con `event_type`.
+- [SSE-002] `event` usa il canale stabile `newland-event`; il tipo canonico rimane nel campo `event_type` dell'envelope, così nuovi tipi non richiedono nuovi listener browser.
 - [SSE-003] `data` contiene l'intero envelope dell'evento.
 - [SSE-004] Il server accetta sia `after_sequence` sia l'header standard `Last-Event-ID`, scegliendo il cursore più avanzato per evitare duplicazioni alla riconnessione.
 - [SSE-005] In assenza di nuovi eventi vengono inviati heartbeat commentati, che non modificano lo stato dell'Observer.
