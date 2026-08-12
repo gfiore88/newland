@@ -357,7 +357,7 @@ class OllamaChronicler:
             "options": {
                 "temperature": temperature,
                 "num_ctx": 8192,
-                "num_predict": 700,
+                "num_predict": 2048,
             },
             "messages": messages,
         }
