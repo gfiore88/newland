@@ -41,6 +41,9 @@ Ogni evento persistito contiene:
 - [EVT-008] `AgentArrived` rende visibile una nuova presenza; `TransitionRemembered` conserva privatamente l'esperienza della soglia.
 - [EVT-009] `FamilyGroupUpdated` registra legami familiari dichiarati senza assegnare ruoli sociali.
 - [EVT-010] `AgentCapabilitiesConfigured` e `TerritoryActivitiesConfigured` migrano identità e attività preesistenti senza riscrivere la storia.
+- [EVT-011] `CooperationProposed`, `CooperationResponded` e `CooperationPerformed` registrano proposta, consenso o rifiuto e attività condivisa come fatti distinti.
+- [EVT-012] `DisputeOpened` e `DisputeResponded` registrano il confronto fra partecipanti su un evento realmente percepito.
+- [EVT-013] `RoleInterpretationRevised` è privato: registra una lettura soggettiva generata dalla mente, non una carica canonica assegnata dal mondo.
 
 ## 3. Contratto `AgentMind`
 
@@ -55,6 +58,7 @@ La baseline persiste:
 - [MND-007] memorie episodiche con salienza, tono emotivo e provenienza.
 - [MND-008] prossima attivazione scelta dalla mente, con tick e motivazione.
 - [MND-009] lingua madre, lingue parlate, competenze pratiche e appartenenza familiare come fatti situati distinti dalle interpretazioni sociali.
+- [MND-010] interpretazioni private e rivedibili dei ruoli propri o di persone conosciute, con etichetta libera, confidenza e provenienza.
 
 Salienza soggettiva, tono emotivo, convinzioni, interpretazione delle relazioni e riflessioni sono output generativi della mente. Il runtime ne valida intervalli e riferimenti agli eventi percepiti, ma non li assegna con tabelle o euristiche statiche.
 
@@ -71,6 +75,7 @@ Ogni risposta cognitiva può includere, oltre all'intenzione:
 - [GEN-007] `plans`: creazione, revisione, completamento o abbandono di piani con passi espliciti.
 - [GEN-008] `commitments`: impegni autonomi con scadenza e persone conosciute coinvolte.
 - [GEN-009] `attention_schedule`: momento e ragione della prossima riattivazione spontanea.
+- [GEN-010] `role_interpretations`: creazione, revisione o ritiro di significati sociali formulati liberamente dalla mente, senza tassonomia del runtime.
 
 Il runtime limita i delta numerici, impedisce riferimenti a persone o memorie sconosciute e persiste ogni mutazione come evento privato con provenienza del modello. Non decide se o come uno stato mentale debba cambiare.
 
@@ -101,6 +106,7 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [ACT-006] Le conseguenze fisiche aggiornano risorse, inventario e corpo soltanto tramite eventi canonici riducibili.
 - [ACT-007] Per parlare, la mente sceglie testo e lingua; l'arbitro verifica soltanto che il parlante conosca quella lingua.
 - [ACT-008] Le attività possono richiedere una competenza minima e produrre esperienza incrementale; il runtime non deriva da ciò un ruolo comunitario.
+- [ACT-009] I parametri estranei all'azione scelta vengono rimossi al confine del protocollo LLM; azione, contenuti e parametri pertinenti restano quelli generati dalla mente e attraversano la normale validazione.
 
 ## 6. Arrivi e identità sociali
 
@@ -109,7 +115,17 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [ARR-003] Residenti e nuovi arrivati vengono riattivati dall'evento, ma accoglienza, fiducia, cooperazione e conflitto restano decisioni generative individuali.
 - [ARR-004] Lingua madre e capacità sono caratteristiche della persona; mediatore, costruttore, saggio o protettore sono significati sociali emergenti e non campi assegnati dal motore.
 
-## 7. Scheduling
+## 7. Cooperazione, conflitto e ruoli emergenti
+
+- [SOC-001] Una cooperazione nasce soltanto da `propose_cooperation` scelto da un agente verso una persona presente e un'attività locale realmente disponibile.
+- [SOC-002] Soltanto il destinatario decide `accept` o `decline`; prima di un'accettazione esplicita nessun effetto materiale condiviso può avvenire.
+- [SOC-003] Dopo il consenso, entrambi i partecipanti possono scegliere di avviare l'attività; il runtime verifica presenza, energia e capacità di entrambi senza scegliere chi agirà.
+- [SOC-004] Un conflitto può essere aperto soltanto da chi ha percepito l'evento contestato e prosegue tramite atti generativi distinti di contestazione, proposta o accettazione della risoluzione.
+- [SOC-005] Nessun conflitto viene risolto automaticamente: una proposta di risoluzione diventa canonica soltanto quando l'altra parte la accetta esplicitamente.
+- [SOC-006] Mediatore, costruttore, saggio, protettore o qualsiasi altra etichetta non appartengono a un enum e non vengono derivati da skill, statistiche o frequenze d'azione.
+- [SOC-007] Ogni mente può attribuire a sé o a persone conosciute ruoli differenti e perfino incompatibili; tali interpretazioni restano private finché un agente non le rende osservabili attraverso una propria azione o parola.
+
+## 8. Scheduling
 
 - [SCH-001] Gli agenti vengono attivati da stimoli, soglie di bisogno, incontri, impegni o riflessioni pianificate.
 - [SCH-002] I processi fisici e fisiologici deterministici avanzano senza chiamate LLM; nessun processo deterministico sceglie un'intenzione per un abitante.
@@ -127,9 +143,11 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [BDY-003] Il superamento di una soglia può interrompere e riattivare la cognizione, ma non seleziona riposo, cibo, movimento o alcuna altra risposta.
 - [BDY-004] La risposta al corpo resta un'intenzione generativa dell'agente e attraversa il normale arbitraggio del mondo.
 
-## 8. Replay e test
+## 9. Replay e test
 
 - [TST-001] Riducendo gli eventi dall'inizio si deve ricostruire lo stesso stato materiale.
 - [TST-002] Un evento privato non deve comparire nella percezione di un altro agente.
 - [TST-003] Un'azione fisicamente impossibile deve generare `ActionRejected` e nessuna conseguenza materiale.
 - [TST-004] Il replay usa decisioni già committate; una nuova inferenza genera un ramo distinto.
+- [TST-005] Il replay ricostruisce stato e ciclo delle cooperazioni e dei conflitti senza rieseguire inferenze.
+- [TST-006] Una competenza materiale, inclusa `mediazione`, non crea alcun ruolo: serve un'esplicita interpretazione generata dalla mente.

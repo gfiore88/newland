@@ -83,3 +83,12 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Aggiunte migrazioni event-sourced per capacità, attività e ricordi iniziali, preservando risorse già consumate nei mondi esistenti.
 - Semplificata la provenienza LLM in `source_ids`, riclassificata e validata dal runtime contro soli eventi percepiti e memorie possedute.
 - Verificato con Ollama `qwen3:4b`: Elia ha integrato lingua, competenze e memoria della transizione e ha scelto autonomamente di esplorare il bosco.
+
+## [2026-08-12] implementation | Milestone 3 - Cooperazione, Conflitti e Ruoli Emergenti
+- Aggiunto un protocollo event-sourced nel quale proposta, accettazione o rifiuto ed esecuzione cooperativa sono decisioni generative separate; nessun effetto condiviso avviene senza consenso esplicito.
+- Introdotto il confronto su eventi realmente percepiti con contestazione, offerta di risoluzione e accettazione come azioni autonome distinte; il runtime non chiude conflitti da solo.
+- Resi cooperazioni e conflitti percepibili soltanto ai destinatari e osservatori locali presenti al momento dell'evento, preservando memoria e ragionamento privati.
+- Aggiunte interpretazioni private e persistenti dei ruoli con etichette libere generate dalle menti; competenze e statistiche materiali non assegnano alcun ruolo.
+- Validati replay, consenso, provenienza, riferimenti sociali e assenza di tassonomie con 52 test automatici.
+- Verificato con Ollama `qwen3:8b`: Elia ha scelto `perform_activity` e ha generato separatamente per sé il ruolo `Osservatore Silenzioso`, fondato su eventi percepiti e non presente nel codice.
+- Impostato `qwen3:8b` come default locale dopo che il contratto cognitivo ampliato ha mostrato maggiore affidabilità rispetto al 4B; errori residui producono esclusivamente retry generativi o `CognitionDeferred`.
