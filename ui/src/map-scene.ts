@@ -1,6 +1,5 @@
 import {
   Application,
-  Batcher,
   Container,
   Graphics,
   Text,
@@ -12,8 +11,6 @@ import type { ObserverWorld } from "./types";
 
 // Pixi otherwise opens and intentionally loses a temporary WebGL context to
 // probe this limit. Newland's primitive-only scene needs far fewer than eight.
-Batcher.defaultOptions.maxTextures = 8;
-
 export type Selection =
   | { kind: "agent"; id: string }
   | { kind: "location"; id: string }
@@ -91,16 +88,25 @@ export class NewlandMapScene {
   }
 
   private async initialize(): Promise<void> {
-    await this.app.init({
-      resizeTo: this.host,
-      preference: "webgl",
-      preferWebGLVersion: 1,
-      antialias: false,
-      powerPreference: "low-power",
-      autoDensity: true,
-      resolution: Math.min(window.devicePixelRatio, 1.5),
-      backgroundAlpha: 0,
-    });
+    try {
+      await this.app.init({
+        resizeTo: this.host,
+        preference: "webgl",
+        autoDensity: true,
+        resolution: Math.min(window.devicePixelRatio, 1.5),
+        backgroundAlpha: 0,
+        hello: false,
+      });
+    } catch {
+      await this.app.init({
+        resizeTo: this.host,
+        preference: "canvas",
+        autoDensity: true,
+        resolution: 1,
+        backgroundAlpha: 0,
+        hello: false,
+      });
+    }
     this.app.ticker.maxFPS = 30;
     this.app.canvas.className = "world-canvas";
     this.app.canvas.setAttribute("aria-label", "Mappa WebGL del territorio di Newland");

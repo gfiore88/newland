@@ -57,11 +57,11 @@ export class ObserverStore {
 
   constructor(
     apiBase: string,
-    fetcher: Fetcher = fetch,
+    fetcher: Fetcher = (...args) => fetch(...args),
     streamFactory: EventStreamFactory = (url) => new EventSource(url),
   ) {
     this.apiBase = apiBase.replace(/\/$/, "");
-    this.fetcher = fetcher;
+    this.fetcher = (...args) => fetcher(...args);
     this.streamFactory = streamFactory;
   }
 
@@ -158,7 +158,13 @@ export class ObserverStore {
       throw new RangeError(`sequence must be between 0 and ${maximum}`);
     }
     const request = ++this.seekRequest;
-    this.patch({ viewMode: "paused", error: null });
+    this.patch({
+      viewMode: "paused",
+      viewSnapshot: this.mutableState.viewSnapshot
+        ? { ...this.mutableState.viewSnapshot, last_sequence: sequence }
+        : null,
+      error: null,
+    });
     try {
       const historyStart = Math.max(0, sequence - 199);
       const [snapshot, history] = await Promise.all([

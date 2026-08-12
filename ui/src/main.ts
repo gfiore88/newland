@@ -5,6 +5,19 @@ import { NewlandMapScene, type Selection } from "./map-scene";
 import { ObserverStore } from "./observer-store";
 import type { EventEnvelope, ObserverSnapshot } from "./types";
 
+const origWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  const msg = String(args[0] ?? "");
+  if (
+    msg.includes("WebGL") ||
+    msg.includes("Alpha-premult") ||
+    msg.includes("lazy initialization")
+  ) {
+    return;
+  }
+  origWarn.apply(console, args);
+};
+
 const root = document.querySelector<HTMLDivElement>("#app");
 if (!root) throw new Error("Missing #app root");
 
@@ -117,14 +130,26 @@ requiredElement<HTMLButtonElement>("#replay-toggle").addEventListener("click", (
 });
 
 let seekTimer: ReturnType<typeof setTimeout> | null = null;
-requiredElement<HTMLInputElement>("#time-slider").addEventListener("input", (event) => {
+let isInteractingWithSlider = false;
+const timeSlider = requiredElement<HTMLInputElement>("#time-slider");
+
+timeSlider.addEventListener("pointerdown", () => { isInteractingWithSlider = true; });
+timeSlider.addEventListener("pointerup", () => { isInteractingWithSlider = false; });
+timeSlider.addEventListener("touchstart", () => { isInteractingWithSlider = true; }, { passive: true });
+timeSlider.addEventListener("touchend", () => { isInteractingWithSlider = false; });
+timeSlider.addEventListener("change", () => { isInteractingWithSlider = false; });
+
+timeSlider.addEventListener("input", (event) => {
   stopReplay();
   const sequence = Number((event.currentTarget as HTMLInputElement).value);
+  const label = requiredElement<HTMLSpanElement>("#time-label");
+  const maximum = Number(timeSlider.max || "0");
+  label.textContent = `vista #${sequence} / live #${maximum}`;
   if (seekTimer !== null) clearTimeout(seekTimer);
   seekTimer = setTimeout(() => {
     seekTimer = null;
     void store.seek(sequence);
-  }, 70);
+  }, 40);
 });
 
 window.addEventListener("beforeunload", () => {
@@ -227,7 +252,10 @@ function renderTimeControls(snapshot: ObserverSnapshot): void {
   const label = requiredElement<HTMLSpanElement>("#time-label");
   const maximum = Math.max(store.state.liveSequence, snapshot.latest_sequence);
   slider.max = String(maximum);
-  slider.value = String(snapshot.last_sequence);
+  if (document.activeElement !== slider && !isInteractingWithSlider) {
+    slider.value = String(snapshot.last_sequence);
+    label.textContent = `vista #${snapshot.last_sequence} / live #${maximum}`;
+  }
   toggle.textContent =
     store.state.viewMode === "live" ? "Pausa visiva" : "Torna al presente";
   toggle.dataset.mode = store.state.viewMode;
@@ -235,7 +263,6 @@ function renderTimeControls(snapshot: ObserverSnapshot): void {
     store.state.viewMode === "live" || snapshot.last_sequence >= maximum;
   replay.textContent = replayActive ? "Ferma replay" : "Riproduci";
   replay.dataset.active = String(replayActive);
-  label.textContent = `vista #${snapshot.last_sequence} / live #${maximum}`;
 }
 
 async function advanceReplay(): Promise<void> {
