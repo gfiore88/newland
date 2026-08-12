@@ -28,7 +28,7 @@
 - [M04-001] Snapshot HTTP e stream SSE degli eventi canonici. **Implementato.**
 - [M04-002] Mappa 2.5D PixiJS con terreno, luoghi e Newlander. **Implementato.**
 - [M04-003] Diario del Cronista Silenzioso e Console dell'Architetto. **Implementato.**
-- [M04-004] Pausa visiva, scrub e replay senza fermare il motore.
+- [M04-004] Pausa visiva, scrub e replay senza fermare il motore. **Implementato.**
 
 ## Definition of Done globale
 

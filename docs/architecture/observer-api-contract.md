@@ -48,6 +48,8 @@ Restituisce una proiezione puntuale composta da:
 
 `last_sequence` è il cursore da passare allo stream dopo aver materializzato lo snapshot, evitando una finestra persa fra bootstrap e aggiornamenti live.
 
+Con `GET /api/snapshot?at_sequence=N` il server esegue il replay materiale fino alla sequenza richiesta. La risposta aggiunge `latest_sequence` e `is_live`, consentendo alla UI di mostrare contemporaneamente il punto osservato e la testa corrente. Gli snapshot mentali storici vengono restituiti vuoti: non sono ricostruibili dal solo log materiale e non vengono inventati.
+
 ### `GET /api/events?after_sequence=N&limit=L`
 
 Restituisce fino a `L` eventi con `sequence > N`, ordinati per sequenza. Il limite ammesso è `1..5000`; il default è `500`.
@@ -94,6 +96,14 @@ Stream SSE delle nuove voci sul canale stabile `chronicle-entry`. Il suo cursore
 4. Applicare in ordine soltanto eventi con sequenza maggiore del cursore locale.
 5. In caso di discontinuità o incompatibilità di schema, richiedere un nuovo snapshot.
 6. Caricare `/api/chronicle` e aprire `/api/chronicle-stream` usando il cursore dell'ultima voce.
+
+## Navigazione temporale
+
+- [TIM-001] La pausa è soltanto una modalità dello store UI: gli stream restano aperti e `liveSequence` continua ad avanzare.
+- [TIM-002] Scrub e replay richiedono snapshot canonici `at_sequence`; non ricostruiscono lo stato da frame o animazioni.
+- [TIM-003] Il registro degli eventi e il Diario sono filtrati fino alla sequenza osservata.
+- [TIM-004] Il replay visuale avanza una sequenza alla volta e non invia alcun comando al runtime.
+- [TIM-005] `Torna al presente` sostituisce la proiezione storica con l'ultimo snapshot live già ricevuto e poi lo riallinea via HTTP.
 
 ## Verifica
 

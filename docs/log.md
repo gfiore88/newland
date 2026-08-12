@@ -133,3 +133,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Esposti query e stream SSE `chronicle-entry` read-only; la UI visualizza direttamente titolo e prosa persistiti insieme alla provenienza.
 - Verificato end-to-end con `qwen3:8b`: una prima bozza non conforme è stata respinta e la voce accettata è stata generata al secondo tentativo.
 - Suite complessiva: 78 test Python, 5 test frontend e build Vite di produzione.
+
+## [2026-08-12] implementation | Milestone 4 - Tempo visuale
+- Aggiunto replay materiale server-side fino a una sequenza canonica richiesta, con indicazione separata della testa live.
+- Gli snapshot cognitivi storici vengono omessi esplicitamente perché il log materiale non consente di ricostruirli senza inventare stato mentale.
+- Lo store frontend mantiene distinti snapshot/eventi live e snapshot/eventi visualizzati; gli stream continuano a ricevere il presente durante la pausa.
+- Aggiunti pausa visiva, scrub, replay sequenziale e riallineamento al presente senza endpoint di comando e senza interferenza sulla simulazione.
+- Registro, mappa e Diario seguono il cursore osservato; il Cronista e i Newlander continuano a operare sul tempo corrente.
+- Milestone 4 completata funzionalmente con 80 test Python, 6 test frontend e build Vite di produzione; resta una QA visiva manuale quando sarà disponibile un browser collegato alla sessione.
