@@ -55,3 +55,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Aggiunto l'evento privato `NeedsChanged` e il relativo replay nello stato materiale.
 - Le soglie corporee producono soltanto un interrupt cognitivo: nessuna risposta o azione viene scelta dal codice.
 - Aggiornato il contesto privato dell'agente affinché la mente generativa percepisca lo stato corrente del proprio corpo.
+
+## [2026-08-12] implementation | Milestone 2 - Piani, Impegni e Agenda Autonoma
+- Esteso l'output cognitivo con piani strutturati, impegni a scadenza e scelta generativa della prossima attivazione.
+- Persistiti `PlanRevised`, `CommitmentRevised` e `AttentionScheduled` come eventi privati con provenienza del modello.
+- Il runtime esegue esclusivamente il richiamo temporale scelto dall'agente: alla scadenza non viene selezionata alcuna risposta automatica.
+- Ricostruita l'agenda dopo il riavvio usando percezioni inevase, attenzione persistita e impegni attivi.
+- Validati fonti, persone coinvolte e scadenze; un riferimento inventato differisce la cognizione senza produrre azioni.
+- Verificato il contratto ampliato con Ollama `qwen3:4b`: Elia ha scelto in tempo reale parola, motivazione e tick della successiva attenzione.

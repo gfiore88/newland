@@ -45,9 +45,10 @@ La baseline persiste:
 - [MND-002] bisogni e stato affettivo correnti;
 - [MND-003] convinzioni con confidenza e provenienza;
 - [MND-004] relazioni indicizzate per altro agente;
-- [MND-005] obiettivi e impegni;
+- [MND-005] obiettivi, piani e impegni strutturati con stato e provenienza;
 - [MND-006] cursore dell'ultimo evento percepito;
 - [MND-007] memorie episodiche con salienza, tono emotivo e provenienza.
+- [MND-008] prossima attivazione scelta dalla mente, con tick e motivazione.
 
 Salienza soggettiva, tono emotivo, convinzioni, interpretazione delle relazioni e riflessioni sono output generativi della mente. Il runtime ne valida intervalli e riferimenti agli eventi percepiti, ma non li assegna con tabelle o euristiche statiche.
 
@@ -61,6 +62,9 @@ Ogni risposta cognitiva può includere, oltre all'intenzione:
 - [GEN-004] `affect`: variazioni emotive motivate;
 - [GEN-005] `reflections`: sintesi sostenute da memorie esistenti;
 - [GEN-006] `goals`: aggiunte o rimozioni motivate degli obiettivi.
+- [GEN-007] `plans`: creazione, revisione, completamento o abbandono di piani con passi espliciti.
+- [GEN-008] `commitments`: impegni autonomi con scadenza e persone conosciute coinvolte.
+- [GEN-009] `attention_schedule`: momento e ragione della prossima riattivazione spontanea.
 
 Il runtime limita i delta numerici, impedisce riferimenti a persone o memorie sconosciute e persiste ogni mutazione come evento privato con provenienza del modello. Non decide se o come uno stato mentale debba cambiare.
 
@@ -92,6 +96,9 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [SCH-003] A parità di tick e priorità, l'ordine è stabile per `agent_id`.
 - [SCH-004] Un errore di inferenza attiva riparazione generativa, eventuale failover generativo e infine `CognitionDeferred`; non produce mai un'azione statica sostitutiva.
 - [SCH-005] Ogni `ActionProposed` registra provider, modello, inference ID, versione prompt e numero di tentativi.
+- [SCH-006] Il runtime persiste `AttentionScheduled` e riattiva la mente al tick scelto dal modello, senza prescrivere il contenuto della deliberazione.
+- [SCH-007] Gli impegni attivi producono un richiamo alla scadenza scelta dalla mente; il richiamo non implica alcuna azione automatica.
+- [SCH-008] Al riavvio, l'agenda viene ricostruita da eventi non ancora percepiti, prossima attenzione persistita e impegni attivi.
 
 ### Bisogni corporei
 
