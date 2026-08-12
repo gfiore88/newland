@@ -417,9 +417,18 @@ class NewlandSimulation:
                         reason=f"impegno generato: {commitment.description}",
                         priority=30,
                     )
+            if not self.scheduler:
+                self.scheduler.schedule(
+                    agent_id,
+                    tick=max(1, self.state.tick),
+                    reason="presenza cosciente nel mondo",
+                    priority=10,
+                )
 
     def run(self, *, max_activations: int = 8) -> list[EventEnvelope]:
         self.initialize()
+        if not self.scheduler and self.minds:
+            self._rebuild_agenda()
         produced: list[EventEnvelope] = []
         activations = 0
         while self.scheduler and activations < max_activations:
