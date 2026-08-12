@@ -57,6 +57,23 @@ class ObserverReadModelTests(unittest.TestCase):
             self.assertEqual(("nwl-test",), event["recipient_ids"])
             self.assertEqual(("nwl-test",), event["actor_ids"])
 
+    def test_historical_snapshot_replays_material_state_without_inventing_minds(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            self._seed(path)
+            before = self._stored_state(path)
+
+            historical = ObserverReadModel(path).snapshot(at_sequence=1)
+
+            self.assertEqual(1, historical["last_sequence"])
+            self.assertEqual(2, historical["latest_sequence"])
+            self.assertFalse(historical["is_live"])
+            self.assertEqual({}, historical["world"]["agents"])
+            self.assertEqual({}, historical["minds"])
+            self.assertEqual(before, self._stored_state(path))
+
     @staticmethod
     def _seed(path: Path) -> AgentMind:
         events = [
@@ -212,6 +229,14 @@ class ObserverHttpTests(unittest.TestCase):
         self.assertEqual("Una soglia quieta", json.loads(block["data"])["title"])
         with ChronicleStore(self.chronicle_path, read_only=True) as store:
             self.assertEqual(before, [entry.to_dict() for entry in store.entries()])
+
+    def test_http_historical_snapshot_keeps_live_head_visible(self) -> None:
+        historical = self._get_json("/api/snapshot?at_sequence=1")
+
+        self.assertEqual(1, historical["last_sequence"])
+        self.assertEqual(2, historical["latest_sequence"])
+        self.assertFalse(historical["is_live"])
+        self.assertEqual({}, historical["minds"])
 
     def test_sse_streams_ordered_canonical_events_without_writes(self) -> None:
         before = ObserverReadModelTests._stored_state(self.database_path)

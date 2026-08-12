@@ -29,15 +29,33 @@ class ObserverReadModel:
             chronicle_database_path or default_chronicle_path(database_path)
         )
 
-    def snapshot(self) -> dict[str, Any]:
+    def snapshot(self, *, at_sequence: int | None = None) -> dict[str, Any]:
+        if at_sequence is not None and at_sequence < 0:
+            raise ValueError("at_sequence must be non-negative")
         with EventStore(self.database_path, read_only=True) as store:
             events, minds = store.read_snapshot()
+        latest_sequence = events[-1].sequence if events else 0
+        if at_sequence is not None and at_sequence > latest_sequence:
+            raise ValueError("at_sequence cannot be beyond the live sequence")
+        projected_events = (
+            events
+            if at_sequence is None
+            else [event for event in events if (event.sequence or 0) <= at_sequence]
+        )
+        projected_sequence = projected_events[-1].sequence if projected_events else 0
+        is_live = at_sequence is None or at_sequence == latest_sequence
         return {
             "schema_version": 1,
             "observer_scope": "architect-local-read-only",
-            "last_sequence": events[-1].sequence if events else 0,
-            "world": world_projection(replay(events)),
-            "minds": {agent_id: mind.to_dict() for agent_id, mind in minds.items()},
+            "last_sequence": projected_sequence,
+            "latest_sequence": latest_sequence,
+            "is_live": is_live,
+            "world": world_projection(replay(projected_events)),
+            "minds": (
+                {agent_id: mind.to_dict() for agent_id, mind in minds.items()}
+                if is_live
+                else {}
+            ),
         }
 
     def events(
@@ -133,7 +151,10 @@ class ObserverServer:
                         )
                         return
                     if parsed.path == "/api/snapshot":
-                        self._json(read_model.snapshot())
+                        query = parse_qs(parsed.query)
+                        values = query.get("at_sequence")
+                        at_sequence = None if not values else int(values[-1])
+                        self._json(read_model.snapshot(at_sequence=at_sequence))
                         return
                     if parsed.path == "/api/events":
                         query = parse_qs(parsed.query)
