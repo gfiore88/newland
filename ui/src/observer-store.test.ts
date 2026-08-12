@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { ObserverStore } from "./observer-store";
-import type { EventEnvelope, ObserverSnapshot } from "./types";
+import type { ChronicleEntry, EventEnvelope, ObserverSnapshot } from "./types";
 
 class FakeEventStream {
   onopen: ((event: Event) => void) | null = null;
@@ -28,10 +28,15 @@ describe("ObserverStore", () => {
     const history = [makeEvent(6), makeEvent(7)];
     const fetcher = vi.fn(async (input: string | URL | Request) => {
       const url = String(input);
-      return new Response(JSON.stringify(url.includes("snapshot") ? snapshot : { events: history }));
+      if (url.includes("snapshot")) return new Response(JSON.stringify(snapshot));
+      if (url.includes("chronicle")) return new Response(JSON.stringify({ entries: [] }));
+      return new Response(JSON.stringify({ events: history }));
     });
-    const stream = new FakeEventStream();
-    const streamFactory = vi.fn(() => stream);
+    const worldStream = new FakeEventStream();
+    const chronicleStream = new FakeEventStream();
+    const streamFactory = vi.fn((url: string) =>
+      url.includes("chronicle") ? chronicleStream : worldStream,
+    );
     const store = new ObserverStore("http://127.0.0.1:8765/", fetcher, streamFactory);
 
     await store.start();
@@ -45,25 +50,73 @@ describe("ObserverStore", () => {
 
   it("accepts each live event once and refreshes canonical state", async () => {
     vi.useFakeTimers();
-    const fetcher = vi
-      .fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify(makeSnapshot(1))))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ events: [makeEvent(1)] })))
-      .mockResolvedValueOnce(new Response(JSON.stringify(makeSnapshot(2))));
-    const stream = new FakeEventStream();
-    const store = new ObserverStore("http://127.0.0.1:8765", fetcher, () => stream);
+    const fetcher = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input);
+      if (url.includes("chronicle")) return new Response(JSON.stringify({ entries: [] }));
+      if (url.includes("events")) {
+        return new Response(JSON.stringify({ events: [makeEvent(1)] }));
+      }
+      const snapshotSequence = fetcher.mock.calls.length > 3 ? 2 : 1;
+      return new Response(JSON.stringify(makeSnapshot(snapshotSequence)));
+    });
+    const worldStream = new FakeEventStream();
+    const store = new ObserverStore(
+      "http://127.0.0.1:8765",
+      fetcher,
+      (url) => (url.includes("chronicle") ? new FakeEventStream() : worldStream),
+    );
     await store.start();
     const event = makeEvent(2);
 
-    stream.emit("newland-event", new MessageEvent("newland-event", { data: JSON.stringify(event) }));
-    stream.emit("newland-event", new MessageEvent("newland-event", { data: JSON.stringify(event) }));
+    worldStream.emit(
+      "newland-event",
+      new MessageEvent("newland-event", { data: JSON.stringify(event) }),
+    );
+    worldStream.emit(
+      "newland-event",
+      new MessageEvent("newland-event", { data: JSON.stringify(event) }),
+    );
     await vi.advanceTimersByTimeAsync(80);
 
     expect(store.state.events.map((item) => item.sequence)).toEqual([1, 2]);
     expect(store.state.snapshot?.last_sequence).toBe(2);
-    expect(fetcher).toHaveBeenCalledTimes(3);
+    expect(fetcher).toHaveBeenCalledTimes(4);
     store.stop();
     vi.useRealTimers();
+  });
+
+  it("receives generative chronicle entries on their independent cursor", async () => {
+    const firstEntry = makeChronicleEntry(1);
+    const fetcher = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input);
+      if (url.includes("snapshot")) return new Response(JSON.stringify(makeSnapshot(4)));
+      if (url.includes("chronicle")) {
+        return new Response(JSON.stringify({ entries: [firstEntry] }));
+      }
+      return new Response(JSON.stringify({ events: [] }));
+    });
+    const chronicleStream = new FakeEventStream();
+    const streamFactory = vi.fn((url: string) =>
+      url.includes("chronicle") ? chronicleStream : new FakeEventStream(),
+    );
+    const store = new ObserverStore("http://127.0.0.1:8765", fetcher, streamFactory);
+    await store.start();
+    const secondEntry = makeChronicleEntry(2);
+
+    chronicleStream.emit(
+      "chronicle-entry",
+      new MessageEvent("chronicle-entry", { data: JSON.stringify(secondEntry) }),
+    );
+    chronicleStream.emit(
+      "chronicle-entry",
+      new MessageEvent("chronicle-entry", { data: JSON.stringify(secondEntry) }),
+    );
+
+    expect(store.state.chronicle.map((entry) => entry.sequence)).toEqual([1, 2]);
+    expect(store.state.chronicleSequence).toBe(2);
+    expect(streamFactory).toHaveBeenCalledWith(
+      "http://127.0.0.1:8765/api/chronicle-stream?after_sequence=1",
+    );
   });
 });
 
@@ -102,5 +155,25 @@ function makeEvent(sequence: number): EventEnvelope {
     visibility: "public",
     recipient_ids: [],
     causation_id: null,
+  };
+}
+
+function makeChronicleEntry(sequence: number): ChronicleEntry {
+  return {
+    entry_id: `chronicle-${sequence}`,
+    sequence,
+    from_sequence: sequence,
+    through_sequence: sequence,
+    world_tick: sequence,
+    world_time: "0001-01-01T06:00:00+00:00",
+    title: `Voce ${sequence}`,
+    prose: "Testo generato.",
+    source_event_ids: [`event-${sequence}`],
+    provider: "test-double",
+    model: "generated",
+    inference_id: `inference-${sequence}`,
+    attempts: 1,
+    prompt_version: "silent-chronicler-v2",
+    created_at: "2026-08-12T00:00:00+00:00",
   };
 }

@@ -126,4 +126,26 @@ export interface EventsResponse {
   events: EventEnvelope[];
 }
 
+export interface ChronicleEntry {
+  entry_id: string;
+  sequence: number;
+  from_sequence: number;
+  through_sequence: number;
+  world_tick: number;
+  world_time: string;
+  title: string;
+  prose: string;
+  source_event_ids: string[];
+  provider: string;
+  model: string;
+  inference_id: string;
+  attempts: number;
+  prompt_version: string;
+  created_at: string;
+}
+
+export interface ChronicleResponse {
+  entries: ChronicleEntry[];
+}
+
 export type ConnectionStatus = "idle" | "connecting" | "live" | "reconnecting" | "offline";

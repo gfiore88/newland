@@ -30,6 +30,15 @@ root.innerHTML = `
       <div id="world-stage" class="world-stage"></div>
       <div class="map-guidance">trascina per muovere · rotella per avvicinare</div>
       <div id="map-error" class="map-error" hidden></div>
+      <article class="chronicle-panel" aria-live="polite">
+        <div class="section-heading">
+          <p class="eyebrow">IL CRONISTA SILENZIOSO</p>
+          <span id="chronicle-sequence">voce —</span>
+        </div>
+        <div id="chronicle-entry" class="chronicle-entry empty-state">
+          Il Cronista è in ascolto. Nessuna voce generativa è ancora stata persistita.
+        </div>
+      </article>
     </section>
 
     <aside class="side-panel">
@@ -90,6 +99,7 @@ store.subscribe(() => {
   renderInhabitants(snapshot, selection);
   renderInspector(snapshot, selection);
   renderEvents(store.state.events);
+  renderChronicle();
   if (snapshot.last_sequence !== lastRenderedSequence) {
     mapScene?.render(snapshot.world);
     lastRenderedSequence = snapshot.last_sequence;
@@ -109,6 +119,32 @@ function renderConnection(): void {
   indicator.dataset.state = store.state.connection;
   label.textContent = store.state.error ? "non raggiungibile" : store.state.connection;
   indicator.title = store.state.error ?? "Flusso Observer locale";
+}
+
+function renderChronicle(): void {
+  const container = requiredElement<HTMLDivElement>("#chronicle-entry");
+  const sequence = requiredElement<HTMLSpanElement>("#chronicle-sequence");
+  const entry = store.state.chronicle.at(-1);
+  if (!entry) {
+    sequence.textContent = "voce —";
+    container.className = "chronicle-entry empty-state";
+    container.textContent =
+      "Il Cronista è in ascolto. Nessuna voce generativa è ancora stata persistita.";
+    return;
+  }
+  sequence.textContent = `voce ${entry.sequence}`;
+  container.className = "chronicle-entry";
+  container.innerHTML = `
+    <h2>${escapeHtml(entry.title)}</h2>
+    ${entry.prose
+      .split(/\n\s*\n/)
+      .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+      .join("")}
+    <footer>
+      <span>${escapeHtml(entry.model)} · tentativo ${entry.attempts}</span>
+      <span>eventi ${entry.from_sequence}–${entry.through_sequence}</span>
+    </footer>
+  `;
 }
 
 function renderClock(snapshot: ObserverSnapshot): void {
