@@ -628,7 +628,7 @@ class NewlandSimulation:
         persisted_pending = [
             event for event in persisted if event.event_id in pending_ids
         ]
-        for event in persisted_pending:
+        for event in persisted:
             reduce_event(self.state, event)
         self._schedule_generated_agenda(working_mind, tick=tick)
         self._schedule_reactions(agent_id, tick, persisted_pending)
