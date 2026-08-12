@@ -9,6 +9,11 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from newland_engine.chronicle import (
+    ChronicleEntry,
+    ChronicleStore,
+    default_chronicle_path,
+)
 from newland_engine.event_store import EventStore
 from newland_engine.models import AgentMind, EventEnvelope, world_time_for_tick
 from newland_engine.observer import ObserverReadModel, ObserverServer
@@ -119,6 +124,25 @@ class ObserverHttpTests(unittest.TestCase):
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.database_path = Path(self.temporary_directory.name) / "newland.db"
         ObserverReadModelTests._seed(self.database_path)
+        self.chronicle_path = default_chronicle_path(self.database_path)
+        with EventStore(self.database_path, read_only=True) as event_store:
+            source_events = event_store.events()
+        with ChronicleStore(self.chronicle_path) as chronicle_store:
+            chronicle_store.append(
+                ChronicleEntry(
+                    from_sequence=1,
+                    through_sequence=2,
+                    world_tick=0,
+                    world_time=world_time_for_tick(0),
+                    title="Una soglia quieta",
+                    prose="Elia giunse nel villaggio.",
+                    source_event_ids=tuple(event.event_id for event in source_events),
+                    provider="test-double",
+                    model="generated",
+                    inference_id="chronicle-test",
+                    attempts=1,
+                )
+            )
         self.server = ObserverServer(
             self.database_path,
             port=0,
@@ -143,12 +167,51 @@ class ObserverHttpTests(unittest.TestCase):
         snapshot = self._get_json("/api/snapshot")
         events = self._get_json("/api/events?after_sequence=1&limit=1")
 
-        self.assertEqual({"status": "ok", "last_sequence": 2}, health)
+        self.assertEqual(
+            {
+                "status": "ok",
+                "last_sequence": 2,
+                "last_chronicle_sequence": 1,
+            },
+            health,
+        )
         self.assertEqual("Elia", snapshot["world"]["agents"]["nwl-test"]["name"])
         self.assertEqual([2], [event["sequence"] for event in events["events"]])
         self.assertEqual(
             before, ObserverReadModelTests._stored_state(self.database_path)
         )
+
+    def test_chronicle_query_and_stream_are_derived_and_read_only(self) -> None:
+        with ChronicleStore(self.chronicle_path, read_only=True) as store:
+            before = [entry.to_dict() for entry in store.entries()]
+
+        response = self._get_json("/api/chronicle?after_sequence=0&limit=20")
+        self.assertEqual("Una soglia quieta", response["entries"][0]["title"])
+        self.assertEqual("test-double", response["entries"][0]["provider"])
+
+        connection = http.client.HTTPConnection(
+            self.server.address.host,
+            self.server.address.port,
+            timeout=2,
+        )
+        connection.request("GET", "/api/chronicle-stream?after_sequence=0")
+        stream = connection.getresponse()
+        block: dict[str, str] = {}
+        while True:
+            line = stream.fp.readline().decode("utf-8").strip()
+            if not line:
+                if block:
+                    break
+                continue
+            key, value = line.split(":", 1)
+            block[key] = value.strip()
+        connection.close()
+
+        self.assertEqual("1", block["id"])
+        self.assertEqual("chronicle-entry", block["event"])
+        self.assertEqual("Una soglia quieta", json.loads(block["data"])["title"])
+        with ChronicleStore(self.chronicle_path, read_only=True) as store:
+            self.assertEqual(before, [entry.to_dict() for entry in store.entries()])
 
     def test_sse_streams_ordered_canonical_events_without_writes(self) -> None:
         before = ObserverReadModelTests._stored_state(self.database_path)

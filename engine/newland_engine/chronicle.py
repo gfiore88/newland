@@ -14,7 +14,7 @@ from uuid import uuid4
 
 from .event_store import EventStore
 from .models import EventEnvelope
-from .observer import event_projection, world_projection
+from .projections import event_projection, world_projection
 from .world import replay
 
 

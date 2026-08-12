@@ -54,6 +54,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     serve_parser.add_argument("--host", default="127.0.0.1")
     serve_parser.add_argument("--port", type=int, default=8765)
+    serve_parser.add_argument(
+        "--chronicle-db",
+        type=Path,
+        help="derived chronicle database (default: next to the canonical database)",
+    )
     chronicle_parser = subparsers.add_parser(
         "chronicle", help="generate the non-interfering Silent Chronicler diary"
     )
@@ -99,7 +104,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "serve":
-        server = ObserverServer(args.db, host=args.host, port=args.port)
+        server = ObserverServer(
+            args.db,
+            chronicle_database_path=args.chronicle_db,
+            host=args.host,
+            port=args.port,
+        )
         address = server.address
         print(f"Newland Observer API: http://{address.host}:{address.port}")
         try:
