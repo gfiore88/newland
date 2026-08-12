@@ -30,4 +30,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Creata la sintesi fonte `src-brainstorming-03-memory-of-arrival.md`.
 - Compilata l'entità `ent-memoria-dell-arrivo.md`.
 - Compilato il concetto `cnc-mito-fondativo-newlander.md`.
+
+## [2026-08-12] ingest | Brainstorming 04 - L'Anamnesi e la Ricerca del Modo
+- Ingerita fonte grezza `docs/raw/raw-brainstorming-04-anamnesis-and-the-way-of-newland.md`.
+- Creata la sintesi fonte `src-brainstorming-04-anamnesis-and-the-way-of-newland.md`.
+- Compilata l'entità `ent-il-modo-di-newland.md`.
+- Compilato il concetto `cnc-ricerca-anamnesi.md`.
 - Aggiornato l'indice generale `docs/index.md`.

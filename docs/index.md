@@ -10,6 +10,7 @@
 - [src-brainstorming-01-closed-world-and-anti-consumerism.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-01-closed-world-and-anti-consumerism.md) - *Brainstorming 01: Topologia Circolare, Assenza di Moneta, Proprietà e Distrazioni Digitali.*
 - [src-brainstorming-02-primordial-amnesia-and-cognitive-forgetting.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-02-primordial-amnesia-and-cognitive-forgetting.md) - *Brainstorming 02: L'Amnesia Primordiale, il Grande Oblio e la Tabula Rasa Cognitiva.*
 - [src-brainstorming-03-memory-of-arrival.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-03-memory-of-arrival.md) - *Brainstorming 03: La Memoria dell'Arrivo e la Soglia di Transizione dei Primi Newlander.*
+- [src-brainstorming-04-anamnesis-and-the-way-of-newland.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-04-anamnesis-and-the-way-of-newland.md) - *Brainstorming 04: L'Anamnesi, la Ricerca del "Modo" e la Sintonizzazione della Coscienza.*
 
 ---
 
@@ -21,6 +22,7 @@
 - [ent-de-distrazione-cognitiva.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-de-distrazione-cognitiva.md) - *Assenza di cellulari, social network e rumore di fondo informativo.*
 - [ent-amnesia-primordiale.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-amnesia-primordiale.md) - *Il Grande Oblio: totale assenza di memoria e vocabolario dei costrutti del vecchio mondo.*
 - [ent-memoria-dell-arrivo.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-memoria-dell-arrivo.md) - *La Soglia della Transizione: l'unico ricordo salvato dal passato (l'esperienza dell'arrivo).*
+- [ent-il-modo-di-newland.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-il-modo-di-newland.md) - *"Il Modo": la via intrinseca definita da Newland per risvegliare il ricordo profondo.*
 
 ---
 
@@ -30,6 +32,7 @@
 - [cnc-assenza-moneta-proprieta.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-assenza-moneta-proprieta.md) - *Superamento del capitale, del consumismo e della proprietà privata.*
 - [cnc-tabula-rasa-cognitiva.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-tabula-rasa-cognitiva.md) - *Psicologia della purezza percettiva e della presenza reale.*
 - [cnc-mito-fondativo-newlander.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-mito-fondativo-newlander.md) - *La memoria collettiva della traversata ed il senso di rinascita.*
+- [cnc-ricerca-anamnesi.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-ricerca-anamnesi.md) - *L'Anamnesi e la ricerca interiore per interpretare ed allinearsi col Modo.*
 
 ---
 
