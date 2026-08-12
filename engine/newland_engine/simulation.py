@@ -29,48 +29,44 @@ from .physiology import PhysiologySystem
 from .scheduler import ActivationScheduler
 from .world import WorldAdjudicator, reduce_event, replay
 
-DEFAULT_AGENTS = (
-    AgentMind(
-        agent_id="nwl-001",
-        name="Elia Moretti",
-        values=["cura", "sincerità", "custodia"],
-        temperament=["meditativo", "pragmatico", "melanconico"],
-        goals=["comprendere la cittadina senza forzare risposte"],
+DEFAULT_AGENTS: tuple[AgentMind, ...] = ()
+INITIAL_AGENT_BODIES: dict[str, dict[str, Any]] = {}
+INITIAL_ARRIVAL_MEMORIES: dict[str, str] = {}
+
+DEFAULT_INITIAL_PROFILES = (
+    ArrivalProfile(
+        mind=AgentMind(
+            agent_id="nwl-001",
+            name="Elia Moretti",
+            values=["cura", "sincerità", "custodia"],
+            temperament=["meditativo", "pragmatico", "melanconico"],
+            goals=["comprendere la cittadina senza forzare risposte"],
+        ),
+        native_language="it",
+        arrival_memory=(
+            "Ricordo una strada secondaria diventata gradualmente silenziosa, "
+            "fino all'ingresso nella cittadina."
+        ),
+        language_proficiencies={"it": 1.0},
+        skills={"osservazione": 0.55, "cura_materiali": 0.45},
     ),
-    AgentMind(
-        agent_id="nwl-002",
-        name="Amina Haddad",
-        values=["dignità", "reciprocità", "prudenza"],
-        temperament=["osservatrice", "riservata", "tenace"],
-        goals=["trovare un ritmo sicuro nel nuovo luogo"],
+    ArrivalProfile(
+        mind=AgentMind(
+            agent_id="nwl-002",
+            name="Amina Haddad",
+            values=["dignità", "reciprocità", "prudenza"],
+            temperament=["osservatrice", "riservata", "tenace"],
+            goals=["trovare un ritmo sicuro nel nuovo luogo"],
+        ),
+        native_language="ar",
+        arrival_memory=(
+            "Ricordo una deviazione ordinaria, l'aria cambiata senza una soglia visibile "
+            "e l'impossibilità di ritrovare la strada percorsa."
+        ),
+        language_proficiencies={"ar": 1.0},
+        skills={"osservazione": 0.45, "orientamento": 0.6, "mediazione": 0.5},
     ),
 )
-
-INITIAL_AGENT_BODIES = {
-    "nwl-001": {
-        "native_language": "it",
-        "language_proficiencies": {"it": 1.0},
-        "skills": {"osservazione": 0.55, "cura_materiali": 0.45},
-        "family_group_id": None,
-    },
-    "nwl-002": {
-        "native_language": "ar",
-        "language_proficiencies": {"ar": 1.0},
-        "skills": {"osservazione": 0.45, "orientamento": 0.6, "mediazione": 0.5},
-        "family_group_id": None,
-    },
-}
-
-INITIAL_ARRIVAL_MEMORIES = {
-    "nwl-001": (
-        "Ricordo una strada secondaria diventata gradualmente silenziosa, "
-        "fino all'ingresso nella cittadina."
-    ),
-    "nwl-002": (
-        "Ricordo una deviazione ordinaria, l'aria cambiata senza una soglia visibile "
-        "e l'impossibilità di ritrovare la strada percorsa."
-    ),
-}
 
 INITIAL_TERRITORY = {
     "locations": {
@@ -177,9 +173,9 @@ class NewlandSimulation:
 
     def initialize(self) -> None:
         if self.store.event_count() > 0:
-            if not self.minds:
+            if self.state.agents and not self.minds:
                 raise RuntimeError(
-                    "event store contains a world but no persisted minds"
+                    "event store contains a world with agents but no persisted minds"
                 )
             self._ensure_territory()
             self._ensure_initial_capabilities()
@@ -342,10 +338,12 @@ class NewlandSimulation:
 
     def seed_initial_encounter(self) -> None:
         self.initialize()
+        if not self.minds:
+            self.admit_arrivals(DEFAULT_INITIAL_PROFILES)
         if self.scheduler:
             return
         self._rebuild_agenda()
-        if not self.scheduler:
+        if not self.scheduler and self.minds:
             first_agent = min(self.minds)
             self.scheduler.schedule(
                 first_agent,

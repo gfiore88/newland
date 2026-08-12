@@ -37,7 +37,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=UnavailableTestCognition()
             ) as simulation:
-                simulation.initialize()
+                simulation.seed_initial_encounter()
                 movement = simulation.adjudicator.adjudicate(
                     simulation.state,
                     "nwl-001",
@@ -71,7 +71,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=GeneratedAnamnesisTestCognition()
             ) as simulation:
-                simulation.initialize()
+                simulation.seed_initial_encounter()
                 movement = simulation.adjudicator.adjudicate(
                     simulation.state,
                     "nwl-001",
@@ -139,7 +139,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=GeneratedRoleInterpretationTestCognition()
             ) as simulation:
-                simulation.initialize()
+                simulation.seed_initial_encounter()
                 self.assertEqual({}, simulation.minds["nwl-001"].role_interpretations)
                 self.assertIn("mediazione", simulation.state.agents["nwl-002"].skills)
                 produced = simulation.run(max_activations=1)
@@ -239,6 +239,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=ScriptedTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=2)
                 speech = [
                     event for event in produced if event.event_type == "SpeechUttered"
@@ -331,6 +332,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=ScriptedTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 produced = simulation.run(max_activations=1)
 
             proposal = next(
@@ -395,6 +397,7 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=ScriptedTestCognition()
             ) as simulation:
+                simulation.seed_initial_encounter()
                 simulation.run(max_activations=1)
 
             with NewlandSimulation(
@@ -550,15 +553,10 @@ class SimulationTests(unittest.TestCase):
                 simulation.initialize()
                 self.assertIn("vena_sorgente", simulation.state.resources)
                 self.assertEqual(
-                    "it", simulation.state.agents["nwl-001"].native_language
+                    "und", simulation.state.agents["nwl-001"].native_language
                 )
                 self.assertEqual(
-                    [
-                        "TerritoryConfigured",
-                        "AgentCapabilitiesConfigured",
-                        "TransitionRemembered",
-                    ],
-                    [event.event_type for event in simulation.store.events()[-3:]],
+                    "TerritoryConfigured", simulation.store.events()[-1].event_type
                 )
 
             with EventStore(path) as store:

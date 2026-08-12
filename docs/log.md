@@ -35,6 +35,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Verificata una conversazione autonoma fra due Newlander sia offline sia con `qwen3:4b` locale.
 - Aggiunti test per persistenza, isolamento percettivo, anti-ricorsione della memoria, replay e rifiuto delle azioni impossibili.
 
+## [2026-08-12] architecture | Inizializzazione Mondo Vergine (0 Abitanti di Default)
+- Modificato il runtime di inizializzazione del mondo in `simulation.py` affinché ogni nuovo mondo nasca 100% vergine e privo di abitanti pre-popolati (`DEFAULT_AGENTS = ()`).
+- Gli abitanti entrano in Newland esclusivamente via `ArrivalService` (CLI `newland arrive` o comandi dell'Architetto) quando l'utente decide di introdurli.
+- Il metodo `seed_initial_encounter()` viene mantenuto esclusivamente come helper esplicito per le suite di test automatizzate che richiedono la coppia Elia e Amina.
+
 ## [2026-08-12] adr | Accettazione ADR-0008 - Zero Decisioni Statiche
 - Registrato e accettato ADR-0008 `docs/adr/adr-0008-zero-static-agent-decisions.md` su esplicita direttiva di Giovanni Fiore.
 - Rimosso il fallback decisionale deterministico dal runtime di produzione e dalla CLI.

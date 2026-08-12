@@ -10,6 +10,7 @@ from pathlib import Path
 from helpers import ScriptedTestCognition
 from newland_engine.chronicle import ChronicleContext, ChronicleEntry
 from newland_engine.live import LiveSupervisor
+from newland_engine.simulation import NewlandSimulation
 
 
 class GeneratedTestChronicler:
@@ -52,6 +53,10 @@ class LiveSupervisorTests(unittest.TestCase):
                 chronicler=GeneratedTestChronicler(),
                 emit=lambda events: activation.set(),
             )
+            with NewlandSimulation(
+                root / "newland.db", cognition=ScriptedTestCognition()
+            ) as sim:
+                sim.seed_initial_encounter()
             try:
                 supervisor.start()
                 self.assertTrue(activation.wait(timeout=2))

@@ -43,14 +43,21 @@ class ScriptedTestCognition:
                 motivation_summary="Verificare il ciclo di reazione.",
                 confidence=0.9,
             )
-        else:
+        elif context.nearby_agents:
             target_id = context.nearby_agents[0][0]
             intention = Intention(
                 action_type="speak",
                 target_id=target_id,
-                spoken_content=self._line(language, reply=False),
+                spoken_content="Saluto generato dal test double.",
                 language=language,
                 motivation_summary="Verificare l'inizio dell'interazione.",
+                confidence=0.9,
+            )
+        else:
+            intention = Intention(
+                action_type="rest",
+                duration_minutes=5,
+                motivation_summary="Verificare riposo in solitudine.",
                 confidence=0.9,
             )
         return CognitionResult(

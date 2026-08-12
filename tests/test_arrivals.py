@@ -66,7 +66,7 @@ class ArrivalTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=ScriptedTestCognition()
             ) as simulation:
-                simulation.admit_arrivals((self._family_profiles()[0],))
+                simulation.admit_arrivals(self._family_profiles())
                 produced = simulation.run(max_activations=1)
 
             speech = next(
