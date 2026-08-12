@@ -12,6 +12,7 @@
 - [src-brainstorming-03-memory-of-arrival.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-03-memory-of-arrival.md) - *Brainstorming 03: La Memoria dell'Arrivo e la Soglia di Transizione dei Primi Newlander.*
 - [src-brainstorming-04-anamnesis-and-the-way-of-newland.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-04-anamnesis-and-the-way-of-newland.md) - *Brainstorming 04: L'Anamnesi, la Ricerca del "Modo" e la Sintonizzazione della Coscienza.*
 - [src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md) - *Brainstorming 05: Singolarità del "Modo", Flashback, Nodi Geografici e la Scelta di Vivere Senza Capire.*
+- [src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md) - *Brainstorming 06: Transizione Invisibile Quotidiana, la Cittadina Iniziale ed l'Esplorazione Emergente.*
 
 ---
 
@@ -24,7 +25,9 @@
 - [ent-amnesia-primordiale.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-amnesia-primordiale.md) - *Il Grande Oblio: totale assenza di memoria e vocabolario dei costrutti del vecchio mondo.*
 - [ent-memoria-dell-arrivo.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-memoria-dell-arrivo.md) - *La Soglia della Transizione: l'unico ricordo salvato dal passato (l'esperienza dell'arrivo).*
 - [ent-il-modo-di-newland.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-il-modo-di-newland.md) - *"Il Modo": la via intrinseca definita da Newland per risvegliare il ricordo profondo.*
-- [ent-nodi-di-risonanza.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-nodi-di-risonanza.md) - *Luoghi geografici che emettono frequenze sottili e scatenano flashback percezioni insolite.*
+- [ent-nodi-di-risonanza.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-nodi-di-risonanza.md) - *Luoghi geografici che emettono frequenze sottili e scatenano flashback e percezioni insolite.*
+- [ent-la-cittadina-iniziale.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-la-cittadina-iniziale.md) - *Il micro-insediamento di partenza circondato dai punti d'accesso periferici.*
+- [ent-soglia-invisibile.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-soglia-invisibile.md) - *La transizione impercettibile dal mondo reale a Newland (es. deviazione stradale errata).*
 
 ---
 
@@ -36,6 +39,7 @@
 - [cnc-mito-fondativo-newlander.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-mito-fondativo-newlander.md) - *La memoria collettiva della traversata ed il senso di rinascita.*
 - [cnc-ricerca-anamnesi.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-ricerca-anamnesi.md) - *L'Anamnesi e la ricerca interiore per interpretare ed allinearsi col Modo.*
 - [cnc-scelta-del-presente.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-scelta-del-presente.md) - *La scelta legittima di "soffermarsi a vivere senza capire" vs la via disorientante della conoscenza.*
+- [cnc-esplorazione-emergente.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-esplorazione-emergente.md) - *Il meccanismo di svelamento progressivo dei territori esterni in risposta al desiderio del cuore dei Newlander.*
 
 ---
 

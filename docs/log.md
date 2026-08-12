@@ -42,4 +42,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Creata la sintesi fonte `src-brainstorming-05-subjective-ways-flashbacks-and-the-choice-to-just-live.md`.
 - Compilata l'entità `ent-nodi-di-risonanza.md`.
 - Compilato il concetto `cnc-scelta-del-presente.md`.
+
+## [2026-08-12] ingest | Brainstorming 06 - Transizione Invisibile, Cittadina Iniziale ed Esplorazione Emergente
+- Ingerita fonte grezza `docs/raw/raw-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md`.
+- Creata la sintesi fonte `src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md`.
+- Compilate le entità `ent-la-cittadina-iniziale.md` ed `ent-soglia-invisibile.md`.
+- Compilato il concetto `cnc-esplorazione-emergente.md`.
 - Aggiornato l'indice generale `docs/index.md`.
