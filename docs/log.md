@@ -12,3 +12,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Ingerito documento di dominio `docs/domain/newland-universe-spec.md`.
 - Compilate le pagine entità: `ent-codice-inviolabile.md` e `ent-matrice-fisica.md`.
 - Compilata la pagina concetto: `cnc-omeostasi-planetaria.md`.
+
+## [2026-08-12] ingest | Brainstorming 01 - Topologia Circolare e De-Distrazione
+- Ingerita fonte grezza `docs/raw/raw-brainstorming-01-closed-world-and-anti-consumerism.md`.
+- Creata la sintesi fonte `src-brainstorming-01-closed-world-and-anti-consumerism.md`.
+- Compilate le entità `ent-topologia-circolare.md` ed `ent-de-distrazione-cognitiva.md`.
+- Compilato il concetto `cnc-assenza-moneta-proprieta.md`.
+- Aggiornato l'indice generale `docs/index.md`.
