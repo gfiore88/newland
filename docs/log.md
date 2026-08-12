@@ -40,6 +40,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Gli abitanti entrano in Newland esclusivamente via `ArrivalService` (CLI `newland arrive` o comandi dell'Architetto) quando l'utente decide di introdurli.
 - Il metodo `seed_initial_encounter()` viene mantenuto esclusivamente come helper esplicito per le suite di test automatizzate che richiedono la coppia Elia e Amina.
 
+## [2026-08-12] tooling | Script Unificato e Pannello di Controllo Interactive (./newland.sh)
+- Creato lo script unico ed interattivo `./newland.sh` a menu ed opzioni rapide (1: Reset, 2: Start, 3: Arrive).
+- Supporta sia la selezione numerica sia l'esecuzione diretta di argomenti (`./newland.sh reset`, `./newland.sh start`, `./newland.sh arrive "Nome"`).
+
 ## [2026-08-12] adr | Accettazione ADR-0008 - Zero Decisioni Statiche
 - Registrato e accettato ADR-0008 `docs/adr/adr-0008-zero-static-agent-decisions.md` su esplicita direttiva di Giovanni Fiore.
 - Rimosso il fallback decisionale deterministico dal runtime di produzione e dalla CLI.
