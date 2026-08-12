@@ -11,14 +11,20 @@ from .models import AgentMind, EventEnvelope
 
 
 class EventStore:
-    def __init__(self, path: str | Path) -> None:
+    def __init__(self, path: str | Path, *, read_only: bool = False) -> None:
         self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.connection = sqlite3.connect(self.path)
+        self.read_only = read_only
+        if read_only:
+            database_uri = f"{self.path.resolve().as_uri()}?mode=ro"
+            self.connection = sqlite3.connect(database_uri, uri=True)
+        else:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.connection = sqlite3.connect(self.path)
         self.connection.row_factory = sqlite3.Row
         self.connection.execute("PRAGMA foreign_keys = ON")
-        self.connection.execute("PRAGMA journal_mode = WAL")
-        self._create_schema()
+        if not read_only:
+            self.connection.execute("PRAGMA journal_mode = WAL")
+            self._create_schema()
 
     def _create_schema(self) -> None:
         self.connection.executescript(
@@ -99,6 +105,14 @@ class EventStore:
             for row in rows
             if (data := json.loads(row["state"]))
         }
+
+    def read_snapshot(self) -> tuple[list[EventEnvelope], dict[str, AgentMind]]:
+        """Read the event log and minds from one consistent SQLite snapshot."""
+        self.connection.execute("BEGIN")
+        try:
+            return self.events(), self.load_minds()
+        finally:
+            self.connection.rollback()
 
     def close(self) -> None:
         self.connection.close()

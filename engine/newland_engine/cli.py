@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .cognition import GenerativeCognitionPool, OllamaCognition, RoutedCognition
 from .event_store import EventStore
+from .observer import ObserverServer
 from .simulation import NewlandSimulation
 from .world import replay
 
@@ -39,6 +40,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("events", help="print the canonical event log")
     subparsers.add_parser("state", help="print materialized world state")
+    serve_parser = subparsers.add_parser(
+        "serve", help="serve the local read-only Observer API"
+    )
+    serve_parser.add_argument("--host", default="127.0.0.1")
+    serve_parser.add_argument("--port", type=int, default=8765)
     return parser
 
 
@@ -60,6 +66,18 @@ def main(argv: list[str] | None = None) -> int:
         with NewlandSimulation(args.db, cognition=cognition) as simulation:
             events = simulation.run(max_activations=args.activations)
             _print_events(events)
+        return 0
+
+    if args.command == "serve":
+        server = ObserverServer(args.db, host=args.host, port=args.port)
+        address = server.address
+        print(f"Newland Observer API: http://{address.host}:{address.port}")
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            server.shutdown()
         return 0
 
     with EventStore(args.db) as store:
