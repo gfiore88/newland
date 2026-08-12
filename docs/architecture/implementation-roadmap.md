@@ -30,6 +30,13 @@
 - [M04-003] Diario del Cronista Silenzioso e Console dell'Architetto. **Implementato.**
 - [M04-004] Pausa visiva, scrub e replay senza fermare il motore. **Implementato.**
 
+## Milestone 5 — Operatività autonoma prolungata
+
+- [M05-001] Runtime continuo arrestabile in sicurezza. **Implementato.**
+- [M05-002] Supervisore locale unico per runtime, Cronista, API e UI.
+- [M05-003] Soak test prolungato con audit di memoria, replay, latenze e crescita del log.
+- [M05-004] Health operativo dei processi senza introdurre eventi o percezioni artificiali.
+
 ## Definition of Done globale
 
 Newland è funzionante quando il runtime può avanzare autonomamente per periodi prolungati, preservare menti distinte e vincoli fisici, riavviarsi senza perdita di identità, spiegare gli eventi tramite audit trail e alimentare la UI WebGL esclusivamente da stato canonico persistito.

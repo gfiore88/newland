@@ -141,3 +141,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Aggiunti pausa visiva, scrub, replay sequenziale e riallineamento al presente senza endpoint di comando e senza interferenza sulla simulazione.
 - Registro, mappa e Diario seguono il cursore osservato; il Cronista e i Newlander continuano a operare sul tempo corrente.
 - Milestone 4 completata funzionalmente con 80 test Python, 6 test frontend e build Vite di produzione; resta una QA visiva manuale quando sarà disponibile un browser collegato alla sessione.
+
+## [2026-08-12] implementation | Milestone 5 - Runtime continuo
+- Aggiunta la modalità `newland run --continuous`, che esegue indefinitamente le attivazioni scelte dallo scheduler e dalle agende generate dai Newlander.
+- Ogni iterazione completa deliberazione, arbitraggio e persistenza atomica prima di pubblicare gli eventi su standard output.
+- Ctrl-C arresta il processo senza creare eventi diegetici, modificare intenzioni o sostituire una deliberazione in corso.
+- Verificato il lifecycle con tre attivazioni complete simulate e una prova Ollama reale interrotta durante una deliberazione: exit code pulito e nessun output parziale.
+- In Ollama risultava caricato soltanto `qwen3:8b`, usato da Newland; nessun processo LLM estraneo era presente.
+- Suite complessiva aggiornata a 82 test Python; 6 test frontend e build Vite restano verdi.

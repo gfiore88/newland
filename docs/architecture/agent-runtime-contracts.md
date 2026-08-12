@@ -159,6 +159,9 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [SCH-009] Cognizione ordinaria usa il pool rapido; un segnale di risonanza percepito o un conflitto attivo usa il pool riflessivo configurato.
 - [SCH-010] Entrambi i pool ricevono lo stesso `CognitionContext` isolato dell'agente e possono contenere più modelli per failover esclusivamente generativo.
 - [SCH-011] Se non viene configurato un pool riflessivo distinto, la route resta auditabile ma usa lo stesso pool ordinario; il router non sintetizza mai un risultato.
+- [SCH-012] In modalità `--continuous` il processo esegue una sola attivazione completa per iterazione e prosegue finché riceve un arresto esterno.
+- [SCH-013] Ctrl-C chiude il processo tra transazioni; non genera azioni, pensieri o eventi canonici di arresto attribuiti ai Newlander.
+- [SCH-014] Gli eventi di ogni attivazione vengono emessi su standard output soltanto dopo il commit atomico di evento e snapshot mentale.
 
 ### Bisogni corporei
 
@@ -177,3 +180,4 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [TST-006] Una competenza materiale, inclusa `mediazione`, non crea alcun ruolo: serve un'esplicita interpretazione generata dalla mente.
 - [TST-007] Replay e migrazione ricostruiscono i nodi di risonanza senza rigenerare esperienze interiori.
 - [TST-008] Un test di indisponibilità LLM deve provare che il segnale fisico non produce frammenti o orientamenti statici.
+- [TST-009] Il runner continuo deve essere arrestabile soltanto fra attivazioni complete e non deve imporre un limite implicito al numero di cicli.
