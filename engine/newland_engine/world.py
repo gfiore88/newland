@@ -9,6 +9,7 @@ from .models import (
     EventEnvelope,
     Intention,
     MaterialAgentState,
+    ResonanceNode,
     ResourceNode,
     WorldState,
     world_time_for_tick,
@@ -27,6 +28,7 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         "WorldInitialized",
         "TerritoryConfigured",
         "TerritoryActivitiesConfigured",
+        "ResonanceNodesConfigured",
     }:
         _configure_territory(state, event.payload)
     elif event.event_type == "AgentRegistered":
@@ -192,6 +194,11 @@ def _configure_territory(state: WorldState, payload: dict[str, Any]) -> None:
             activity_id: ActivityDefinition(activity_id=activity_id, **definition)
             for activity_id, definition in payload.get("activities", {}).items()
         }
+    if "resonance_nodes" in payload:
+        state.resonance_nodes = {
+            node_id: ResonanceNode(node_id=node_id, **definition)
+            for node_id, definition in payload.get("resonance_nodes", {}).items()
+        }
 
 
 def replay(events: list[EventEnvelope]) -> WorldState:
@@ -335,6 +342,12 @@ class WorldAdjudicator:
                 proficiency = actor.skills.get(activity.practiced_skill, 0.0)
                 if proficiency < activity.minimum_proficiency:
                     return "actor lacks the required skill proficiency"
+        if intention.action_type == "attune_resonance":
+            node = state.resonance_nodes.get(intention.node_id or "")
+            if node is None:
+                return "resonance node does not exist"
+            if node.location != actor.location:
+                return "resonance node is not present at actor location"
         if intention.action_type == "propose_cooperation":
             activity = state.activities.get(intention.activity_id or "")
             if activity is None:
@@ -474,7 +487,7 @@ class WorldAdjudicator:
             destination_recipients = tuple(
                 sorted(set(recipients) | set(state.agents_at(destination or "")))
             )
-            return [
+            events = [
                 EventEnvelope(
                     event_type="AgentMoved",
                     world_tick=tick,
@@ -487,6 +500,25 @@ class WorldAdjudicator:
                     causation_id=causation_id,
                 )
             ]
+            events.extend(
+                EventEnvelope(
+                    event_type="ResonanceSignalReceived",
+                    world_tick=tick,
+                    world_time=world_time,
+                    actor_ids=(actor_id,),
+                    location=destination,
+                    payload={
+                        "node_id": node.node_id,
+                        "intensity": node.intensity,
+                        "exposure_mode": "arrival",
+                    },
+                    visibility="private",
+                    recipient_ids=(actor_id,),
+                    causation_id=events[0].event_id,
+                )
+                for node in state.resonance_nodes_at(destination or "")
+            )
+            return events
         if intention.action_type == "gather":
             resource = state.resources[intention.resource_id or ""]
             return [
@@ -538,6 +570,32 @@ class WorldAdjudicator:
                     **common,
                 )
             ]
+        if intention.action_type == "attune_resonance":
+            node = state.resonance_nodes[intention.node_id or ""]
+            performed = EventEnvelope(
+                event_type="ResonanceAttunementPerformed",
+                payload={
+                    "node_id": node.node_id,
+                    "duration_minutes": intention.duration_minutes,
+                },
+                **common,
+            )
+            signal = EventEnvelope(
+                event_type="ResonanceSignalReceived",
+                world_tick=tick,
+                world_time=world_time,
+                actor_ids=(actor_id,),
+                location=actor.location,
+                payload={
+                    "node_id": node.node_id,
+                    "intensity": node.intensity,
+                    "exposure_mode": "attunement",
+                },
+                visibility="private",
+                recipient_ids=(actor_id,),
+                causation_id=performed.event_id,
+            )
+            return [performed, signal]
         if intention.action_type == "propose_cooperation":
             return [
                 EventEnvelope(

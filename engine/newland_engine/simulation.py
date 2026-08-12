@@ -12,6 +12,7 @@ from .cognition import (
     CooperationAffordance,
     DisputeAffordance,
     MemoryAppraisal,
+    ResonanceNodeAffordance,
     ResourceAffordance,
     validate_cognition_result,
 )
@@ -142,6 +143,18 @@ INITIAL_TERRITORY = {
             "skill_gain": 0.005,
         },
     },
+    "resonance_nodes": {
+        "eco_della_sorgente": {
+            "label": "eco sottile della sorgente",
+            "location": "sorgente_chiara",
+            "intensity": 0.72,
+        },
+        "quiete_del_bosco": {
+            "label": "quiete profonda del sottobosco",
+            "location": "bosco_est",
+            "intensity": 0.48,
+        },
+    },
 }
 
 
@@ -241,26 +254,44 @@ class NewlandSimulation:
 
     def _ensure_territory(self) -> None:
         if not self.state.resources or not self.state.activities:
-            event = EventEnvelope(
-                event_type="TerritoryConfigured",
-                world_tick=self.state.tick,
-                world_time=world_time_for_tick(self.state.tick),
-                payload=INITIAL_TERRITORY,
-            )
-        elif all(
-            activity.practiced_skill is not None
-            for activity in self.state.activities.values()
-        ):
-            return
+            events = [
+                EventEnvelope(
+                    event_type="TerritoryConfigured",
+                    world_tick=self.state.tick,
+                    world_time=world_time_for_tick(self.state.tick),
+                    payload=INITIAL_TERRITORY,
+                )
+            ]
         else:
-            event = EventEnvelope(
-                event_type="TerritoryActivitiesConfigured",
-                world_tick=self.state.tick,
-                world_time=world_time_for_tick(self.state.tick),
-                payload={"activities": INITIAL_TERRITORY["activities"]},
-            )
-        persisted = self.store.append(event)
-        reduce_event(self.state, persisted)
+            events = []
+            if not all(
+                activity.practiced_skill is not None
+                for activity in self.state.activities.values()
+            ):
+                events.append(
+                    EventEnvelope(
+                        event_type="TerritoryActivitiesConfigured",
+                        world_tick=self.state.tick,
+                        world_time=world_time_for_tick(self.state.tick),
+                        payload={"activities": INITIAL_TERRITORY["activities"]},
+                    )
+                )
+            if not self.state.resonance_nodes:
+                events.append(
+                    EventEnvelope(
+                        event_type="ResonanceNodesConfigured",
+                        world_tick=self.state.tick,
+                        world_time=world_time_for_tick(self.state.tick),
+                        payload={
+                            "resonance_nodes": INITIAL_TERRITORY["resonance_nodes"]
+                        },
+                    )
+                )
+        if not events:
+            return
+        persisted = self.store.append_many(events)
+        for event in persisted:
+            reduce_event(self.state, event)
 
     def _ensure_initial_capabilities(self) -> None:
         events: list[EventEnvelope] = []
@@ -461,6 +492,14 @@ class NewlandSimulation:
                     minimum_proficiency=activity.minimum_proficiency,
                 )
                 for activity in self.state.activities_at(material.location)
+            ),
+            local_resonance_nodes=tuple(
+                ResonanceNodeAffordance(
+                    node_id=node.node_id,
+                    label=node.label,
+                    intensity=node.intensity,
+                )
+                for node in self.state.resonance_nodes_at(material.location)
             ),
             social_proposals=tuple(
                 CooperationAffordance(
@@ -713,6 +752,14 @@ class NewlandSimulation:
         self, actor_id: str, tick: int, events: list[EventEnvelope]
     ) -> None:
         for event in events:
+            if event.event_type == "ResonanceSignalReceived":
+                self.scheduler.schedule(
+                    actor_id,
+                    tick=tick + 1,
+                    reason="segnale corporeo di risonanza percepito",
+                    priority=5,
+                )
+                continue
             if event.event_type in {"SpeechUttered", "HelpOffered"}:
                 target_id = event.payload.get("target_id")
                 if target_id and target_id != actor_id:
@@ -760,6 +807,7 @@ class NewlandSimulation:
                 "ResourceConsumed",
                 "ActivityPerformed",
                 "CooperationPerformed",
+                "ResonanceAttunementPerformed",
             }:
                 continue
             for observer_id in event.recipient_ids:

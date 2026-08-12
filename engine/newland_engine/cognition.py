@@ -29,6 +29,13 @@ class ActivityAffordance:
 
 
 @dataclass(frozen=True, slots=True)
+class ResonanceNodeAffordance:
+    node_id: str
+    label: str
+    intensity: float
+
+
+@dataclass(frozen=True, slots=True)
 class CooperationAffordance:
     proposal_id: str
     proposer_id: str
@@ -58,6 +65,7 @@ class CognitionContext:
     adjacent_locations: tuple[str, ...] = ()
     local_resources: tuple[ResourceAffordance, ...] = ()
     available_activities: tuple[ActivityAffordance, ...] = ()
+    local_resonance_nodes: tuple[ResonanceNodeAffordance, ...] = ()
     social_proposals: tuple[CooperationAffordance, ...] = ()
     active_disputes: tuple[DisputeAffordance, ...] = ()
 
@@ -372,6 +380,8 @@ class OllamaCognition:
             "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
             "Puoi usare soltanto destination, resource_id e activity_id elencati nelle affordance locali; "
             "la loro presenza non ti obbliga a usarli. "
+            "Puoi usare attune_resonance soltanto con un node_id locale; il nodo è uno stimolo fisico, "
+            "non implica automaticamente un flashback o un significato. "
             "Usa proposal_id e dispute_id soltanto dalle affordance sociali fornite. "
             "Nei campi intention non pertinenti all'action_type scelto restituisci null. "
             "Se parli, scegli una lingua che conosci e scrivi spoken_content in quella lingua; "
@@ -592,6 +602,12 @@ class OllamaCognition:
             } | {memory.source_event_id for memory in context.mind.memories}
             if intention.subject_event_id not in known_event_ids:
                 raise ValueError("dispute references an event unknown to the agent")
+        node_ids = {node.node_id for node in context.local_resonance_nodes}
+        if (
+            intention.action_type == "attune_resonance"
+            and intention.node_id not in node_ids
+        ):
+            raise ValueError("resonance intention references a non-local node")
 
     @staticmethod
     def _private_context(context: CognitionContext) -> dict[str, Any]:
@@ -655,6 +671,14 @@ class OllamaCognition:
                         "minimum_proficiency": activity.minimum_proficiency,
                     }
                     for activity in context.available_activities
+                ],
+                "resonance_nodes": [
+                    {
+                        "node_id": node.node_id,
+                        "label": node.label,
+                        "intensity": node.intensity,
+                    }
+                    for node in context.local_resonance_nodes
                 ],
             },
             "social_affordances": {
@@ -766,6 +790,7 @@ class OllamaCognition:
                                 "perform_cooperation",
                                 "open_dispute",
                                 "respond_dispute",
+                                "attune_resonance",
                             ],
                         },
                         "target_id": {"type": ["string", "null"]},
@@ -797,6 +822,7 @@ class OllamaCognition:
                                 None,
                             ],
                         },
+                        "node_id": {"type": ["string", "null"]},
                         "motivation_summary": {"type": "string", "maxLength": 300},
                         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
                     },
@@ -814,6 +840,7 @@ class OllamaCognition:
                         "dispute_id",
                         "subject_event_id",
                         "response",
+                        "node_id",
                         "motivation_summary",
                         "confidence",
                     ],

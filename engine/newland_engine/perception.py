@@ -22,6 +22,8 @@ PERCEPTIBLE_EVENT_TYPES = {
     "CooperationPerformed",
     "DisputeOpened",
     "DisputeResponded",
+    "ResonanceAttunementPerformed",
+    "ResonanceSignalReceived",
 }
 
 

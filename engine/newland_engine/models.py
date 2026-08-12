@@ -19,6 +19,7 @@ ActionType = Literal[
     "perform_cooperation",
     "open_dispute",
     "respond_dispute",
+    "attune_resonance",
 ]
 ACTION_ARGUMENTS: dict[str, frozenset[str]] = {
     "speak": frozenset({"target_id", "spoken_content", "language"}),
@@ -41,6 +42,7 @@ ACTION_ARGUMENTS: dict[str, frozenset[str]] = {
     "respond_dispute": frozenset(
         {"spoken_content", "language", "dispute_id", "response"}
     ),
+    "attune_resonance": frozenset({"node_id"}),
 }
 
 
@@ -281,6 +283,7 @@ class Intention:
     dispute_id: str | None = None
     subject_event_id: str | None = None
     response: str | None = None
+    node_id: str | None = None
     motivation_summary: str = ""
     confidence: float = 0.5
 
@@ -337,6 +340,8 @@ class Intention:
             raise ValueError(
                 "respond_dispute requires dispute_id and a supported response"
             )
+        if self.action_type == "attune_resonance" and not self.node_id:
+            raise ValueError("attune_resonance requires node_id")
         allowed_fields = ACTION_ARGUMENTS[self.action_type]
         optional_values = {
             "target_id": self.target_id,
@@ -350,6 +355,7 @@ class Intention:
             "dispute_id": self.dispute_id,
             "subject_event_id": self.subject_event_id,
             "response": self.response,
+            "node_id": self.node_id,
         }
         extraneous = sorted(
             field_name
@@ -405,6 +411,18 @@ class ActivityDefinition:
 
 
 @dataclass(slots=True)
+class ResonanceNode:
+    node_id: str
+    label: str
+    location: str
+    intensity: float
+
+    def __post_init__(self) -> None:
+        if not 0.0 <= self.intensity <= 1.0:
+            raise ValueError("resonance intensity must be between 0 and 1")
+
+
+@dataclass(slots=True)
 class CooperationState:
     proposal_id: str
     proposer_id: str
@@ -435,6 +453,7 @@ class WorldState:
     resources: dict[str, ResourceNode] = field(default_factory=dict)
     resource_effects: dict[str, dict[str, float]] = field(default_factory=dict)
     activities: dict[str, ActivityDefinition] = field(default_factory=dict)
+    resonance_nodes: dict[str, ResonanceNode] = field(default_factory=dict)
     family_groups: dict[str, set[str]] = field(default_factory=dict)
     cooperations: dict[str, CooperationState] = field(default_factory=dict)
     disputes: dict[str, DisputeState] = field(default_factory=dict)
@@ -471,5 +490,17 @@ class WorldState:
                     if activity.location == location
                 ),
                 key=lambda activity: activity.activity_id,
+            )
+        )
+
+    def resonance_nodes_at(self, location: str) -> tuple[ResonanceNode, ...]:
+        return tuple(
+            sorted(
+                (
+                    node
+                    for node in self.resonance_nodes.values()
+                    if node.location == location
+                ),
+                key=lambda node: node.node_id,
             )
         )

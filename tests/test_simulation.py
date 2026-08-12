@@ -518,9 +518,13 @@ class SimulationTests(unittest.TestCase):
                     7.0, simulation.state.resources["risorsa_esistente"].quantity
                 )
                 self.assertEqual(
-                    "TerritoryActivitiesConfigured",
-                    simulation.store.events()[-1].event_type,
+                    [
+                        "TerritoryActivitiesConfigured",
+                        "ResonanceNodesConfigured",
+                    ],
+                    [event.event_type for event in simulation.store.events()[-2:]],
                 )
+                self.assertIn("eco_della_sorgente", simulation.state.resonance_nodes)
                 self.assertEqual(
                     "osservazione",
                     simulation.state.activities["esaminare_edifici"].practiced_skill,

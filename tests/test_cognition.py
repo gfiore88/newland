@@ -10,6 +10,7 @@ from newland_engine.cognition import (
     GenerativeCognitionPool,
     MentalUpdates,
     OllamaCognition,
+    ResonanceNodeAffordance,
     RoleInterpretationRevision,
     validate_cognition_result,
 )
@@ -47,6 +48,34 @@ def context() -> CognitionContext:
 
 
 class GenerativeCognitionPoolTests(unittest.TestCase):
+    def test_resonance_action_must_reference_a_local_node(self) -> None:
+        cognition_context = context()
+        result = CognitionResult(
+            intention=Intention(action_type="attune_resonance", node_id="remote_node"),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(4, "Riesaminare il segnale."),
+            provider="test-double",
+            model="invalid-resonance-reference-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        with self.assertRaisesRegex(ValueError, "non-local node"):
+            validate_cognition_result(result, cognition_context)
+
+        valid_context = CognitionContext(
+            mind=cognition_context.mind,
+            material_state=cognition_context.material_state,
+            observations=(),
+            nearby_agents=cognition_context.nearby_agents,
+            activation_reason=cognition_context.activation_reason,
+            local_resonance_nodes=(
+                ResonanceNodeAffordance("remote_node", "eco locale", 0.4),
+            ),
+        )
+        validate_cognition_result(result, valid_context)
+
     def test_intention_rejects_invented_parameters_from_other_actions(self) -> None:
         with self.assertRaisesRegex(ValueError, "fields for another action"):
             Intention(

@@ -81,6 +81,14 @@ def main(argv: list[str] | None = None) -> int:
                             }
                             for key, value in state.activities.items()
                         },
+                        "resonance_nodes": {
+                            key: {
+                                "label": value.label,
+                                "location": value.location,
+                                "intensity": value.intensity,
+                            }
+                            for key, value in state.resonance_nodes.items()
+                        },
                         "agents": {
                             key: {
                                 "name": value.name,
