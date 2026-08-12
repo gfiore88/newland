@@ -10,6 +10,8 @@ tmp/
 
 # Node & Python artifacts if any
 node_modules/
+dist/
+*.tsbuildinfo
 __pycache__/
 *.pyc
 .venv/
