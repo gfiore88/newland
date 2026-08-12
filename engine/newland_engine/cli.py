@@ -8,6 +8,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Protocol
 
+from .arrivals import ArrivalProfile
 from .chronicle import (
     ChronicleUnavailable,
     ChronicleWorker,
@@ -18,6 +19,7 @@ from .chronicle import (
 from .cognition import GenerativeCognitionPool, OllamaCognition, RoutedCognition
 from .event_store import EventStore
 from .live import LiveSupervisor
+from .models import AgentMind
 from .observer import ObserverServer
 from .simulation import NewlandSimulation
 from .world import replay
@@ -111,6 +113,45 @@ def build_parser() -> argparse.ArgumentParser:
     live_parser.add_argument("--agent-weight", type=int, default=8)
     live_parser.add_argument("--batch-size", type=int, default=20)
     live_parser.add_argument("--poll-interval", type=float, default=2.0)
+
+    arrive_parser = subparsers.add_parser(
+        "arrive", help="admit a new inhabitant into Newland"
+    )
+    arrive_parser.add_argument(
+        "--name", required=True, help="full name of the inhabitant"
+    )
+    arrive_parser.add_argument(
+        "--location", default="cittadina_iniziale", help="location of arrival"
+    )
+    arrive_parser.add_argument(
+        "--language", default="it", help="native language of the inhabitant"
+    )
+    arrive_parser.add_argument(
+        "--values",
+        nargs="*",
+        default=["cura", "sincerità", "custodia"],
+        help="core values",
+    )
+    arrive_parser.add_argument(
+        "--temperament",
+        nargs="*",
+        default=["meditativo", "pragmatico", "melanconico"],
+        help="temperament traits",
+    )
+    arrive_parser.add_argument(
+        "--goals",
+        nargs="*",
+        default=["comprendere il nuovo luogo senza forzare risposte"],
+        help="initial goals",
+    )
+    arrive_parser.add_argument(
+        "--memory",
+        default=(
+            "Ricordo una strada secondaria diventata gradualmente silenziosa, "
+            "fino all'ingresso nella cittadina."
+        ),
+        help="arrival memory",
+    )
     return parser
 
 
@@ -214,9 +255,28 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Newland live: http://{address[0]}:{address[1]}")
             supervisor.wait()
         except KeyboardInterrupt:
-            pass
-        finally:
             supervisor.shutdown()
+        return 0
+
+    if args.command == "arrive":
+        agent_id = f"nwl-{int(time.time() * 1000) % 1000000:06d}"
+        mind = AgentMind(
+            agent_id=agent_id,
+            name=args.name,
+            values=list(args.values),
+            temperament=list(args.temperament),
+            goals=list(args.goals),
+        )
+        profile = ArrivalProfile(
+            mind=mind,
+            native_language=args.language,
+            arrival_memory=args.memory,
+            language_proficiencies={args.language: 1.0},
+            location=args.location,
+        )
+        with NewlandSimulation(args.db, cognition=OllamaCognition("qwen3:8b")) as simulation:
+            simulation.admit_arrivals((profile,))
+        print(f"✨ {args.name} è entrato a Newland ({args.location}) con id {mind.agent_id}!")
         return 0
 
     with EventStore(args.db) as store:
