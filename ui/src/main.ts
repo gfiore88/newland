@@ -81,22 +81,6 @@ let selection: Selection | null = null;
 let lastRenderedSequence = -1;
 let mapScene: NewlandMapScene | null = null;
 
-try {
-  mapScene = await NewlandMapScene.create(stage, (nextSelection) => {
-    selection = nextSelection;
-    const snapshot = store.state.viewSnapshot;
-    if (snapshot) {
-      renderInspector(snapshot, selection);
-      renderInhabitants(snapshot, selection);
-    }
-  });
-} catch (error) {
-  const message = error instanceof Error ? error.message : String(error);
-  const mapError = requiredElement<HTMLDivElement>("#map-error");
-  mapError.hidden = false;
-  mapError.textContent = `WebGL non disponibile: ${message}`;
-}
-
 store.subscribe(() => {
   renderConnection();
   const snapshot = store.state.viewSnapshot;
@@ -150,6 +134,51 @@ window.addEventListener("beforeunload", () => {
 });
 
 void store.start();
+void initializeMap();
+
+async function initializeMap(): Promise<void> {
+  const mapError = requiredElement<HTMLDivElement>("#map-error");
+  const slowInitialization = setTimeout(() => {
+    mapError.hidden = false;
+    mapError.textContent =
+      "WebGL non risponde ancora. I dati dell'Observer restano disponibili.";
+  }, 5_000);
+  try {
+    const scene = await NewlandMapScene.create(stage, (nextSelection) => {
+      selection = nextSelection;
+      const snapshot = store.state.viewSnapshot;
+      if (snapshot) {
+        renderInspector(snapshot, selection);
+        renderInhabitants(snapshot, selection);
+      }
+    });
+    mapScene = scene;
+    clearTimeout(slowInitialization);
+    mapError.hidden = true;
+    const canvas = stage.querySelector<HTMLCanvasElement>("canvas");
+    canvas?.addEventListener("webglcontextlost", (event) => {
+      event.preventDefault();
+      mapError.hidden = false;
+      mapError.textContent =
+        "Contesto WebGL perso. Firefox sta tentando di ripristinarlo.";
+    });
+    canvas?.addEventListener("webglcontextrestored", () => {
+      mapError.hidden = true;
+      const snapshot = store.state.viewSnapshot;
+      if (snapshot) scene.render(snapshot.world);
+    });
+    const snapshot = store.state.viewSnapshot;
+    if (snapshot) {
+      scene.render(snapshot.world);
+      lastRenderedSequence = snapshot.last_sequence;
+    }
+  } catch (error) {
+    clearTimeout(slowInitialization);
+    const message = error instanceof Error ? error.message : String(error);
+    mapError.hidden = false;
+    mapError.textContent = `WebGL non disponibile: ${message}`;
+  }
+}
 
 function renderConnection(): void {
   const indicator = requiredElement<HTMLDivElement>("#connection");
