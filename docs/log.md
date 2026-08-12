@@ -163,3 +163,9 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - La capacità effettiva sarà derivata da una policy fisica versionata; l'LLM continuerà a decidere ogni tentativo e ogni reazione, senza poter riscrivere i limiti materiali.
 - La migrazione di Elia e Amina non inventerà dati mancanti e richiederà profili corporei espliciti prima dell'implementazione completa.
 - Implementazione sospesa in attesa dell'approvazione esplicita di Giovanni Fiore, come richiesto dalla governance ADR.
+
+## [2026-08-12] adr | Approvazione ADR-0009 - Supervisore e priorità inferenza
+- Giovanni Fiore ha approvato esplicitamente ADR-0009.
+- Lo stato di `docs/adr/adr-0009-supervised-runtime-and-inference-priority.md` è passato da `Proposed` ad `Accepted`.
+- È autorizzata l'implementazione incrementale del supervisore locale, dell'ammissione inferenza agent-first e della telemetria operativa non diegetica.
+- ADR-0010 resta separatamente in stato `Proposed` e non autorizza ancora modifiche al modello corporeo.

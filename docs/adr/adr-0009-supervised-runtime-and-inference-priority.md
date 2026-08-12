@@ -1,7 +1,7 @@
 ---
 id: adr-0009
 title: "Supervised Runtime and Agent-First Inference Priority"
-status: "Proposed"
+status: "Accepted"
 date: "2026-08-12"
 authors: ["Agent AI", "Giovanni Fiore"]
 tags: ["runtime", "supervision", "ollama", "inference", "priority", "observer"]
@@ -89,4 +89,4 @@ Chosen Option: **Alternative 3 (Single Local Supervisor with Weighted Agent-Firs
 
 - [CMP-001] **Related Decisions**: ADR-0003, ADR-0005, ADR-0006, ADR-0007, and ADR-0008.
 - [CMP-002] **Implementation Contracts After Approval**: We will add supervisor and inference-admission contracts, deterministic lifecycle tests, then a bounded real Ollama soak test.
-- [CMP-003] **Approval Required**: This ADR is proposed and must be explicitly approved by Giovanni Fiore before implementation begins.
+- [CMP-003] **Approval**: Giovanni Fiore accepted this decision on 2026-08-12 and authorized implementation.
