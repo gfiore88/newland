@@ -65,4 +65,5 @@
 ## ⚙️ Specifiche Implementative (`docs/architecture/`)
 
 - [Agent Runtime Contracts](file:///Users/giovannifiore/Desktop/newland/docs/architecture/agent-runtime-contracts.md) - *Envelope eventi, confini della mente, percezione, intenzioni, arbitraggio, scheduling e invarianti di replay.*
+- [Observer API Contract](file:///Users/giovannifiore/Desktop/newland/docs/architecture/observer-api-contract.md) - *Read model privilegiato, snapshot HTTP e stream SSE locali senza interferenza sulla simulazione.*
 - [Implementation Roadmap](file:///Users/giovannifiore/Desktop/newland/docs/architecture/implementation-roadmap.md) - *Milestone dal primo vertical slice al territorio sociale e all'observer WebGL.*

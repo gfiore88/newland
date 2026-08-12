@@ -28,6 +28,7 @@ docs/
 │       └── character-template.agent.md
 ├── architecture/                            <-- Contratti eseguibili e roadmap
 │   ├── agent-runtime-contracts.md            <-- Eventi, mente, percezione, azioni e scheduler
+│   ├── observer-api-contract.md               <-- Snapshot HTTP, SSE e confine read-only
 │   └── implementation-roadmap.md             <-- Milestone engine, società e UI WebGL
 ├── domain/                                  <-- Documenti di Dominio Grezzi / Capitolato
 │   └── newland-universe-spec.md             <-- Specifica Primordiale Universo Parallelo
@@ -50,6 +51,7 @@ docs/
 | **Governance ADR-0007** | [adr-0007-autonomous-agent-mind-and-world-runtime.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0007-autonomous-agent-mind-and-world-runtime.md) | ADR Nygard: Cognizione Agenti (`AgentMind`), Event-Driven Architecture, SQLite Adjudicator. |
 | **Governance ADR-0008** | [adr-0008-zero-static-agent-decisions.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0008-zero-static-agent-decisions.md) | ADR Nygard: nessuna decisione statica o fallback comportamentale; retry/failover generativo o differimento cognitivo. |
 | **Contratti Runtime** | [agent-runtime-contracts.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/agent-runtime-contracts.md) | Contratti implementativi per eventi canonici, `AgentMind`, percezione, intenzioni, arbitraggio, scheduling e replay. |
+| **Contratto Observer** | [observer-api-contract.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/observer-api-contract.md) | Read model privilegiato, snapshot HTTP, stream SSE, sicurezza locale e non-interferenza. |
 | **Roadmap Engine** | [implementation-roadmap.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/implementation-roadmap.md) | Milestone dal vertical slice agentico alla UI WebGL obbligatoria. |
 | **Template Personaggi** | [character-template.agent.md](file:///Users/giovannifiore/Desktop/newland/docs/agents/templates/character-template.agent.md) | Template di base per la scheda agentica (.agent.md) di ogni Newlander. |
 | **Skill Auto-Annealing** | [character-auto-annealing/SKILL.md](file:///Users/giovannifiore/Desktop/newland/skills/character-auto-annealing/SKILL.md) | Skill Addy Osmani per l'evoluzione ed auto-commit dei personaggi. |

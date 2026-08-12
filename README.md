@@ -23,6 +23,11 @@ uv run newland --db data/newland.db run \
 uv run newland --db data/newland.db events
 uv run newland --db data/newland.db state
 
+# API locale read-only per l'Observer WebGL
+uv run newland --db data/newland.db serve
+# http://127.0.0.1:8765/api/snapshot
+# http://127.0.0.1:8765/api/stream
+
 # Test degli invarianti
 uv run python -m unittest discover -s tests -v
 ```
@@ -73,4 +78,5 @@ newland/
 - 📄 **[ADR-0001: Governance Agentica & Workflow ADR](docs/adr/adr-0001-agentic-governance-and-adr-workflow.md)**
 - 📄 **[Specifica Universo Parallelo Newland](docs/domain/newland-universe-spec.md)**
 - 📄 **[Contratti del Runtime Agentico](docs/architecture/agent-runtime-contracts.md)**
+- 📄 **[Contratto HTTP/SSE dell'Observer](docs/architecture/observer-api-contract.md)**
 - 📄 **[Roadmap Implementativa](docs/architecture/implementation-roadmap.md)**

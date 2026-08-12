@@ -109,3 +109,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Il router non seleziona, corregge o sostituisce azioni e mutazioni mentali: inoltra integralmente il `CognitionResult` del modello e aggiunge soltanto la route alla provenienza.
 - La CLI accetta pool ripetibili `--model` e `--reflective-model`; senza configurazione riflessiva distinta riusa il pool ordinario senza caricare un altro modello.
 - Verificati routing, identità del contesto privato e provenienza con 64 test automatici.
+
+## [2026-08-12] implementation | Milestone 4 - Observer API read-only
+- Implementato il read model privilegiato dell'Observer con snapshot coerente di mondo e menti, ricostruito dal log canonico e dagli snapshot cognitivi persistiti.
+- Aggiunti endpoint HTTP per health, snapshot e paginazione incrementale degli eventi, più stream SSE ordinato e riprendibile tramite `Last-Event-ID`.
+- SQLite viene aperto in modalità realmente read-only; richieste e stream non producono eventi e non alterano le menti.
+- Limitato CORS alle sole origini loopback per impedire a pagine esterne di leggere lo stato privato della Console dell'Architetto.
+- Aggiunto il comando `newland serve`, bindato per default a `127.0.0.1:8765`.
+- Verificati replay, riservatezza locale, ripresa SSE e non-interferenza con 70 test automatici.
