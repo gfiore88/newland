@@ -169,6 +169,61 @@ button {
   pointer-events: none;
 }
 
+.time-controls {
+  position: absolute;
+  right: 1.4rem;
+  bottom: 1.15rem;
+  display: grid;
+  grid-template-columns: auto auto minmax(9rem, 18vw) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgb(16 22 18 / 78%);
+  backdrop-filter: blur(14px);
+}
+
+.time-controls button {
+  padding: 0.35rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--moss);
+  font-size: 0.62rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.time-controls button[data-mode="paused"] {
+  color: var(--paper);
+  background: rgb(174 150 202 / 28%);
+}
+
+.time-controls button:disabled {
+  color: var(--muted);
+  background: rgb(255 255 255 / 6%);
+  cursor: not-allowed;
+}
+
+.time-controls button[data-active="true"] {
+  color: var(--paper);
+  background: rgb(174 150 202 / 32%);
+}
+
+.time-controls input {
+  width: 100%;
+  accent-color: var(--moss);
+  cursor: ew-resize;
+}
+
+.time-controls span {
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.58rem;
+  white-space: nowrap;
+}
+
 .map-error {
   position: absolute;
   inset: 2rem;
@@ -570,6 +625,23 @@ button {
 
   .chronicle-panel {
     max-height: 42%;
+  }
+
+  .time-controls {
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    grid-template-columns: auto auto 1fr;
+    border-radius: 0.65rem;
+  }
+
+  .time-controls span {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .map-guidance {
+    display: none;
   }
 }
 

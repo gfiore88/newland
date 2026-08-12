@@ -118,13 +118,48 @@ describe("ObserverStore", () => {
       "http://127.0.0.1:8765/api/chronicle-stream?after_sequence=1",
     );
   });
+
+  it("keeps receiving live state while the visual projection seeks the past", async () => {
+    const fetcher = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input);
+      if (url.includes("at_sequence=1")) {
+        return new Response(JSON.stringify(makeSnapshot(1, 4, false)));
+      }
+      if (url.includes("snapshot")) return new Response(JSON.stringify(makeSnapshot(4)));
+      if (url.includes("chronicle")) return new Response(JSON.stringify({ entries: [] }));
+      return new Response(JSON.stringify({ events: [] }));
+    });
+    const store = new ObserverStore(
+      "http://127.0.0.1:8765",
+      fetcher,
+      () => new FakeEventStream(),
+    );
+    await store.start();
+
+    store.pause();
+    await store.seek(1);
+
+    expect(store.state.viewMode).toBe("paused");
+    expect(store.state.viewSnapshot?.last_sequence).toBe(1);
+    expect(store.state.snapshot?.last_sequence).toBe(4);
+
+    store.goLive();
+    expect(store.state.viewMode).toBe("live");
+    expect(store.state.viewSnapshot?.last_sequence).toBe(4);
+  });
 });
 
-function makeSnapshot(sequence: number): ObserverSnapshot {
+function makeSnapshot(
+  sequence: number,
+  latestSequence = sequence,
+  isLive = sequence === latestSequence,
+): ObserverSnapshot {
   return {
     schema_version: 1,
     observer_scope: "architect-local-read-only",
     last_sequence: sequence,
+    latest_sequence: latestSequence,
+    is_live: isLive,
     world: {
       tick: sequence,
       world_time: "0001-01-01T06:00:00+00:00",

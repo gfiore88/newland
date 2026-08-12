@@ -118,9 +118,13 @@ export interface ObserverSnapshot {
   schema_version: number;
   observer_scope: "architect-local-read-only";
   last_sequence: number;
+  latest_sequence: number;
+  is_live: boolean;
   world: ObserverWorld;
   minds: Record<string, AgentMindSnapshot>;
 }
+
+export type ViewMode = "live" | "paused";
 
 export interface EventsResponse {
   events: EventEnvelope[];

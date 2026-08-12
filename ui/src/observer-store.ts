@@ -5,6 +5,7 @@ import type {
   EventEnvelope,
   EventsResponse,
   ObserverSnapshot,
+  ViewMode,
 } from "./types";
 
 interface EventStream {
@@ -20,7 +21,10 @@ type Listener = () => void;
 
 export interface ObserverStoreState {
   snapshot: ObserverSnapshot | null;
+  viewSnapshot: ObserverSnapshot | null;
+  viewMode: ViewMode;
   events: readonly EventEnvelope[];
+  viewEvents: readonly EventEnvelope[];
   connection: ConnectionStatus;
   error: string | null;
   liveSequence: number;
@@ -36,9 +40,13 @@ export class ObserverStore {
   private worldStream: EventStream | null = null;
   private chronicleStream: EventStream | null = null;
   private refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  private seekRequest = 0;
   private mutableState: ObserverStoreState = {
     snapshot: null,
+    viewSnapshot: null,
+    viewMode: "live",
     events: [],
+    viewEvents: [],
     connection: "idle",
     error: null,
     liveSequence: 0,
@@ -82,7 +90,10 @@ export class ObserverStore {
       const chronicleSequence = chronicleEntries.at(-1)?.sequence ?? 0;
       this.mutableState = {
         snapshot,
+        viewSnapshot: snapshot,
+        viewMode: "live",
         events: uniqueOrdered(history.events),
+        viewEvents: uniqueOrdered(history.events),
         connection: "connecting",
         error: null,
         liveSequence: snapshot.last_sequence,
@@ -111,6 +122,58 @@ export class ObserverStore {
     }
   }
 
+  pause(): void {
+    if (!this.mutableState.snapshot) return;
+    this.seekRequest += 1;
+    this.patch({
+      viewMode: "paused",
+      viewSnapshot: this.mutableState.viewSnapshot ?? this.mutableState.snapshot,
+    });
+  }
+
+  goLive(): void {
+    if (!this.mutableState.snapshot) return;
+    this.seekRequest += 1;
+    this.patch({
+      viewMode: "live",
+      viewSnapshot: this.mutableState.snapshot,
+      viewEvents: this.mutableState.events,
+      error: null,
+    });
+    void this.refreshSnapshot();
+  }
+
+  async seek(sequence: number): Promise<void> {
+    const maximum = this.mutableState.liveSequence;
+    if (!Number.isInteger(sequence) || sequence < 0 || sequence > maximum) {
+      throw new RangeError(`sequence must be between 0 and ${maximum}`);
+    }
+    const request = ++this.seekRequest;
+    this.patch({ viewMode: "paused", error: null });
+    try {
+      const historyStart = Math.max(0, sequence - 199);
+      const [snapshot, history] = await Promise.all([
+        this.getJson<ObserverSnapshot>(`/api/snapshot?at_sequence=${sequence}`),
+        this.getJson<EventsResponse>(
+          `/api/events?after_sequence=${historyStart}&limit=200`,
+        ),
+      ]);
+      if (request !== this.seekRequest) return;
+      this.patch({
+        viewSnapshot: snapshot,
+        viewEvents: uniqueOrdered(history.events).filter(
+          (event) => event.sequence <= sequence,
+        ),
+        error: null,
+      });
+    } catch (error) {
+      if (request !== this.seekRequest) return;
+      this.patch({
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
   private openStream(afterSequence: number): void {
     const stream = this.streamFactory(
       `${this.apiBase}/api/stream?after_sequence=${afterSequence}`,
@@ -124,6 +187,10 @@ export class ObserverStore {
       this.mutableState = {
         ...this.mutableState,
         events: uniqueOrdered([...this.mutableState.events, event]).slice(-200),
+        viewEvents:
+          this.mutableState.viewMode === "live"
+            ? uniqueOrdered([...this.mutableState.events, event]).slice(-200)
+            : this.mutableState.viewEvents,
         liveSequence: event.sequence,
       };
       this.emit();
@@ -162,7 +229,14 @@ export class ObserverStore {
       if (snapshot.last_sequence < (this.mutableState.snapshot?.last_sequence ?? 0)) {
         return;
       }
-      this.patch({ snapshot, error: null });
+      this.patch({
+        snapshot,
+        viewSnapshot:
+          this.mutableState.viewMode === "live"
+            ? snapshot
+            : this.mutableState.viewSnapshot,
+        error: null,
+      });
     } catch (error) {
       this.patch({
         error: error instanceof Error ? error.message : String(error),

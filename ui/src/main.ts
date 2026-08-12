@@ -29,6 +29,12 @@ root.innerHTML = `
       <div class="map-atmosphere"></div>
       <div id="world-stage" class="world-stage"></div>
       <div class="map-guidance">trascina per muovere · rotella per avvicinare</div>
+      <nav class="time-controls" aria-label="Navigazione temporale dell'Observer">
+        <button id="time-toggle" type="button">Pausa visiva</button>
+        <button id="replay-toggle" type="button" disabled>Riproduci</button>
+        <input id="time-slider" type="range" min="0" max="0" value="0" step="1" />
+        <span id="time-label">vista #0 / live #0</span>
+      </nav>
       <div id="map-error" class="map-error" hidden></div>
       <article class="chronicle-panel" aria-live="polite">
         <div class="section-heading">
@@ -78,7 +84,7 @@ let mapScene: NewlandMapScene | null = null;
 try {
   mapScene = await NewlandMapScene.create(stage, (nextSelection) => {
     selection = nextSelection;
-    const snapshot = store.state.snapshot;
+    const snapshot = store.state.viewSnapshot;
     if (snapshot) {
       renderInspector(snapshot, selection);
       renderInhabitants(snapshot, selection);
@@ -93,20 +99,52 @@ try {
 
 store.subscribe(() => {
   renderConnection();
-  const snapshot = store.state.snapshot;
+  const snapshot = store.state.viewSnapshot;
   if (!snapshot) return;
   renderClock(snapshot);
+  renderTimeControls(snapshot);
   renderInhabitants(snapshot, selection);
   renderInspector(snapshot, selection);
-  renderEvents(store.state.events);
-  renderChronicle();
+  renderEvents(store.state.viewEvents, snapshot.last_sequence);
+  renderChronicle(snapshot.last_sequence);
   if (snapshot.last_sequence !== lastRenderedSequence) {
     mapScene?.render(snapshot.world);
     lastRenderedSequence = snapshot.last_sequence;
   }
 });
 
+requiredElement<HTMLButtonElement>("#time-toggle").addEventListener("click", () => {
+  stopReplay();
+  if (store.state.viewMode === "live") store.pause();
+  else store.goLive();
+});
+
+let replayActive = false;
+let replayTimer: ReturnType<typeof setTimeout> | null = null;
+requiredElement<HTMLButtonElement>("#replay-toggle").addEventListener("click", () => {
+  if (replayActive) {
+    stopReplay();
+    return;
+  }
+  replayActive = true;
+  const snapshot = store.state.viewSnapshot;
+  if (snapshot) renderTimeControls(snapshot);
+  void advanceReplay();
+});
+
+let seekTimer: ReturnType<typeof setTimeout> | null = null;
+requiredElement<HTMLInputElement>("#time-slider").addEventListener("input", (event) => {
+  stopReplay();
+  const sequence = Number((event.currentTarget as HTMLInputElement).value);
+  if (seekTimer !== null) clearTimeout(seekTimer);
+  seekTimer = setTimeout(() => {
+    seekTimer = null;
+    void store.seek(sequence);
+  }, 70);
+});
+
 window.addEventListener("beforeunload", () => {
+  stopReplay();
   store.stop();
   mapScene?.destroy();
 });
@@ -117,14 +155,20 @@ function renderConnection(): void {
   const indicator = requiredElement<HTMLDivElement>("#connection");
   const label = requiredElement<HTMLSpanElement>("#connection-label");
   indicator.dataset.state = store.state.connection;
-  label.textContent = store.state.error ? "non raggiungibile" : store.state.connection;
+  label.textContent = store.state.error
+    ? "non raggiungibile"
+    : store.state.viewMode === "paused"
+      ? `${store.state.connection} · vista in pausa`
+      : store.state.connection;
   indicator.title = store.state.error ?? "Flusso Observer locale";
 }
 
-function renderChronicle(): void {
+function renderChronicle(throughSequence: number): void {
   const container = requiredElement<HTMLDivElement>("#chronicle-entry");
   const sequence = requiredElement<HTMLSpanElement>("#chronicle-sequence");
-  const entry = store.state.chronicle.at(-1);
+  const entry = store.state.chronicle
+    .filter((candidate) => candidate.through_sequence <= throughSequence)
+    .at(-1);
   if (!entry) {
     sequence.textContent = "voce —";
     container.className = "chronicle-entry empty-state";
@@ -147,13 +191,53 @@ function renderChronicle(): void {
   `;
 }
 
+function renderTimeControls(snapshot: ObserverSnapshot): void {
+  const toggle = requiredElement<HTMLButtonElement>("#time-toggle");
+  const replay = requiredElement<HTMLButtonElement>("#replay-toggle");
+  const slider = requiredElement<HTMLInputElement>("#time-slider");
+  const label = requiredElement<HTMLSpanElement>("#time-label");
+  const maximum = Math.max(store.state.liveSequence, snapshot.latest_sequence);
+  slider.max = String(maximum);
+  slider.value = String(snapshot.last_sequence);
+  toggle.textContent =
+    store.state.viewMode === "live" ? "Pausa visiva" : "Torna al presente";
+  toggle.dataset.mode = store.state.viewMode;
+  replay.disabled =
+    store.state.viewMode === "live" || snapshot.last_sequence >= maximum;
+  replay.textContent = replayActive ? "Ferma replay" : "Riproduci";
+  replay.dataset.active = String(replayActive);
+  label.textContent = `vista #${snapshot.last_sequence} / live #${maximum}`;
+}
+
+async function advanceReplay(): Promise<void> {
+  if (!replayActive) return;
+  const snapshot = store.state.viewSnapshot;
+  if (!snapshot || snapshot.last_sequence >= store.state.liveSequence) {
+    stopReplay();
+    return;
+  }
+  await store.seek(snapshot.last_sequence + 1);
+  if (!replayActive) return;
+  replayTimer = setTimeout(() => void advanceReplay(), 520);
+}
+
+function stopReplay(): void {
+  replayActive = false;
+  if (replayTimer !== null) {
+    clearTimeout(replayTimer);
+    replayTimer = null;
+  }
+  const snapshot = store.state.viewSnapshot;
+  if (snapshot) renderTimeControls(snapshot);
+}
+
 function renderClock(snapshot: ObserverSnapshot): void {
   requiredElement<HTMLSpanElement>("#world-date").textContent = formatWorldTime(
     snapshot.world.world_time,
   );
   requiredElement<HTMLSpanElement>("#world-tick").textContent = `tick ${snapshot.world.tick}`;
   requiredElement<HTMLSpanElement>("#event-sequence").textContent =
-    `#${store.state.liveSequence}`;
+    `#${snapshot.last_sequence}`;
 }
 
 function renderInhabitants(snapshot: ObserverSnapshot, active: Selection | null): void {
@@ -201,7 +285,12 @@ function renderInspector(snapshot: ObserverSnapshot, active: Selection | null): 
   if (active.kind === "agent") {
     const agent = snapshot.world.agents[active.id];
     const mind = snapshot.minds[active.id];
-    if (!agent) return;
+    if (!agent) {
+      inspector.className = "inspector empty-state";
+      inspector.textContent =
+        "Questa presenza non esisteva ancora nella sequenza osservata.";
+      return;
+    }
     inspector.innerHTML = `
       <div class="inspector-title">
         <span class="inhabitant-mark large">${escapeHtml(initials(agent.name))}</span>
@@ -218,6 +307,11 @@ function renderInspector(snapshot: ObserverSnapshot, active: Selection | null): 
       ${detailRow("Prossima attenzione", mind?.next_activation_tick == null ? "non fissata" : `tick ${mind.next_activation_tick}`)}
       ${detailRow("Memorie", String(mind?.memories.length ?? 0))}
       ${detailRow("Riflessioni", String(mind?.reflections.length ?? 0))}
+      ${
+        snapshot.is_live
+          ? ""
+          : '<p class="privacy-note">Le menti storiche non sono ricostruite: questa vista mostra soltanto lo stato materiale replayable.</p>'
+      }
     `;
     return;
   }
@@ -257,9 +351,12 @@ function renderInspector(snapshot: ObserverSnapshot, active: Selection | null): 
   `;
 }
 
-function renderEvents(events: readonly EventEnvelope[]): void {
+function renderEvents(events: readonly EventEnvelope[], throughSequence: number): void {
   const list = requiredElement<HTMLOListElement>("#event-list");
-  const recent = [...events].reverse().slice(0, 24);
+  const recent = events
+    .filter((event) => event.sequence <= throughSequence)
+    .reverse()
+    .slice(0, 24);
   list.replaceChildren(
     ...recent.map((event) => {
       const item = document.createElement("li");
