@@ -3,6 +3,8 @@ name: character-[nome-cognome-slug]
 description: "Scheda Agentica Newlander: [Nome e Cognome]"
 type: inhabitant
 species_heritage: "[Etnia / Lignaggio Terrestre, es. Umano Terrestre - Mediterraneo]"
+biological_sex: "[Maschio | Femmina]"
+apparent_age: "[Es. 34 anni]"
 language_native: "[Lingua Madre, es. Italiano, Spagnolo, Giapponese]"
 past_memory_state: "[Completa | Parziale | Oblio della Professione]"
 path_choice: "[Custodian (Custode del Presente) | Seeker (Cercatore dell'Anamnesi)]"
@@ -13,19 +15,24 @@ status: "Active"
 
 # AGENT PROFILE: [Nome e Cognome]
 
-## 1. Identità Umana e Relazioni
+## 1. Identità Umana e Dati Biometrici
 - **Nome e Cognome**: [Nome e Cognome reali - Unica identificazione pubblica]
 - *(ID Interno di Sistema: NWL-AGENT-[NNN] - Riservato solo alla console, mai pubblico)*
+- **Sesso Biologico**: [Maschio | Femmina]
+- **Età**: [Es. 34 anni]
+- **Altezza e Peso**: [Es. 178 cm | 75 kg]
+- **Fisionomia e Somatotipo**: [Es. Corporatura atletica/robusta, capelli castani mossi, occhi scuri, cicatrice sul sopracciglio sinistro, carnagione olivastra]
+- **Stato Fisico all'Arrivo**: [Es. In piena salute, affaticato dalla traversata, lieve zoppia alla gamba destra]
 - **Razza / Lignaggio**: [Es. Umano Terrestre - etnia e costituzione fisica]
 - **Lingua Madre**: [Lingua di provenienza]
-- **Gruppo di Arrivo**: [Es. Solo | Con la famiglia | Insieme a conoscenti]
+- **Gruppo di Arrivo**: [Es. Solo | Con la famiglia (moglie e due figli) | Insieme a conoscenti]
 
 ## 2. Carattere, Temperamento e Peculiarità
 - **Profilo di Personalità e Temperamento**: [Es. Melancolico-pragmatico, pacifico ma testardo, impulsivo ma protettivo, timido ed osservatore]
 - **Peculiarità ed Abitudini**: [Tic, gesti ricorsivi, abitudini fisiche/verbali, piccole manie o stranezze]
 - **Attitudini Relazionali**: [Come si rapporta agli altri: tende a guidare, a collaborare in silenzio, ad isolarsi, a cercare il dialogo?]
 - **Inneschi di Sintonia (Andare d'accordo)**: [Cosa gli fa apprezzare gli altri: la dedizione al lavoro rurale, la calma, il rispetto del silenzio, la sincerità]
-- **Inneschi di Frizione/Conflitto (Scontro)**: [Cosa gli dà fastidio: la prepotenza, la furbizia, la lamentela continua, l'invasione degli spazi]
+- **Inneschi di Frizione/Conflitto (Scontro)**: [Cosa gli dà fastidio: la prepotenza, la furbizia, la lamentela continua, l'invasione degli spaces]
 
 ## 3. L'Evento dell'Arrivo e l'Innesco (Il Fatto Antecedente)
 - **Mezzo di Arrivo**: [Es. A piedi, in auto, autobus turistico, bicicletta]
