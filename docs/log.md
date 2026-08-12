@@ -149,3 +149,9 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Verificato il lifecycle con tre attivazioni complete simulate e una prova Ollama reale interrotta durante una deliberazione: exit code pulito e nessun output parziale.
 - In Ollama risultava caricato soltanto `qwen3:8b`, usato da Newland; nessun processo LLM estraneo era presente.
 - Suite complessiva aggiornata a 82 test Python; 6 test frontend e build Vite restano verdi.
+
+## [2026-08-12] adr | Proposta ADR-0009 - Supervisore e priorità inferenza
+- Proposto ADR-0009 `docs/adr/adr-0009-supervised-runtime-and-inference-priority.md`.
+- La decisione evita che il Cronista downstream competa senza controllo con le menti dei Newlander sullo stesso Ollama locale.
+- Proposta una coda seriale agent-first con rapporto iniziale almeno `8:1`, health operativo separato dal mondo, servizio statico della UI e shutdown coordinato.
+- Implementazione sospesa in attesa dell'approvazione esplicita di Giovanni Fiore, come richiesto dalla governance ADR.
