@@ -33,5 +33,8 @@ class ActivationScheduler:
         self._scheduled.discard((activation.tick, activation.agent_id))
         return activation
 
+    def pending(self) -> tuple[Activation, ...]:
+        return tuple(sorted(self._queue))
+
     def __bool__(self) -> bool:
         return bool(self._queue)

@@ -4,13 +4,16 @@ from uuid import uuid4
 
 from newland_engine.cognition import (
     AffectRevision,
+    AttentionSchedule,
     BeliefRevision,
     CognitionContext,
     CognitionResult,
     CognitionUnavailable,
+    CommitmentRevision,
     GoalRevision,
     MemoryAppraisal,
     MentalUpdates,
+    PlanRevision,
     ReflectionDraft,
     RelationshipRevision,
 )
@@ -57,6 +60,10 @@ class ScriptedTestCognition:
                 for observation in context.observations
             ),
             mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=6,
+                reason="Riesaminare autonomamente la situazione.",
+            ),
             provider="test-double",
             model="scripted-invariant-fixture",
             inference_id=str(uuid4()),
@@ -88,6 +95,10 @@ class InvalidAppraisalTestCognition:
                 ),
             ),
             mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=6,
+                reason="Riesaminare autonomamente la situazione.",
+            ),
             provider="test-double",
             model="invalid-appraisal-fixture",
             inference_id=str(uuid4()),
@@ -151,6 +162,10 @@ class GeneratedMentalStateTestCognition:
                     ),
                 ),
             ),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=7,
+                reason="Valutare come evolve la presenza condivisa.",
+            ),
             provider="test-double",
             model="generated-mental-state-fixture",
             inference_id=str(uuid4()),
@@ -187,8 +202,88 @@ class GeneratedReflectionTestCognition:
                     ),
                 )
             ),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=8,
+                reason="Lasciare sedimentare la riflessione.",
+            ),
             provider="test-double",
             model="generated-reflection-fixture",
+            inference_id=str(uuid4()),
+            attempts=1,
+        )
+
+
+class GeneratedAgendaTestCognition:
+    def decide(self, context: CognitionContext) -> CognitionResult:
+        source_event_id = context.observations[-1].event.event_id
+        other_id = context.nearby_agents[0][0]
+        return CognitionResult(
+            intention=Intention(
+                action_type="rest",
+                duration_minutes=5,
+                motivation_summary="Preparare un incontro scelto autonomamente.",
+                confidence=0.84,
+            ),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                plans=(
+                    PlanRevision(
+                        operation="upsert",
+                        plan_key="incontro_cauto",
+                        description="Avvicinarmi con prudenza all'altra persona.",
+                        steps=("Osservare", "Scegliere un momento", "Parlare"),
+                        source_event_ids=(source_event_id,),
+                    ),
+                ),
+                commitments=(
+                    CommitmentRevision(
+                        operation="add",
+                        commitment_key="parlare_con_altro",
+                        description="Riconsiderare se parlare con l'altra persona.",
+                        due_tick=context.world_tick + 3,
+                        involved_agent_ids=(other_id,),
+                        source_event_ids=(source_event_id,),
+                    ),
+                ),
+            ),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=9,
+                reason="Rivedere il piano quando avrò osservato abbastanza.",
+            ),
+            provider="test-double",
+            model="generated-agenda-fixture",
+            inference_id=str(uuid4()),
+            attempts=1,
+        )
+
+
+class InvalidCommitmentTestCognition:
+    def decide(self, context: CognitionContext) -> CognitionResult:
+        source_event_id = context.observations[-1].event.event_id
+        return CognitionResult(
+            intention=Intention(
+                action_type="rest",
+                motivation_summary="Questa azione non deve raggiungere il mondo.",
+            ),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                commitments=(
+                    CommitmentRevision(
+                        operation="add",
+                        commitment_key="persona_inventata",
+                        description="Incontrare qualcuno che non conosco.",
+                        due_tick=context.world_tick + 2,
+                        involved_agent_ids=("nwl-inesistente",),
+                        source_event_ids=(source_event_id,),
+                    ),
+                )
+            ),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=4,
+                reason="Controllare un impegno invalido.",
+            ),
+            provider="test-double",
+            model="invalid-commitment-fixture",
             inference_id=str(uuid4()),
             attempts=1,
         )

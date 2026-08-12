@@ -90,6 +90,31 @@ class Reflection:
 
 
 @dataclass(slots=True)
+class Plan:
+    plan_key: str
+    description: str
+    steps: list[str]
+    status: str
+    created_tick: int
+    updated_tick: int
+    source_event_ids: list[str] = field(default_factory=list)
+    source_memory_ids: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
+class Commitment:
+    commitment_key: str
+    description: str
+    due_tick: int
+    involved_agent_ids: list[str]
+    status: str
+    created_tick: int
+    updated_tick: int
+    source_event_ids: list[str] = field(default_factory=list)
+    source_memory_ids: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
 class AgentMind:
     agent_id: str
     name: str
@@ -104,10 +129,13 @@ class AgentMind:
     beliefs: dict[str, Belief] = field(default_factory=dict)
     relationships: dict[str, Relationship] = field(default_factory=dict)
     goals: list[str] = field(default_factory=list)
-    commitments: list[str] = field(default_factory=list)
+    plans: dict[str, Plan] = field(default_factory=dict)
+    commitments: dict[str, Commitment] = field(default_factory=dict)
     memories: list[Memory] = field(default_factory=list)
     reflections: list[Reflection] = field(default_factory=list)
     last_perceived_sequence: int = 0
+    next_activation_tick: int | None = None
+    next_activation_reason: str = ""
     private_state: dict[str, Any] = field(default_factory=dict)
 
     def remember(
@@ -160,6 +188,19 @@ class AgentMind:
             value if isinstance(value, Reflection) else Reflection(**value)
             for value in data.get("reflections", [])
         ]
+        normalized["plans"] = {
+            key: value if isinstance(value, Plan) else Plan(**value)
+            for key, value in data.get("plans", {}).items()
+        }
+        commitments = data.get("commitments", {})
+        normalized["commitments"] = (
+            {
+                key: value if isinstance(value, Commitment) else Commitment(**value)
+                for key, value in commitments.items()
+            }
+            if isinstance(commitments, dict)
+            else {}
+        )
         return cls(**normalized)
 
     def relationship_with(self, other_id: str) -> Relationship:

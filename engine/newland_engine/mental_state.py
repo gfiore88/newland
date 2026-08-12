@@ -5,7 +5,7 @@ from typing import Any
 from uuid import uuid4
 
 from .cognition import MentalUpdates
-from .models import AgentMind, Belief, Reflection
+from .models import AgentMind, Belief, Commitment, Plan, Reflection
 
 
 @dataclass(frozen=True, slots=True)
@@ -146,6 +146,98 @@ class MentalStateApplier:
                     revision.source_memory_ids,
                 )
             )
+
+        for revision in updates.plans:
+            plan = mind.plans.get(revision.plan_key)
+            if revision.operation == "upsert":
+                if plan is None:
+                    plan = Plan(
+                        plan_key=revision.plan_key,
+                        description=revision.description,
+                        steps=list(revision.steps),
+                        status="active",
+                        created_tick=tick,
+                        updated_tick=tick,
+                        source_event_ids=list(revision.source_event_ids),
+                        source_memory_ids=list(revision.source_memory_ids),
+                    )
+                    mind.plans[revision.plan_key] = plan
+                else:
+                    plan.description = revision.description
+                    plan.steps = list(revision.steps)
+                    plan.status = "active"
+                    plan.updated_tick = tick
+                    self._extend_unique(
+                        plan.source_event_ids, revision.source_event_ids
+                    )
+                    self._extend_unique(
+                        plan.source_memory_ids, revision.source_memory_ids
+                    )
+            elif plan is not None:
+                plan.status = (
+                    "completed" if revision.operation == "complete" else "abandoned"
+                )
+                plan.updated_tick = tick
+                self._extend_unique(plan.source_event_ids, revision.source_event_ids)
+                self._extend_unique(plan.source_memory_ids, revision.source_memory_ids)
+            if plan is not None:
+                mutations.append(
+                    MindMutation(
+                        "PlanRevised",
+                        {"operation": revision.operation, **asdict(plan)},
+                        revision.source_event_ids,
+                        revision.source_memory_ids,
+                    )
+                )
+
+        for revision in updates.commitments:
+            commitment = mind.commitments.get(revision.commitment_key)
+            if revision.operation == "add":
+                if commitment is None:
+                    commitment = Commitment(
+                        commitment_key=revision.commitment_key,
+                        description=revision.description,
+                        due_tick=revision.due_tick,
+                        involved_agent_ids=list(revision.involved_agent_ids),
+                        status="active",
+                        created_tick=tick,
+                        updated_tick=tick,
+                        source_event_ids=list(revision.source_event_ids),
+                        source_memory_ids=list(revision.source_memory_ids),
+                    )
+                    mind.commitments[revision.commitment_key] = commitment
+                else:
+                    commitment.description = revision.description
+                    commitment.due_tick = revision.due_tick
+                    commitment.involved_agent_ids = list(revision.involved_agent_ids)
+                    commitment.status = "active"
+                    commitment.updated_tick = tick
+                    self._extend_unique(
+                        commitment.source_event_ids, revision.source_event_ids
+                    )
+                    self._extend_unique(
+                        commitment.source_memory_ids, revision.source_memory_ids
+                    )
+            elif commitment is not None:
+                commitment.status = (
+                    "completed" if revision.operation == "complete" else "abandoned"
+                )
+                commitment.updated_tick = tick
+                self._extend_unique(
+                    commitment.source_event_ids, revision.source_event_ids
+                )
+                self._extend_unique(
+                    commitment.source_memory_ids, revision.source_memory_ids
+                )
+            if commitment is not None:
+                mutations.append(
+                    MindMutation(
+                        "CommitmentRevised",
+                        {"operation": revision.operation, **asdict(commitment)},
+                        revision.source_event_ids,
+                        revision.source_memory_ids,
+                    )
+                )
         return mutations
 
     @staticmethod

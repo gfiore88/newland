@@ -18,6 +18,7 @@ class CognitionContext:
     observations: tuple[Observation, ...]
     nearby_agents: tuple[tuple[str, str], ...]
     activation_reason: str
+    world_tick: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -100,12 +101,51 @@ class GoalRevision:
 
 
 @dataclass(frozen=True, slots=True)
+class PlanRevision:
+    operation: Literal["upsert", "complete", "abandon"]
+    plan_key: str
+    description: str
+    steps: tuple[str, ...]
+    source_event_ids: tuple[str, ...] = ()
+    source_memory_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class CommitmentRevision:
+    operation: Literal["add", "complete", "abandon"]
+    commitment_key: str
+    description: str
+    due_tick: int
+    involved_agent_ids: tuple[str, ...]
+    source_event_ids: tuple[str, ...] = ()
+    source_memory_ids: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.due_tick < 0:
+            raise ValueError("commitment due_tick must be non-negative")
+
+
+@dataclass(frozen=True, slots=True)
+class AttentionSchedule:
+    next_activation_in_ticks: int
+    reason: str
+
+    def __post_init__(self) -> None:
+        if not 1 <= self.next_activation_in_ticks <= 144:
+            raise ValueError("next activation must be between 1 and 144 ticks")
+        if not self.reason.strip():
+            raise ValueError("next activation reason is required")
+
+
+@dataclass(frozen=True, slots=True)
 class MentalUpdates:
     beliefs: tuple[BeliefRevision, ...] = ()
     relationships: tuple[RelationshipRevision, ...] = ()
     affect: AffectRevision | None = None
     reflections: tuple[ReflectionDraft, ...] = ()
     goals: tuple[GoalRevision, ...] = ()
+    plans: tuple[PlanRevision, ...] = ()
+    commitments: tuple[CommitmentRevision, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,6 +153,7 @@ class CognitionResult:
     intention: Intention
     memory_appraisals: tuple[MemoryAppraisal, ...]
     mental_updates: MentalUpdates
+    attention_schedule: AttentionSchedule
     provider: str
     model: str
     inference_id: str
@@ -173,10 +214,12 @@ class OllamaCognition:
                     MemoryAppraisal(**item) for item in parsed["memory_appraisals"]
                 )
                 mental_updates = self._parse_mental_updates(parsed["mental_updates"])
+                attention_schedule = AttentionSchedule(**parsed["attention_schedule"])
                 result = CognitionResult(
                     intention=intention,
                     memory_appraisals=appraisals,
                     mental_updates=mental_updates,
+                    attention_schedule=attention_schedule,
                     provider="ollama",
                     model=self.model,
                     inference_id=inference_id,
@@ -235,6 +278,7 @@ class OllamaCognition:
             "Interpreta soggettivamente soltanto gli eventi osservati e usa i loro event_id nelle memory_appraisals; "
             "puoi scegliere di non memorizzare un evento. Beliefs, relazioni, affetti, riflessioni e obiettivi "
             "cambiano soltanto se tu produci un mental_update con fonti valide; usa array vuoti se nulla cambia. "
+            "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
             "Non inventare oggetti, persone, luoghi o conoscenze. "
             "Restituisci soltanto il JSON richiesto. "
             "motivation_summary deve essere una motivazione breve e dichiarabile, non ragionamento nascosto."
@@ -267,6 +311,10 @@ class OllamaCognition:
             affect=AffectRevision(**affect_data) if affect_data is not None else None,
             reflections=tuple(ReflectionDraft(**item) for item in data["reflections"]),
             goals=tuple(GoalRevision(**item) for item in data["goals"]),
+            plans=tuple(PlanRevision(**item) for item in data["plans"]),
+            commitments=tuple(
+                CommitmentRevision(**item) for item in data["commitments"]
+            ),
         )
 
     @staticmethod
@@ -296,6 +344,8 @@ class OllamaCognition:
             *updates.beliefs,
             *updates.relationships,
             *updates.goals,
+            *updates.plans,
+            *updates.commitments,
         ]
         if updates.affect is not None:
             sourced_updates.append(updates.affect)
@@ -311,6 +361,23 @@ class OllamaCognition:
         for relationship in updates.relationships:
             if relationship.other_agent_id not in known_agents:
                 raise ValueError("relationship update references an unknown agent")
+        for plan in updates.plans:
+            if plan.operation != "upsert" and plan.plan_key not in context.mind.plans:
+                raise ValueError("plan revision references an unknown plan")
+        for commitment in updates.commitments:
+            unknown_agents = set(commitment.involved_agent_ids) - known_agents
+            if unknown_agents:
+                raise ValueError("commitment references unknown agents")
+            if (
+                commitment.operation == "add"
+                and commitment.due_tick < context.world_tick
+            ):
+                raise ValueError("new commitment cannot be due in the past")
+            if (
+                commitment.operation != "add"
+                and commitment.commitment_key not in context.mind.commitments
+            ):
+                raise ValueError("commitment revision references an unknown commitment")
         for reflection in updates.reflections:
             if not reflection.source_memory_ids:
                 raise ValueError("reflection requires supporting memories")
@@ -332,8 +399,28 @@ class OllamaCognition:
                 },
                 "affect": context.mind.affect,
                 "goals": context.mind.goals,
+                "plans": [
+                    {
+                        "plan_key": plan.plan_key,
+                        "description": plan.description,
+                        "steps": plan.steps,
+                        "status": plan.status,
+                    }
+                    for plan in context.mind.plans.values()
+                ],
+                "commitments": [
+                    {
+                        "commitment_key": commitment.commitment_key,
+                        "description": commitment.description,
+                        "due_tick": commitment.due_tick,
+                        "involved_agent_ids": commitment.involved_agent_ids,
+                        "status": commitment.status,
+                    }
+                    for commitment in context.mind.commitments.values()
+                ],
                 "location": context.material_state.location,
             },
+            "world_tick": context.world_tick,
             "activation_reason": context.activation_reason,
             "recent_memories": [
                 {
@@ -624,6 +711,81 @@ class OllamaCognition:
                                 "additionalProperties": False,
                             },
                         },
+                        "plans": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "operation": {
+                                        "type": "string",
+                                        "enum": ["upsert", "complete", "abandon"],
+                                    },
+                                    "plan_key": {"type": "string", "maxLength": 120},
+                                    "description": {"type": "string", "maxLength": 500},
+                                    "steps": {
+                                        "type": "array",
+                                        "items": {"type": "string", "maxLength": 300},
+                                    },
+                                    "source_event_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    },
+                                    "source_memory_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    },
+                                },
+                                "required": [
+                                    "operation",
+                                    "plan_key",
+                                    "description",
+                                    "steps",
+                                    "source_event_ids",
+                                    "source_memory_ids",
+                                ],
+                                "additionalProperties": False,
+                            },
+                        },
+                        "commitments": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "operation": {
+                                        "type": "string",
+                                        "enum": ["add", "complete", "abandon"],
+                                    },
+                                    "commitment_key": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                    },
+                                    "description": {"type": "string", "maxLength": 500},
+                                    "due_tick": {"type": "integer", "minimum": 0},
+                                    "involved_agent_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    },
+                                    "source_event_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    },
+                                    "source_memory_ids": {
+                                        "type": "array",
+                                        "items": {"type": "string"},
+                                    },
+                                },
+                                "required": [
+                                    "operation",
+                                    "commitment_key",
+                                    "description",
+                                    "due_tick",
+                                    "involved_agent_ids",
+                                    "source_event_ids",
+                                    "source_memory_ids",
+                                ],
+                                "additionalProperties": False,
+                            },
+                        },
                     },
                     "required": [
                         "beliefs",
@@ -631,11 +793,31 @@ class OllamaCognition:
                         "affect",
                         "reflections",
                         "goals",
+                        "plans",
+                        "commitments",
                     ],
                     "additionalProperties": False,
                 },
+                "attention_schedule": {
+                    "type": "object",
+                    "properties": {
+                        "next_activation_in_ticks": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 144,
+                        },
+                        "reason": {"type": "string", "maxLength": 300},
+                    },
+                    "required": ["next_activation_in_ticks", "reason"],
+                    "additionalProperties": False,
+                },
             },
-            "required": ["intention", "memory_appraisals", "mental_updates"],
+            "required": [
+                "intention",
+                "memory_appraisals",
+                "mental_updates",
+                "attention_schedule",
+            ],
             "additionalProperties": False,
         }
 

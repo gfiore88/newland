@@ -126,14 +126,43 @@ class NewlandSimulation:
 
     def seed_initial_encounter(self) -> None:
         self.initialize()
+        if self.scheduler:
+            return
+        self._rebuild_agenda()
         if not self.scheduler:
             first_agent = min(self.minds)
             self.scheduler.schedule(
                 first_agent,
                 tick=max(1, self.state.tick + 1),
-                reason="prima presenza umana percepita nella cittadina",
+                reason="prima percezione cosciente nella cittadina",
                 priority=10,
             )
+
+    def _rebuild_agenda(self) -> None:
+        for agent_id, mind in self.minds.items():
+            unseen = self.store.events(after_sequence=mind.last_perceived_sequence)
+            if self.perception.perceive(agent_id, unseen):
+                self.scheduler.schedule(
+                    agent_id,
+                    tick=max(1, self.state.tick),
+                    reason="eventi percepibili non ancora elaborati",
+                    priority=20,
+                )
+            if mind.next_activation_tick is not None:
+                self.scheduler.schedule(
+                    agent_id,
+                    tick=max(self.state.tick, mind.next_activation_tick),
+                    reason=mind.next_activation_reason,
+                    priority=50,
+                )
+            for commitment in mind.commitments.values():
+                if commitment.status == "active":
+                    self.scheduler.schedule(
+                        agent_id,
+                        tick=max(self.state.tick, commitment.due_tick),
+                        reason=f"impegno generato: {commitment.description}",
+                        priority=30,
+                    )
 
     def run(self, *, max_activations: int = 8) -> list[EventEnvelope]:
         self.seed_initial_encounter()
@@ -192,6 +221,7 @@ class NewlandSimulation:
             observations=tuple(observations),
             nearby_agents=nearby,
             activation_reason=reason,
+            world_tick=tick,
         )
         try:
             cognition_result = self.cognition.decide(context)
@@ -239,6 +269,24 @@ class NewlandSimulation:
             tick=tick,
             cognition=cognition_result.provenance(),
         )
+        next_activation_tick = (
+            tick + cognition_result.attention_schedule.next_activation_in_ticks
+        )
+        working_mind.next_activation_tick = next_activation_tick
+        working_mind.next_activation_reason = cognition_result.attention_schedule.reason
+        attention_event = EventEnvelope(
+            event_type="AttentionScheduled",
+            world_tick=tick,
+            world_time=world_time_for_tick(tick),
+            actor_ids=(working_mind.agent_id,),
+            payload={
+                "next_activation_tick": next_activation_tick,
+                "reason": cognition_result.attention_schedule.reason,
+                "cognition": cognition_result.provenance(),
+            },
+            visibility="private",
+            recipient_ids=(working_mind.agent_id,),
+        )
         if unseen and unseen[-1].sequence is not None:
             working_mind.last_perceived_sequence = unseen[-1].sequence
         pending = self.adjudicator.adjudicate(
@@ -248,7 +296,12 @@ class NewlandSimulation:
             tick=tick,
             cognition=cognition_result.provenance(),
         )
-        activation_events = [*memory_events, *mental_events, *pending]
+        activation_events = [
+            *memory_events,
+            *mental_events,
+            attention_event,
+            *pending,
+        ]
         persisted = self.store.append_many_with_mind(activation_events, working_mind)
         self.minds[agent_id] = working_mind
         pending_ids = {event.event_id for event in pending}
@@ -257,8 +310,26 @@ class NewlandSimulation:
         ]
         for event in persisted_pending:
             reduce_event(self.state, event)
+        self._schedule_generated_agenda(working_mind, tick=tick)
         self._schedule_reactions(agent_id, tick, persisted_pending)
         return persisted
+
+    def _schedule_generated_agenda(self, mind: AgentMind, *, tick: int) -> None:
+        if mind.next_activation_tick is not None:
+            self.scheduler.schedule(
+                mind.agent_id,
+                tick=mind.next_activation_tick,
+                reason=mind.next_activation_reason,
+                priority=50,
+            )
+        for commitment in mind.commitments.values():
+            if commitment.status == "active" and commitment.due_tick > tick:
+                self.scheduler.schedule(
+                    mind.agent_id,
+                    tick=commitment.due_tick,
+                    reason=f"impegno generato: {commitment.description}",
+                    priority=30,
+                )
 
     @staticmethod
     def _mental_events(

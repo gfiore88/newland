@@ -5,9 +5,11 @@ import unittest
 from pathlib import Path
 
 from helpers import (
+    GeneratedAgendaTestCognition,
     GeneratedMentalStateTestCognition,
     GeneratedReflectionTestCognition,
     InvalidAppraisalTestCognition,
+    InvalidCommitmentTestCognition,
     ScriptedTestCognition,
     UnavailableTestCognition,
 )
@@ -195,6 +197,73 @@ class SimulationTests(unittest.TestCase):
                 reflections[0].source_memory_ids,
                 list(reflection_event.payload["source_memory_ids"]),
             )
+
+    def test_generated_plan_commitment_and_attention_are_durable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=GeneratedAgendaTestCognition()
+            ) as simulation:
+                produced = simulation.run(max_activations=1)
+                mind = simulation.minds["nwl-001"]
+                self.assertEqual("active", mind.plans["incontro_cauto"].status)
+                commitment_tick = mind.commitments["parlare_con_altro"].due_tick
+                attention_tick = mind.next_activation_tick
+                self.assertEqual(4, commitment_tick)
+                self.assertEqual(10, attention_tick)
+                self.assertEqual(
+                    {
+                        "PlanRevised",
+                        "CommitmentRevised",
+                        "AttentionScheduled",
+                    },
+                    {
+                        event.event_type
+                        for event in produced
+                        if event.event_type
+                        in {
+                            "PlanRevised",
+                            "CommitmentRevised",
+                            "AttentionScheduled",
+                        }
+                    },
+                )
+
+            with NewlandSimulation(
+                path, cognition=GeneratedAgendaTestCognition()
+            ) as restarted:
+                restarted.seed_initial_encounter()
+                pending = restarted.scheduler.pending()
+                self.assertTrue(
+                    any(
+                        activation.agent_id == "nwl-001"
+                        and activation.tick == commitment_tick
+                        and activation.reason.startswith("impegno generato:")
+                        for activation in pending
+                    )
+                )
+                self.assertTrue(
+                    any(
+                        activation.agent_id == "nwl-001"
+                        and activation.tick == attention_tick
+                        and activation.reason
+                        == "Rivedere il piano quando avrò osservato abbastanza."
+                        for activation in pending
+                    )
+                )
+
+    def test_invalid_generated_commitment_defers_without_action(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=InvalidCommitmentTestCognition()
+            ) as simulation:
+                produced = simulation.run(max_activations=1)
+
+            event_types = {event.event_type for event in produced}
+            self.assertIn("CognitionDeferred", event_types)
+            self.assertNotIn("ActionProposed", event_types)
+            self.assertNotIn("CommitmentRevised", event_types)
 
 
 if __name__ == "__main__":
