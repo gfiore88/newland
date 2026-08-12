@@ -24,4 +24,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Creata la sintesi fonte `src-brainstorming-02-primordial-amnesia-and-cognitive-forgetting.md`.
 - Compilata l'entità `ent-amnesia-primordiale.md`.
 - Compilato il concetto `cnc-tabula-rasa-cognitiva.md`.
+
+## [2026-08-12] ingest | Brainstorming 03 - Il Ricordo dell'Arrivo
+- Ingerita fonte grezza `docs/raw/raw-brainstorming-03-memory-of-arrival.md`.
+- Creata la sintesi fonte `src-brainstorming-03-memory-of-arrival.md`.
+- Compilata l'entità `ent-memoria-dell-arrivo.md`.
+- Compilato il concetto `cnc-mito-fondativo-newlander.md`.
 - Aggiornato l'indice generale `docs/index.md`.
