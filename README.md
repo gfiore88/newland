@@ -4,7 +4,7 @@
 
 ## Primo vertical slice eseguibile
 
-Il repository contiene un runtime Python event-driven con due menti persistenti, percezione privata, memoria episodica soggettiva, beliefs, relazioni, affetti, riflessioni, obiettivi, piani, impegni, agenda autonoma, intenzioni generative strutturate, arbitraggio delle azioni ed event store SQLite. Ollama è obbligatorio per le decisioni dei Newlander: il codice non sostituisce mai una mente con pattern statici. Tutti i cambiamenti psicologici e il momento della successiva attenzione vengono generati dalla mente dell'agente e validati contro ciò che ha realmente percepito o ricordato.
+Il repository contiene un runtime Python event-driven con due menti persistenti, percezione privata, memoria episodica soggettiva, beliefs, relazioni, affetti, riflessioni, obiettivi, piani, impegni, agenda autonoma e intenzioni generative strutturate. Il mondo canonico comprende un territorio connesso, risorse locali, inventari, consumo e attività fisiche, arbitrati e persistiti su SQLite. Ollama è obbligatorio per le decisioni dei Newlander: il codice non sostituisce mai una mente con pattern statici. Tutti i cambiamenti psicologici, le azioni materiali e il momento della successiva attenzione vengono scelti dalla mente dell'agente e validati contro ciò che ha realmente percepito, ricordato o può fisicamente raggiungere.
 
 ```bash
 # Setup e run agentico in tempo reale

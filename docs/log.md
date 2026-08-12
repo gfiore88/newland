@@ -63,3 +63,13 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Ricostruita l'agenda dopo il riavvio usando percezioni inevase, attenzione persistita e impegni attivi.
 - Validati fonti, persone coinvolte e scadenze; un riferimento inventato differisce la cognizione senza produrre azioni.
 - Verificato il contratto ampliato con Ollama `qwen3:4b`: Elia ha scelto in tempo reale parola, motivazione e tick della successiva attenzione.
+
+## [2026-08-12] implementation | Milestone 3 - Territorio Situato e Risorse
+- Estesa la topologia iniziale a cittadina, campo, bosco e sorgente con adiacenze canoniche.
+- Aggiunte risorse locali, inventario e capacità di trasporto, effetti corporei del consumo e attività legate ai luoghi.
+- Esteso il vocabolario generativo con `gather`, `consume` e `perform_activity`; nessuna affordance seleziona automaticamente un comportamento.
+- Il contesto privato espone soltanto destinazioni adiacenti, risorse presenti e attività disponibili nella posizione corrente.
+- Persistiti e resi percepibili localmente `ResourceGathered`, `ResourceConsumed` e `ActivityPerformed`.
+- Aggiunto `TerritoryConfigured` per migrare e ricostruire via replay i mondi creati prima del territorio esteso.
+- Limitato il contesto Ollama della cognizione ordinaria per evitare occupazione GPU e timeout non necessari, senza ridurre il vocabolario decisionale.
+- Verificato con `qwen3:4b`: Elia ha scelto autonomamente `esaminare_edifici`, accettato dall'arbitro con conseguenza fisica e costo energetico.

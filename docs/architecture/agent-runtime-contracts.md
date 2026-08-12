@@ -36,6 +36,8 @@ Ogni evento persistito contiene:
 - [EVT-003] `ActionAccepted`, `ActionModified`, `ActionRejected` registrano l'arbitraggio.
 - [EVT-004] `SpeechUttered`, `AgentMoved`, `AgentRested`, `HelpOffered` registrano conseguenze osservabili.
 - [EVT-005] `MemoryEncoded` è privato e registra l'acquisizione soggettiva di un'esperienza.
+- [EVT-006] `TerritoryConfigured` evolve in modo replayable topologia, risorse e attività di un mondo già persistito.
+- [EVT-007] `ResourceGathered`, `ResourceConsumed` e `ActivityPerformed` registrano conseguenze materiali osservabili localmente.
 
 ## 3. Contratto `AgentMind`
 
@@ -79,15 +81,18 @@ La mente non contiene lo stato globale e non può leggere direttamente il databa
 - [PER-003] Un evento `private` è percepibile solo dai `recipient_ids`.
 - [PER-004] Un agente non riceve prompt, memorie, motivazioni private o deliberazioni di un altro agente.
 - [PER-005] La percezione può generare una memoria soggettiva, ma non modifica il fatto canonico.
+- [PER-006] Il contesto cognitivo espone soltanto uscite adiacenti, risorse presenti e attività disponibili nella posizione corrente.
 
 ## 5. Intenzione e arbitraggio
 
-Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minutes`, `spoken_content`, `motivation_summary` e `confidence`.
+Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minutes`, `spoken_content`, `resource_id`, `quantity`, `activity_id`, `motivation_summary` e `confidence`.
 
 - [ACT-001] Il runtime rifiuta output non conformi allo schema.
 - [ACT-002] Il mondo verifica esistenza, posizione, tempo, risorse e target.
 - [ACT-003] La proposta e il suo esito vengono persistiti nello stesso commit transazionale.
 - [ACT-004] Il testo libero può diventare dialogo o motivazione, ma non una mutazione arbitraria dello stato.
+- [ACT-005] Movimento, raccolta, consumo e attività vengono scelti dalla mente; il mondo verifica adiacenza, presenza, quantità, capacità d'inventario ed energia.
+- [ACT-006] Le conseguenze fisiche aggiornano risorse, inventario e corpo soltanto tramite eventi canonici riducibili.
 
 ## 6. Scheduling
 

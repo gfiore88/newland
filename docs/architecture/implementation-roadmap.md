@@ -18,7 +18,7 @@
 
 ## Milestone 3 — Territorio e società
 
-- [M03-001] Grafo spaziale, movimento, risorse e attività.
+- [M03-001] Grafo spaziale, movimento, risorse e attività. **Implementato.**
 - [M03-002] Arrivi, lingue, competenze e gruppi familiari.
 - [M03-003] Cooperazione, conflitti e ruoli emergenti.
 - [M03-004] Nodi di risonanza, flashback e anamnesi.
