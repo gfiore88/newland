@@ -105,5 +105,26 @@ class ArrivalTests(unittest.TestCase):
         )
 
 
+    def test_live_simulation_detects_external_arrivals_dynamically(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=ScriptedTestCognition()
+            ) as main_sim:
+                main_sim.initialize()
+                self.assertEqual(0, len(main_sim.minds))
+                self.assertEqual([], main_sim.run(max_activations=1))
+
+                with NewlandSimulation(
+                    path, cognition=ScriptedTestCognition()
+                ) as external_sim:
+                    external_sim.admit_arrivals(self._family_profiles()[:1])
+
+                produced = main_sim.run(max_activations=1)
+                self.assertIn("nwl-101", main_sim.minds)
+                self.assertEqual("Lucía Rivera", main_sim.minds["nwl-101"].name)
+                self.assertGreaterEqual(len(produced), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

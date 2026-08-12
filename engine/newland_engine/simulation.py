@@ -425,8 +425,17 @@ class NewlandSimulation:
                     priority=10,
                 )
 
+    def _sync_with_store(self) -> None:
+        latest_minds = self.store.load_minds()
+        new_agent_ids = set(latest_minds) - set(self.minds)
+        if new_agent_ids:
+            self.minds = latest_minds
+            self.state = replay(self.store.events())
+            self._rebuild_agenda()
+
     def run(self, *, max_activations: int = 8) -> list[EventEnvelope]:
         self.initialize()
+        self._sync_with_store()
         if not self.scheduler and self.minds:
             self._rebuild_agenda()
         produced: list[EventEnvelope] = []
