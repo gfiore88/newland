@@ -12,6 +12,9 @@ PERCEPTIBLE_EVENT_TYPES = {
     "HelpOffered",
     "ActionRejected",
     "NeedsChanged",
+    "ResourceGathered",
+    "ResourceConsumed",
+    "ActivityPerformed",
 }
 
 

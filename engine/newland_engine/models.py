@@ -6,7 +6,15 @@ from typing import Any, Literal
 from uuid import uuid4
 
 Visibility = Literal["public", "local", "private"]
-ActionType = Literal["speak", "move", "rest", "offer_help"]
+ActionType = Literal[
+    "speak",
+    "move",
+    "rest",
+    "offer_help",
+    "gather",
+    "consume",
+    "perform_activity",
+]
 
 
 def world_time_for_tick(tick: int) -> str:
@@ -216,6 +224,9 @@ class Intention:
     destination: str | None = None
     duration_minutes: int = 10
     spoken_content: str | None = None
+    resource_id: str | None = None
+    quantity: float | None = None
+    activity_id: str | None = None
     motivation_summary: str = ""
     confidence: float = 0.5
 
@@ -228,6 +239,13 @@ class Intention:
             raise ValueError("speak requires spoken_content")
         if self.action_type == "move" and not self.destination:
             raise ValueError("move requires destination")
+        if self.action_type in {"gather", "consume"}:
+            if not self.resource_id:
+                raise ValueError(f"{self.action_type} requires resource_id")
+            if self.quantity is None or self.quantity <= 0:
+                raise ValueError(f"{self.action_type} requires a positive quantity")
+        if self.action_type == "perform_activity" and not self.activity_id:
+            raise ValueError("perform_activity requires activity_id")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -241,7 +259,28 @@ class MaterialAgentState:
     energy: float = 0.8
     hunger: float = 0.1
     thirst: float = 0.1
+    inventory: dict[str, float] = field(default_factory=dict)
+    inventory_capacity: float = 20.0
     active: bool = True
+
+
+@dataclass(slots=True)
+class ResourceNode:
+    resource_id: str
+    kind: str
+    label: str
+    location: str
+    quantity: float
+    unit: str
+    renewable: bool = False
+
+
+@dataclass(slots=True)
+class ActivityDefinition:
+    activity_id: str
+    label: str
+    location: str
+    energy_cost: float = 0.0
 
 
 @dataclass(slots=True)
@@ -250,6 +289,9 @@ class WorldState:
     world_time: str = field(default_factory=lambda: world_time_for_tick(0))
     locations: dict[str, set[str]] = field(default_factory=dict)
     agents: dict[str, MaterialAgentState] = field(default_factory=dict)
+    resources: dict[str, ResourceNode] = field(default_factory=dict)
+    resource_effects: dict[str, dict[str, float]] = field(default_factory=dict)
+    activities: dict[str, ActivityDefinition] = field(default_factory=dict)
 
     def agents_at(self, location: str) -> tuple[str, ...]:
         return tuple(
@@ -257,5 +299,29 @@ class WorldState:
                 agent_id
                 for agent_id, state in self.agents.items()
                 if state.location == location
+            )
+        )
+
+    def resources_at(self, location: str) -> tuple[ResourceNode, ...]:
+        return tuple(
+            sorted(
+                (
+                    resource
+                    for resource in self.resources.values()
+                    if resource.location == location and resource.quantity > 0
+                ),
+                key=lambda resource: resource.resource_id,
+            )
+        )
+
+    def activities_at(self, location: str) -> tuple[ActivityDefinition, ...]:
+        return tuple(
+            sorted(
+                (
+                    activity
+                    for activity in self.activities.values()
+                    if activity.location == location
+                ),
+                key=lambda activity: activity.activity_id,
             )
         )

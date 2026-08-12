@@ -59,6 +59,25 @@ def main(argv: list[str] | None = None) -> int:
                         "locations": {
                             key: sorted(value) for key, value in state.locations.items()
                         },
+                        "resources": {
+                            key: {
+                                "kind": value.kind,
+                                "label": value.label,
+                                "location": value.location,
+                                "quantity": value.quantity,
+                                "unit": value.unit,
+                                "renewable": value.renewable,
+                            }
+                            for key, value in state.resources.items()
+                        },
+                        "activities": {
+                            key: {
+                                "label": value.label,
+                                "location": value.location,
+                                "energy_cost": value.energy_cost,
+                            }
+                            for key, value in state.activities.items()
+                        },
                         "agents": {
                             key: {
                                 "name": value.name,
@@ -66,6 +85,8 @@ def main(argv: list[str] | None = None) -> int:
                                 "energy": value.energy,
                                 "hunger": value.hunger,
                                 "thirst": value.thirst,
+                                "inventory": value.inventory,
+                                "inventory_capacity": value.inventory_capacity,
                             }
                             for key, value in state.agents.items()
                         },

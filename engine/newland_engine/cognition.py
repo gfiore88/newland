@@ -12,6 +12,21 @@ from .perception import Observation
 
 
 @dataclass(frozen=True, slots=True)
+class ResourceAffordance:
+    resource_id: str
+    kind: str
+    label: str
+    quantity: float
+    unit: str
+
+
+@dataclass(frozen=True, slots=True)
+class ActivityAffordance:
+    activity_id: str
+    label: str
+
+
+@dataclass(frozen=True, slots=True)
 class CognitionContext:
     mind: AgentMind
     material_state: MaterialAgentState
@@ -19,6 +34,9 @@ class CognitionContext:
     nearby_agents: tuple[tuple[str, str], ...]
     activation_reason: str
     world_tick: int = 0
+    adjacent_locations: tuple[str, ...] = ()
+    local_resources: tuple[ResourceAffordance, ...] = ()
+    available_activities: tuple[ActivityAffordance, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -248,8 +266,13 @@ class OllamaCognition:
         payload = {
             "model": self.model,
             "stream": False,
+            "think": False,
             "format": self._schema(),
-            "options": {"temperature": 0.7},
+            "options": {
+                "temperature": 0.7,
+                "num_ctx": 16384,
+                "num_predict": 2048,
+            },
             "messages": messages,
         }
         request = Request(
@@ -279,6 +302,8 @@ class OllamaCognition:
             "puoi scegliere di non memorizzare un evento. Beliefs, relazioni, affetti, riflessioni e obiettivi "
             "cambiano soltanto se tu produci un mental_update con fonti valide; usa array vuoti se nulla cambia. "
             "Scegli inoltre quando vorrai riesaminare la situazione tramite attention_schedule. "
+            "Puoi usare soltanto destination, resource_id e activity_id elencati nelle affordance locali; "
+            "la loro presenza non ti obbliga a usarli. "
             "Non inventare oggetti, persone, luoghi o conoscenze. "
             "Restituisci soltanto il JSON richiesto. "
             "motivation_summary deve essere una motivazione breve e dichiarabile, non ragionamento nascosto."
@@ -418,7 +443,29 @@ class OllamaCognition:
                     }
                     for commitment in context.mind.commitments.values()
                 ],
+                "inventory": context.material_state.inventory,
+                "inventory_capacity": context.material_state.inventory_capacity,
                 "location": context.material_state.location,
+            },
+            "local_affordances": {
+                "adjacent_locations": context.adjacent_locations,
+                "resources": [
+                    {
+                        "resource_id": resource.resource_id,
+                        "kind": resource.kind,
+                        "label": resource.label,
+                        "quantity": resource.quantity,
+                        "unit": resource.unit,
+                    }
+                    for resource in context.local_resources
+                ],
+                "activities": [
+                    {
+                        "activity_id": activity.activity_id,
+                        "label": activity.label,
+                    }
+                    for activity in context.available_activities
+                ],
             },
             "world_tick": context.world_tick,
             "activation_reason": context.activation_reason,
@@ -483,7 +530,15 @@ class OllamaCognition:
                     "properties": {
                         "action_type": {
                             "type": "string",
-                            "enum": ["speak", "move", "rest", "offer_help"],
+                            "enum": [
+                                "speak",
+                                "move",
+                                "rest",
+                                "offer_help",
+                                "gather",
+                                "consume",
+                                "perform_activity",
+                            ],
                         },
                         "target_id": {"type": ["string", "null"]},
                         "destination": {"type": ["string", "null"]},
@@ -493,6 +548,12 @@ class OllamaCognition:
                             "maximum": 240,
                         },
                         "spoken_content": {"type": ["string", "null"]},
+                        "resource_id": {"type": ["string", "null"]},
+                        "quantity": {
+                            "type": ["number", "null"],
+                            "exclusiveMinimum": 0,
+                        },
+                        "activity_id": {"type": ["string", "null"]},
                         "motivation_summary": {"type": "string", "maxLength": 300},
                         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
                     },
@@ -502,6 +563,9 @@ class OllamaCognition:
                         "destination",
                         "duration_minutes",
                         "spoken_content",
+                        "resource_id",
+                        "quantity",
+                        "activity_id",
                         "motivation_summary",
                         "confidence",
                     ],

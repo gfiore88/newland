@@ -4,10 +4,12 @@ from pathlib import Path
 from typing import Self
 
 from .cognition import (
+    ActivityAffordance,
     CognitionContext,
     CognitionProvider,
     CognitionUnavailable,
     MemoryAppraisal,
+    ResourceAffordance,
     validate_cognition_result,
 )
 from .event_store import EventStore
@@ -40,6 +42,67 @@ DEFAULT_AGENTS = (
     ),
 )
 
+INITIAL_TERRITORY = {
+    "locations": {
+        "cittadina_iniziale": ["bosco_est", "campo_nord"],
+        "campo_nord": ["cittadina_iniziale", "sorgente_chiara"],
+        "bosco_est": ["cittadina_iniziale", "sorgente_chiara"],
+        "sorgente_chiara": ["bosco_est", "campo_nord"],
+    },
+    "resources": {
+        "deposito_legna_caduta": {
+            "kind": "legna",
+            "label": "legna caduta",
+            "location": "bosco_est",
+            "quantity": 80.0,
+            "unit": "kg",
+            "renewable": False,
+        },
+        "cespugli_bacche": {
+            "kind": "bacche",
+            "label": "bacche selvatiche",
+            "location": "bosco_est",
+            "quantity": 30.0,
+            "unit": "kg",
+            "renewable": True,
+        },
+        "vena_sorgente": {
+            "kind": "acqua",
+            "label": "acqua di sorgente",
+            "location": "sorgente_chiara",
+            "quantity": 500.0,
+            "unit": "litri",
+            "renewable": True,
+        },
+    },
+    "resource_effects": {
+        "acqua": {"thirst": 0.5},
+        "bacche": {"hunger": 0.35, "energy": 0.05},
+    },
+    "activities": {
+        "esaminare_edifici": {
+            "label": "esaminare gli edifici silenziosi",
+            "location": "cittadina_iniziale",
+            "energy_cost": 0.01,
+        },
+        "osservare_terreno": {
+            "label": "osservare il terreno del campo",
+            "location": "campo_nord",
+            "energy_cost": 0.02,
+        },
+        "esplorare_sottobosco": {
+            "label": "esplorare il sottobosco",
+            "location": "bosco_est",
+            "energy_cost": 0.04,
+        },
+        "ascoltare_sorgente": {
+            "label": "ascoltare e osservare la sorgente",
+            "location": "sorgente_chiara",
+            "energy_cost": 0.01,
+        },
+    },
+}
+
 
 class NewlandSimulation:
     def __init__(
@@ -63,6 +126,7 @@ class NewlandSimulation:
                 raise RuntimeError(
                     "event store contains a world but no persisted minds"
                 )
+            self._ensure_territory()
             return
 
         minds = {
@@ -78,13 +142,7 @@ class NewlandSimulation:
                 event_type="WorldInitialized",
                 world_tick=tick,
                 world_time=world_time,
-                payload={
-                    "name": "Newland",
-                    "locations": {
-                        "cittadina_iniziale": ["campo_nord"],
-                        "campo_nord": ["cittadina_iniziale"],
-                    },
-                },
+                payload={"name": "Newland", **INITIAL_TERRITORY},
             )
         ]
         for mind in minds.values():
@@ -102,6 +160,7 @@ class NewlandSimulation:
                             "energy": 0.8,
                             "hunger": 0.1,
                             "thirst": 0.1,
+                            "inventory_capacity": 20.0,
                         },
                         visibility="private",
                         recipient_ids=(mind.agent_id,),
@@ -123,6 +182,18 @@ class NewlandSimulation:
         self.minds = minds
         for mind in self.minds.values():
             self.store.save_mind(mind)
+
+    def _ensure_territory(self) -> None:
+        if self.state.resources and self.state.activities:
+            return
+        event = EventEnvelope(
+            event_type="TerritoryConfigured",
+            world_tick=self.state.tick,
+            world_time=world_time_for_tick(self.state.tick),
+            payload=INITIAL_TERRITORY,
+        )
+        persisted = self.store.append(event)
+        reduce_event(self.state, persisted)
 
     def seed_initial_encounter(self) -> None:
         self.initialize()
@@ -222,6 +293,24 @@ class NewlandSimulation:
             nearby_agents=nearby,
             activation_reason=reason,
             world_tick=tick,
+            adjacent_locations=tuple(sorted(self.state.locations[material.location])),
+            local_resources=tuple(
+                ResourceAffordance(
+                    resource_id=resource.resource_id,
+                    kind=resource.kind,
+                    label=resource.label,
+                    quantity=resource.quantity,
+                    unit=resource.unit,
+                )
+                for resource in self.state.resources_at(material.location)
+            ),
+            available_activities=tuple(
+                ActivityAffordance(
+                    activity_id=activity.activity_id,
+                    label=activity.label,
+                )
+                for activity in self.state.activities_at(material.location)
+            ),
         )
         try:
             cognition_result = self.cognition.decide(context)
@@ -448,15 +537,32 @@ class NewlandSimulation:
         self, actor_id: str, tick: int, events: list[EventEnvelope]
     ) -> None:
         for event in events:
-            if event.event_type not in {"SpeechUttered", "HelpOffered"}:
+            if event.event_type in {"SpeechUttered", "HelpOffered"}:
+                target_id = event.payload.get("target_id")
+                if target_id and target_id != actor_id:
+                    self.scheduler.schedule(
+                        target_id,
+                        tick=tick + 1,
+                        reason=f"reazione a {event.event_type} di {actor_id}",
+                        priority=20,
+                    )
                 continue
-            target_id = event.payload.get("target_id")
-            if target_id and target_id != actor_id:
+            if event.event_type not in {
+                "AgentMoved",
+                "AgentRested",
+                "ResourceGathered",
+                "ResourceConsumed",
+                "ActivityPerformed",
+            }:
+                continue
+            for observer_id in event.recipient_ids:
+                if observer_id == actor_id:
+                    continue
                 self.scheduler.schedule(
-                    target_id,
+                    observer_id,
                     tick=tick + 1,
-                    reason=f"reazione a {event.event_type} di {actor_id}",
-                    priority=20,
+                    reason=f"evento locale osservabile: {event.event_type}",
+                    priority=25,
                 )
 
     def close(self) -> None:

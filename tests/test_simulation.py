@@ -11,9 +11,11 @@ from helpers import (
     InvalidAppraisalTestCognition,
     InvalidCommitmentTestCognition,
     ScriptedTestCognition,
+    SituatedActivityTestCognition,
     UnavailableTestCognition,
 )
 from newland_engine.event_store import EventStore
+from newland_engine.models import AgentMind, EventEnvelope, world_time_for_tick
 from newland_engine.simulation import NewlandSimulation
 from newland_engine.world import replay
 
@@ -264,6 +266,85 @@ class SimulationTests(unittest.TestCase):
             self.assertIn("CognitionDeferred", event_types)
             self.assertNotIn("ActionProposed", event_types)
             self.assertNotIn("CommitmentRevised", event_types)
+
+    def test_agent_receives_only_situated_affordances_and_can_choose_one(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            cognition = SituatedActivityTestCognition()
+            with NewlandSimulation(path, cognition=cognition) as simulation:
+                produced = simulation.run(max_activations=1)
+
+            context = cognition.contexts[0]
+            self.assertEqual(("bosco_est", "campo_nord"), context.adjacent_locations)
+            self.assertEqual((), context.local_resources)
+            self.assertEqual(
+                ("esaminare_edifici",),
+                tuple(
+                    activity.activity_id for activity in context.available_activities
+                ),
+            )
+            activity = next(
+                event for event in produced if event.event_type == "ActivityPerformed"
+            )
+            self.assertEqual("esaminare_edifici", activity.payload["activity_id"])
+            self.assertEqual(
+                "situated-activity-fixture",
+                next(
+                    event for event in produced if event.event_type == "ActionProposed"
+                ).payload["cognition"]["model"],
+            )
+
+    def test_existing_world_receives_a_replayable_territory_configuration(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            legacy_mind = AgentMind(
+                agent_id="nwl-legacy",
+                name="Legacy Newlander",
+                values=["continuità"],
+                temperament=["vigile"],
+            )
+            with EventStore(path) as store:
+                store.append_many(
+                    [
+                        EventEnvelope(
+                            event_type="WorldInitialized",
+                            world_tick=0,
+                            world_time=world_time_for_tick(0),
+                            payload={
+                                "name": "Newland",
+                                "locations": {"cittadina_iniziale": []},
+                            },
+                        ),
+                        EventEnvelope(
+                            event_type="AgentRegistered",
+                            world_tick=0,
+                            world_time=world_time_for_tick(0),
+                            actor_ids=(legacy_mind.agent_id,),
+                            location="cittadina_iniziale",
+                            payload={
+                                "name": legacy_mind.name,
+                                "location": "cittadina_iniziale",
+                            },
+                            visibility="private",
+                            recipient_ids=(legacy_mind.agent_id,),
+                        ),
+                    ]
+                )
+                store.save_mind(legacy_mind)
+
+            with NewlandSimulation(
+                path, cognition=ScriptedTestCognition()
+            ) as simulation:
+                simulation.initialize()
+                self.assertIn("vena_sorgente", simulation.state.resources)
+                self.assertEqual(
+                    "TerritoryConfigured", simulation.store.events()[-1].event_type
+                )
+
+            with EventStore(path) as store:
+                reconstructed = replay(store.events())
+            self.assertIn("bosco_est", reconstructed.locations)
+            self.assertIn("esplorare_sottobosco", reconstructed.activities)
 
 
 if __name__ == "__main__":

@@ -49,6 +49,23 @@ class PerceptionTests(unittest.TestCase):
         self.assertEqual(1, len(self.service.perceive("nwl-002", [local])))
         self.assertEqual([], self.service.perceive("nwl-003", [local]))
 
+    def test_local_resource_action_is_perceptible_without_private_intention(
+        self,
+    ) -> None:
+        gathered = EventEnvelope(
+            event_type="ResourceGathered",
+            world_tick=4,
+            world_time=world_time_for_tick(4),
+            actor_ids=("nwl-001",),
+            location="forest",
+            payload={"resource_id": "berries", "quantity": 1.0},
+            visibility="local",
+            recipient_ids=("nwl-001", "nwl-002"),
+        )
+        perceived = self.service.perceive("nwl-002", [gathered])
+        self.assertEqual([gathered], [item.event for item in perceived])
+        self.assertEqual([], self.service.perceive("nwl-003", [gathered]))
+
 
 if __name__ == "__main__":
     unittest.main()

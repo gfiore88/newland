@@ -287,3 +287,31 @@ class InvalidCommitmentTestCognition:
             inference_id=str(uuid4()),
             attempts=1,
         )
+
+
+class SituatedActivityTestCognition:
+    def __init__(self) -> None:
+        self.contexts: list[CognitionContext] = []
+
+    def decide(self, context: CognitionContext) -> CognitionResult:
+        self.contexts.append(context)
+        activity = context.available_activities[0]
+        return CognitionResult(
+            intention=Intention(
+                action_type="perform_activity",
+                activity_id=activity.activity_id,
+                duration_minutes=10,
+                motivation_summary="Esplorare un'affordance locale percepita.",
+                confidence=0.8,
+            ),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(),
+            attention_schedule=AttentionSchedule(
+                next_activation_in_ticks=5,
+                reason="Valutare ciò che l'attività mi avrà mostrato.",
+            ),
+            provider="test-double",
+            model="situated-activity-fixture",
+            inference_id=str(uuid4()),
+            attempts=1,
+        )
