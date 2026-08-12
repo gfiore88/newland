@@ -15,6 +15,10 @@ uv run newland --db data/newland.db run
 uv run newland --db data/newland.db run \
   --model qwen3:8b --model qwen3:4b
 
+# Modello riflessivo opzionale per risonanza e conflitti attivi
+uv run newland --db data/newland.db run \
+  --model qwen3:8b --reflective-model qwen3:30b
+
 # Ispezione della verità canonica
 uv run newland --db data/newland.db events
 uv run newland --db data/newland.db state

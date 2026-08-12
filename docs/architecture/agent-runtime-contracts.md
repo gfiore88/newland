@@ -9,6 +9,7 @@
 - [BND-003] Il servizio LLM è stateless: riceve un contesto privato e restituisce una proposta d'azione.
 - [BND-004] Il `WorldAdjudicator` è l'unico componente autorizzato a produrre conseguenze canoniche delle azioni.
 - [BND-005] Cronista e UI sono proiezioni downstream e non partecipano alla deliberazione.
+- [BND-006] Il router cognitivo seleziona soltanto un tier di inferenza; non modifica contesto privato, intenzione o aggiornamenti mentali generati dal provider scelto.
 
 ## 2. Event envelope canonico
 
@@ -151,10 +152,13 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [SCH-002] I processi fisici e fisiologici deterministici avanzano senza chiamate LLM; nessun processo deterministico sceglie un'intenzione per un abitante.
 - [SCH-003] A parità di tick e priorità, l'ordine è stabile per `agent_id`.
 - [SCH-004] Un errore di inferenza attiva riparazione generativa, eventuale failover generativo e infine `CognitionDeferred`; non produce mai un'azione statica sostitutiva.
-- [SCH-005] Ogni `ActionProposed` registra provider, modello, inference ID, versione prompt e numero di tentativi.
+- [SCH-005] Ogni `ActionProposed` registra provider, modello, inference ID, versione prompt, numero di tentativi e route cognitiva.
 - [SCH-006] Il runtime persiste `AttentionScheduled` e riattiva la mente al tick scelto dal modello, senza prescrivere il contenuto della deliberazione.
 - [SCH-007] Gli impegni attivi producono un richiamo alla scadenza scelta dalla mente; il richiamo non implica alcuna azione automatica.
 - [SCH-008] Al riavvio, l'agenda viene ricostruita da eventi non ancora percepiti, prossima attenzione persistita e impegni attivi.
+- [SCH-009] Cognizione ordinaria usa il pool rapido; un segnale di risonanza percepito o un conflitto attivo usa il pool riflessivo configurato.
+- [SCH-010] Entrambi i pool ricevono lo stesso `CognitionContext` isolato dell'agente e possono contenere più modelli per failover esclusivamente generativo.
+- [SCH-011] Se non viene configurato un pool riflessivo distinto, la route resta auditabile ma usa lo stesso pool ordinario; il router non sintetizza mai un risultato.
 
 ### Bisogni corporei
 

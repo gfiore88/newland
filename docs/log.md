@@ -102,3 +102,10 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Le riflessioni possono ora fondarsi direttamente su eventi percepiti oltre che su memorie persistite; le variazioni affettive intense restano scelte dal modello e lo stato finale rimane limitato fra zero e uno.
 - Verificati isolamento, replay, migrazione, assenza di tassonomie e assenza di flashback statici con 62 test automatici.
 - Verificato con Ollama `qwen3:8b`: dopo il segnale del bosco Elia ha generato autonomamente due esperienze soggettive, una riflessione, la scelta di restare ricettivo e un'azione separata poi correttamente rifiutata dall'arbitro perché fisicamente invalida.
+
+## [2026-08-12] implementation | Milestone 2 - Routing Cognitivo
+- Introdotto `RoutedCognition` con tier ordinario e riflessivo, entrambi conformi allo stesso contratto generativo e allo stesso confine privato per agente.
+- I segnali di risonanza percepiti e i conflitti attivi vengono inoltrati al tier riflessivo; le altre attivazioni restano sul tier ordinario.
+- Il router non seleziona, corregge o sostituisce azioni e mutazioni mentali: inoltra integralmente il `CognitionResult` del modello e aggiunge soltanto la route alla provenienza.
+- La CLI accetta pool ripetibili `--model` e `--reflective-model`; senza configurazione riflessiva distinta riusa il pool ordinario senza caricare un altro modello.
+- Verificati routing, identità del contesto privato e provenienza con 64 test automatici.
