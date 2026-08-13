@@ -191,3 +191,8 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - La deliberazione ha esaurito tre riparazioni generative per provenienza di anamnesi non valida ed è diventata `CognitionDeferred`; nessuna azione o esperienza statica ha sostituito la mente.
 - Lo smoke ha rivelato che un job già accodato poteva partire durante lo shutdown; l'ammissione ora entra in stato chiuso, lascia terminare soltanto la chiamata attiva e rifiuta quelle in attesa.
 - Il modello Ollama caricato dallo smoke è stato arrestato; al termine non risultano processi LLM attivi.
+
+## [2026-08-13] ingest | Proposta UI dell'Observer (ADR-0014)
+- Ingerito il design system e la proposta visuale `docs/raw/newland-ui-proposal.md`.
+- Generato `docs/wiki/sources/src-newland-ui-proposal.md` e collegato alle entità esistenti *Cronista Silenzioso* e *Console dell'Architetto*.
+- Approvato e registrato ADR-0014 `docs/adr/adr-0014-observer-ui-architecture-and-aesthetics.md` per l'adozione del design system (DOM overlay su PixiJS WebGL).

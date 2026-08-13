@@ -13,3 +13,4 @@
 ## Riferimenti
 - ADR: [adr-0003-silent-chronicler-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0003-silent-chronicler-observer-architecture.md)
 - Concetto correlato: [cnc-console-dell-architetto.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-console-dell-architetto.md)
+- Proposta UI: [src-newland-ui-proposal.md](../sources/src-newland-ui-proposal.md)

@@ -14,3 +14,4 @@ La *Console dell'Architetto* è lo strumento extradiegetico a disposizione dell'
 ## Riferimenti
 - ADR: [adr-0003-silent-chronicler-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0003-silent-chronicler-observer-architecture.md)
 - Entità correlata: [ent-cronista-silenzioso.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/entities/ent-cronista-silenzioso.md)
+- Proposta UI: [src-newland-ui-proposal.md](../sources/src-newland-ui-proposal.md)

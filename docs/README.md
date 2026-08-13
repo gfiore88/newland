@@ -65,3 +65,7 @@ docs/
 | **Roadmap Engine** | [implementation-roadmap.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/implementation-roadmap.md) | Milestone dal vertical slice agentico alla UI WebGL obbligatoria. |
 | **Template Personaggi** | [character-template.agent.md](file:///Users/giovannifiore/Desktop/newland/docs/agents/templates/character-template.agent.md) | Template di base per la scheda agentica (.agent.md) di ogni Newlander. |
 | **Skill Auto-Annealing** | [character-auto-annealing/SKILL.md](file:///Users/giovannifiore/Desktop/newland/skills/character-auto-annealing/SKILL.md) | Skill Addy Osmani per l'evoluzione ed auto-commit dei personaggi. |
+| **Governance ADR-0014** | [adr-0014-observer-ui-architecture-and-aesthetics.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0014-observer-ui-architecture-and-aesthetics.md) | ADR Nygard: Architettura e Design System dell'Observer UI |
+
+## Wiki RAG: Fonti Aggiuntive
+- [Proposta UI dell'Observer](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-newland-ui-proposal.md)
