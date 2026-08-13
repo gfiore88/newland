@@ -1,7 +1,7 @@
 ---
 id: adr-0012
 title: "Cognitive Stalemate Resolution for Small LLMs"
-status: "Proposed"
+status: "Accepted"
 date: "2026-08-12"
 authors: ["Agent AI", "Giovanni Fiore"]
 tags: ["cognition", "prompting", "bugfix"]
