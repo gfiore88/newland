@@ -48,6 +48,8 @@ Ogni evento persistito contiene:
 - [EVT-014] `ResonanceNodesConfigured` registra posizione e intensità fisica dei nodi senza descrivere effetti mentali.
 - [EVT-015] `ResonanceSignalReceived` contiene esclusivamente nodo, intensità e modalità di esposizione ed è privato dell'abitante coinvolto.
 - [EVT-016] `AnamnesisFragmentRevised` e `ResonanceOrientationRevised` sono mutazioni private generate dalla mente con provenienza Ollama.
+- [EVT-017] `ActionStarted`, `ActionCompleted` e `ActionInterrupted` rendono replayable il tempo realmente occupato da un'azione; la conseguenza materiale esiste soltanto al completamento.
+- [EVT-018] `NeedsChanged` conserva separatamente esposizione a esaurimento, inedia e disidratazione, così la causa di un eventuale `AgentDied` non dipende da stato volatile.
 
 ## 3. Contratto `AgentMind`
 
@@ -65,6 +67,7 @@ La baseline persiste:
 - [MND-010] interpretazioni private e rivedibili dei ruoli propri o di persone conosciute, con etichetta libera, confidenza e provenienza.
 - [MND-011] frammenti di anamnesi soggettivi, fallibili e rivedibili, distinti dai fatti canonici del mondo.
 - [MND-012] orientamento personale verso la risonanza: la mente può scegliere di restare ricettiva o chiudere il proprio canale attentivo.
+- [MND-013] Il retrieval può consolidare memorie semanticamente equivalenti nella sola vista cognitiva, esponendo frequenza e provenienza senza cancellare o riscrivere gli episodi originali.
 
 Salienza soggettiva, tono emotivo, convinzioni, interpretazione delle relazioni e riflessioni sono output generativi della mente. Il runtime ne valida intervalli e riferimenti agli eventi percepiti, ma non li assegna con tabelle o euristiche statiche.
 
@@ -118,6 +121,9 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [ACT-008] Le attività possono richiedere una competenza minima e produrre esperienza incrementale; il runtime non deriva da ciò un ruolo comunitario.
 - [ACT-009] I parametri estranei all'azione scelta vengono rimossi al confine del protocollo LLM; azione, contenuti e parametri pertinenti restano quelli generati dalla mente e attraversano la normale validazione.
 - [ACT-010] `attune_resonance` è un'intenzione generativa volontaria valida soltanto presso un nodo locale; il suo esito fisico non prescrive alcuna esperienza interiore.
+- [ACT-011] La durata proposta dalla mente viene convertita in tick canonici: accettazione e inizio non applicano l'effetto materiale, che viene ricalcolato e validato al completamento.
+- [ACT-012] Durante un'azione pendente l'agente resta esposto al tempo e alla fisiologia; morte o perdita delle precondizioni producono `ActionInterrupted` senza effetto materiale.
+- [ACT-013] Il contesto privato espone costi, unità temporali ed effetti consumabili dalla stessa policy usata dall'arbitro, senza consigliare quale azione scegliere.
 
 ## 6. Arrivi e identità sociali
 
@@ -162,6 +168,8 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [SCH-012] In modalità `--continuous` il processo esegue una sola attivazione completa per iterazione e prosegue finché riceve un arresto esterno.
 - [SCH-013] Ctrl-C chiude il processo tra transazioni; non genera azioni, pensieri o eventi canonici di arresto attribuiti ai Newlander.
 - [SCH-014] Gli eventi di ogni attivazione vengono emessi su standard output soltanto dopo il commit atomico di evento e snapshot mentale.
+- [SCH-015] Una condizione somatica critica o fatale genera richiami ravvicinati finché persiste, senza cambiare obiettivi, intenzione o priorità semantica della mente.
+- [SCH-016] Il completamento di un'azione è un'attivazione materiale distinta dalla deliberazione e viene ricostruito da `ActionStarted` dopo un riavvio.
 
 ### Supervisione e inferenza condivisa
 
@@ -180,6 +188,9 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [BDY-002] Il tempo modifica questi valori attraverso `NeedsChanged`, evento privato percepibile esclusivamente dall'abitante interessato.
 - [BDY-003] Il superamento di una soglia può interrompere e riattivare la cognizione, ma non seleziona riposo, cibo, movimento o alcuna altra risposta.
 - [BDY-004] La risposta al corpo resta un'intenzione generativa dell'agente e attraversa il normale arbitraggio del mondo.
+- [BDY-005] Il contesto privato traduce le scale opposte di energia, fame e sete in condizioni nominali, trend, durata della condizione e cause critiche; non contiene un'azione obbligatoria.
+- [BDY-006] Esaurimento, inedia e disidratazione accumulano esposizioni fatali indipendenti soltanto dopo il reale attraversamento della rispettiva soglia.
+- [BDY-007] Recuperare una dimensione corporea azzera soltanto la sua esposizione; le altre cause restano intatte e replayable.
 
 ## 10. Replay e test
 
@@ -192,3 +203,4 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [TST-007] Replay e migrazione ricostruiscono i nodi di risonanza senza rigenerare esperienze interiori.
 - [TST-008] Un test di indisponibilità LLM deve provare che il segnale fisico non produce frammenti o orientamenti statici.
 - [TST-009] Il runner continuo deve essere arrestabile soltanto fra attivazioni complete e non deve imporre un limite implicito al numero di cicli.
+- [TST-010] I test di sopravvivenza verificano informazione, provenienza, replay e fattibilità, ma non impongono alla mente di scegliere una specifica azione salvifica.
