@@ -32,6 +32,10 @@ def validate_mental_updates(
     visible_ids = {
         observation.event.event_id for observation in context.observations
     }
+    remembered_event_ids = {
+        memory.source_event_id for memory in context.mind.memories
+    }
+    known_event_ids = visible_ids | remembered_event_ids
     memory_ids = {memory.memory_id for memory in context.mind.memories}
     perceived_agents = {
         actor_id
@@ -67,7 +71,7 @@ def validate_mental_updates(
         source_memories = set(update.source_memory_ids)
         if not source_events and not source_memories:
             raise ValueError("mental updates require event or memory provenance")
-        if source_events - visible_ids:
+        if source_events - known_event_ids:
             raise ValueError("mental update references unobserved events")
         if source_memories - memory_ids:
             raise ValueError("mental update references unknown memories")
@@ -87,6 +91,10 @@ def validate_mental_updates(
         observation.event.event_id
         for observation in context.observations
         if observation.event.event_type == "ResonanceSignalReceived"
+    } | {
+        memory.source_event_id
+        for memory in context.mind.memories
+        if memory.event_type == "ResonanceSignalReceived"
     }
     resonance_memory_ids = {
         memory.memory_id

@@ -261,6 +261,67 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
         )
         self.assertEqual(-0.8, revision.calm_delta)
 
+    def test_mental_update_accepts_the_source_event_of_a_possessed_memory(
+        self,
+    ) -> None:
+        cognition_context = context()
+        cognition_context.mind.memories = [
+            Memory(
+                memory_id="memory-of-body-event",
+                source_event_id="historical-body-event",
+                event_type="NeedsChanged",
+                summary="Ho percepito il cambiamento del mio corpo.",
+                salience=0.9,
+                emotional_tone="allerta",
+                confidence=0.9,
+                created_tick=11,
+            )
+        ]
+        result = CognitionResult(
+            intention=Intention(action_type="rest"),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                affect=AffectRevision(
+                    calm_delta=-0.2,
+                    curiosity_delta=0.0,
+                    melancholy_delta=0.0,
+                    interpretation="Il ricordo del corpo mi rende vigile.",
+                    source_event_ids=("historical-body-event",),
+                )
+            ),
+            attention_schedule=AttentionSchedule(4, "Riascoltare il corpo."),
+            provider="test-double",
+            model="historical-memory-source-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        validate_cognition_result(result, cognition_context)
+
+    def test_mental_update_still_rejects_an_unknown_historical_event(self) -> None:
+        cognition_context = context()
+        result = CognitionResult(
+            intention=Intention(action_type="rest"),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                affect=AffectRevision(
+                    calm_delta=-0.2,
+                    curiosity_delta=0.0,
+                    melancholy_delta=0.0,
+                    interpretation="Una fonte che non conosco.",
+                    source_event_ids=("invented-historical-event",),
+                )
+            ),
+            attention_schedule=AttentionSchedule(4, "Riascoltare il corpo."),
+            provider="test-double",
+            model="unknown-memory-source-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        with self.assertRaisesRegex(ValueError, "unobserved events"):
+            validate_cognition_result(result, cognition_context)
+
     def test_anamnesis_requires_a_perceived_resonance_source(self) -> None:
         cognition_context = context()
         ordinary_event = EventEnvelope(
@@ -303,6 +364,46 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "resonance provenance"):
             validate_cognition_result(result, cognition_context)
+
+    def test_anamnesis_accepts_the_source_event_of_a_remembered_resonance(
+        self,
+    ) -> None:
+        cognition_context = context()
+        cognition_context.mind.memories = [
+            Memory(
+                memory_id="remembered-resonance",
+                source_event_id="historical-resonance-event",
+                event_type="ResonanceSignalReceived",
+                summary="Ricordo il segnale ricevuto presso la sorgente.",
+                salience=0.8,
+                emotional_tone="stupore",
+                confidence=0.8,
+                created_tick=4,
+            )
+        ]
+        result = CognitionResult(
+            intention=Intention(action_type="rest"),
+            memory_appraisals=(),
+            mental_updates=MentalUpdates(
+                anamnesis_fragments=(
+                    AnamnesisFragmentRevision(
+                        fragment_key="eco_ricordata",
+                        phenomenon_label="eco interiore",
+                        content="Il segnale ritorna nella memoria.",
+                        interpretation="È un ricordo soggettivo, non un nuovo fatto.",
+                        confidence=0.6,
+                        source_event_ids=("historical-resonance-event",),
+                    ),
+                )
+            ),
+            attention_schedule=AttentionSchedule(4, "Riconsiderare il ricordo."),
+            provider="test-double",
+            model="remembered-resonance-source-fixture",
+            inference_id="inference-test",
+            attempts=1,
+        )
+
+        validate_cognition_result(result, cognition_context)
 
     def test_anamnesis_labels_are_free_text_not_runtime_categories(self) -> None:
         schema = get_cognition_schema()["properties"]["mental_updates"][
