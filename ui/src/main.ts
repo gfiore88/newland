@@ -301,6 +301,13 @@ function renderInhabitants(snapshot: ObserverSnapshot, active: Selection | null)
 // ── render: inspector (panel on mondo view) ────────────────────
 function renderInspector(snapshot: ObserverSnapshot, active: Selection | null): void {
   const inspector = el<HTMLDivElement>("#inspector");
+  
+  // Collapse chronicle panel if something is selected
+  const chroniclePanel = document.querySelector(".fp-chronicle");
+  if (chroniclePanel) {
+    chroniclePanel.classList.toggle("collapsed", active !== null);
+  }
+
   if (!inspector) return;
   if (!active) {
     inspector.className = "inspector empty-state";
