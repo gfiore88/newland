@@ -106,6 +106,15 @@ class CliTests(unittest.TestCase):
             str(args.prompt_registry).endswith("docs/prompts/agent-cognition")
         )
 
+    def test_selective_attention_requires_explicit_opt_in_during_canary(self) -> None:
+        parser = build_parser()
+
+        run = parser.parse_args(["run", "--selective-attention"])
+        live = parser.parse_args(["live", "--selective-attention"])
+
+        self.assertTrue(run.selective_attention)
+        self.assertTrue(live.selective_attention)
+
     def test_prompt_commands_expose_status_run_and_rollback(self) -> None:
         parser = build_parser()
 

@@ -58,6 +58,7 @@ class LiveSupervisor:
         prompt_ledger_path: str | Path | None = None,
         allow_prompt_annealing: bool = False,
         prompt_annealer_model: str = "qwen2.5:3b",
+        selective_attention: bool = False,
         max_activations: int | None = None,
         dashscope_requester: DashScopeRequester | None = None,
         cognition: CognitionProvider | None = None,
@@ -127,6 +128,7 @@ class LiveSupervisor:
                     prompt_ledger_path
                     or default_prompt_ledger_path(self.database_path)
                 ),
+                selective_attention=selective_attention,
             )
             cognition = self.configured_cognition.cognition
         if chronicler is None:

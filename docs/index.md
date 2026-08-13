@@ -17,6 +17,7 @@
 - [src-brainstorming-08-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-08-observer-architecture.md) - *Brainstorming 08 & ADR-0003: Architettura dell'Osservatore Integrato.*
 - [src-brainstorming-09-cognitive-economy-and-model-tiers.md](wiki/sources/src-brainstorming-09-cognitive-economy-and-model-tiers.md) - *Brainstorming 09: economia cognitiva, routing multi-modello e benchmark della vera emergenza.*
 - [src-brainstorming-10-alibaba-model-studio-cognition-benchmark.md](wiki/sources/src-brainstorming-10-alibaba-model-studio-cognition-benchmark.md) - *Brainstorming 10: Alibaba Model Studio come upper bound cloud offline, con privacy e budget vincolati.*
+- [src-brainstorming-11-selective-cognitive-attention.md](wiki/sources/src-brainstorming-11-selective-cognitive-attention.md) - *Brainstorming 11: memoria totale distinta dalla coscienza attiva e deliberazione progressiva con minimo contesto sufficiente.*
 
 ---
 
@@ -50,6 +51,7 @@
 - [cnc-gestione-primordiale-conflitti.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-gestione-primordiale-conflitti.md) - *La risoluzione tribale/primordiale dei conflitti e l'emersione spontanea dei ruoli comunitari.*
 - [cnc-console-dell-architetto.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-console-dell-architetto.md) - *L'interfaccia extradiegetica d'ispezione dello stato cognitivo e dei log per l'utente/architetto.*
 - [cnc-economia-cognitiva-multi-modello.md](wiki/concepts/cnc-economia-cognitiva-multi-modello.md) - *Concetto candidato per assegnare capacità, provider e code in base a misure operative senza scegliere al posto degli agenti.*
+- [cnc-selective-cognitive-attention.md](wiki/concepts/cnc-selective-cognitive-attention.md) - *Working set privato e situato, con livelli focali, contestuali e riflessivi ed espansione generativa.*
 
 ---
 
@@ -74,6 +76,7 @@
 - [adr-0018-bounded-cloud-cognition-benchmark.md](adr/adr-0018-bounded-cloud-cognition-benchmark.md) - *ADR-0018 accettato: benchmark cognitivo cloud offline, sanitizzato e strettamente budgetato.*
 - [adr-0019-live-cloud-cognition-with-persistent-budget.md](adr/adr-0019-live-cloud-cognition-with-persistent-budget.md) - *ADR-0019 accettato: cognition Alibaba live con opt-in, budget persistente e continuità soltanto generativa.*
 - [adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md](adr/adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md) - *ADR-0020 accettato: prompt registry esterno, evidenze persistenti e annealing autonomo limitato con rollback.*
+- [adr-0021-selective-cognitive-attention-and-progressive-deliberation.md](adr/adr-0021-selective-cognitive-attention-and-progressive-deliberation.md) - *ADR-0021 accettato: working set attentivo minimo, recupero progressivo e richiesta generativa di contesto.*
 
 ---
 
@@ -82,3 +85,4 @@
 - [Agent Runtime Contracts](file:///Users/giovannifiore/Desktop/newland/docs/architecture/agent-runtime-contracts.md) - *Envelope eventi, confini della mente, percezione, intenzioni, arbitraggio, scheduling e invarianti di replay.*
 - [Observer API Contract](file:///Users/giovannifiore/Desktop/newland/docs/architecture/observer-api-contract.md) - *Read model privilegiato, snapshot HTTP e stream SSE locali senza interferenza sulla simulazione.*
 - [Implementation Roadmap](file:///Users/giovannifiore/Desktop/newland/docs/architecture/implementation-roadmap.md) - *Milestone dal primo vertical slice al territorio sociale e all'observer WebGL.*
+- [Selective Attention Offline Payload](experiments/2026-08-13-selective-attention-offline-payload.md) - *Misura offline: −57,7% sul contesto focale e −39,8% sul payload stimato complessivo.*

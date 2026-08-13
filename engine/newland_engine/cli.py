@@ -105,6 +105,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_live_cloud_options(run_parser)
     _add_prompt_options(run_parser)
+    run_parser.add_argument("--selective-attention", action="store_true")
     run_parser.add_argument(
         "--model",
         action="append",
@@ -180,6 +181,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_live_cloud_options(live_parser)
     _add_prompt_options(live_parser)
+    live_parser.add_argument("--selective-attention", action="store_true")
     live_parser.add_argument("--allow-prompt-annealing", action="store_true")
     live_parser.add_argument(
         "--prompt-annealer-model", default="qwen2.5:3b"
@@ -236,6 +238,7 @@ def main(argv: list[str] | None = None) -> int:
             prompt_ledger_path=(
                 args.prompt_ledger or default_prompt_ledger_path(args.db)
             ),
+            selective_attention=args.selective_attention,
         )
         try:
             with NewlandSimulation(
@@ -329,6 +332,7 @@ def main(argv: list[str] | None = None) -> int:
             prompt_ledger_path=args.prompt_ledger,
             allow_prompt_annealing=args.allow_prompt_annealing,
             prompt_annealer_model=args.prompt_annealer_model,
+            selective_attention=args.selective_attention,
             emit=_print_events,
         )
         try:

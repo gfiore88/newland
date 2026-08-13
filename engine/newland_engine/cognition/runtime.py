@@ -18,6 +18,7 @@ from .provider import CognitionProvider, GenerativeCognitionPool, RoutedCognitio
 from .prompt_learning import PromptFailureLedger
 from .prompt_registry import PromptRegistry
 from .schema import DEFAULT_PROMPT_REGISTRY
+from .attention import ProgressiveCognition
 
 
 DashScopeRequester = Callable[[Request, float], dict[str, Any]]
@@ -25,13 +26,14 @@ DashScopeRequester = Callable[[Request, float], dict[str, Any]]
 
 @dataclass(slots=True)
 class ConfiguredCognition:
-    cognition: RoutedCognition
+    cognition: CognitionProvider
     ordinary_specs: tuple[ModelSpec, ...]
     reflective_specs: tuple[ModelSpec, ...]
     cloud_providers: tuple[DashScopeCognition, ...]
     ledger: CloudUsageLedger | None = None
     prompt_registry: PromptRegistry | None = None
     prompt_failure_ledger: PromptFailureLedger | None = None
+    attention_controller: ProgressiveCognition | None = None
     _closed: bool = False
     _final_health: dict[str, object] | None = None
 
@@ -60,6 +62,11 @@ class ConfiguredCognition:
                 self.prompt_failure_ledger.summary()
                 if self.prompt_failure_ledger is not None
                 else None
+            ),
+            "selective_attention": (
+                self.attention_controller.health()
+                if self.attention_controller is not None
+                else {"enabled": False}
             ),
         }
 
@@ -91,6 +98,7 @@ def build_configured_cognition(
     ledger_path: str | Path,
     prompt_registry_path: str | Path = DEFAULT_PROMPT_REGISTRY,
     prompt_ledger_path: str | Path | None = None,
+    selective_attention: bool = False,
     dashscope_requester: DashScopeRequester | None = None,
 ) -> ConfiguredCognition:
     ordinary_specs = tuple(ModelSpec.parse(value) for value in ordinary_models)
@@ -155,14 +163,17 @@ def build_configured_cognition(
             ledger.close()
         prompt_failure_ledger.close()
         raise
+    routed = RoutedCognition(ordinary, reflective)
+    attention_controller = ProgressiveCognition(routed) if selective_attention else None
     return ConfiguredCognition(
-        cognition=RoutedCognition(ordinary, reflective),
+        cognition=attention_controller or routed,
         ordinary_specs=ordinary_specs,
         reflective_specs=reflective_specs,
         cloud_providers=tuple(cloud_providers),
         ledger=ledger,
         prompt_registry=prompt_registry,
         prompt_failure_ledger=prompt_failure_ledger,
+        attention_controller=attention_controller,
     )
 
 

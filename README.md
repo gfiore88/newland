@@ -34,6 +34,15 @@ uv run newland --db data/newland.db live \
 # Il consumo cumulativo e il circuito sono visibili in /api/health.
 # Il ledger non canonico predefinito è data/newland.cloud-runtime.db.
 
+# Canary opt-in dell'attenzione selettiva ADR-0021.
+# Parte dal minimo contesto sufficiente e può espandere fino al livello riflessivo.
+uv run newland --db data/newland.db live \
+  --model dashscope:qwen-flash-character \
+  --model ollama:qwen2.5:3b \
+  --allow-cloud-live --cloud-token-cap 100000 \
+  --selective-attention --max-activations 3
+# Senza --selective-attention resta attivo il percorso full-context precedente.
+
 # Registry del prompt cognitivo e learning ledger
 # Il prompt attivo vive sotto docs/prompts/, non nei moduli Python.
 uv run newland --db data/newland.db prompts status

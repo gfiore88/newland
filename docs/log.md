@@ -4,6 +4,25 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 
 ---
 
+## [2026-08-13] ingest | Brainstorming 11 - Attenzione cognitiva selettiva
+- Acquisita la distinzione fra memoria totale, memoria attiva, percezione e contesto d'inferenza.
+- Formalizzato il principio del minimo contesto sufficiente con espansione per incertezza, conflitto, rischio o conseguenze importanti.
+- Rilevato che il runtime attuale limita già le affordance al luogo ma include ancora collezioni mentali globali e retrieval prevalentemente per salienza/recenza.
+- Riscritta la proposta ADR-0021: l'ottimizzazione sintattica diventa subordinata a working set attentivi L1/L2/L3 e richieste generative di contesto.
+- Preservato ADR-0008: il livello procedurale completa soltanto intenzioni già generate e non sceglie nuove reazioni statiche.
+
+## [2026-08-13] adr | Approvazione ADR-0021 - Attenzione cognitiva selettiva
+- Giovanni Fiore ha approvato esplicitamente ADR-0021.
+- Autorizzata l'implementazione di working set focali, contestuali e riflessivi, retrieval legato al focus e richieste generative di espansione.
+- Il canary Alibaba reale resta escluso dall'autorizzazione implicita e richiederà un avvio intenzionale separato con budget persistente.
+
+## [2026-08-13] implementation | Vertical slice ADR-0021 - Attenzione selettiva
+- Implementati working set `focal`, `contextual` e `reflective`, con promozione minima per persona presente, impegno scaduto, rifiuti ripetuti, disputa, risonanza e rischio corporeo critico.
+- Introdotta la richiesta generativa e validata di espansione del contesto, limitata a due passaggi e senza fallback comportamentale statico.
+- Compattato deterministicamente il contratto DashScope nel percorso progressivo e conservato invariato il percorso full-context senza opt-in.
+- Registrate provenance e health attentive; gli ID dichiarati sono limitati alle fonti realmente incluse nel working set.
+- Misurata offline una riduzione del 57,7% del contesto focale e del 39,8% del payload complessivo stimato; nessuna quota cloud è stata consumata.
+
 ## [2026-08-12] init | Inizializzazione Karpathy LLM-Wiki RAG Architecture (ADR-0002)
 - Creata la struttura a 3 livelli: `docs/raw/`, `docs/wiki/`, `docs/wiki-schema.md`.
 - Inizializzato il catalogo `docs/index.md` e la direttiva di manutenzione `docs/wiki-schema.md`.

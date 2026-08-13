@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+from dataclasses import replace
 from collections.abc import Callable
 from time import monotonic
 from typing import Any
@@ -20,6 +22,14 @@ from .types import (
     AttentionSchedule,
     CognitionContext,
     CognitionResult,
+    ContextExpansionRequest,
+)
+from .attention import (
+    ATTENTION_SYSTEM_INSTRUCTION,
+    COMPACT_SCHEMA_LEGEND,
+    compact_schema_contract,
+    parse_context_expansion,
+    progressive_response_schema,
 )
 from .validation import validate_cognition_result
 
@@ -81,22 +91,59 @@ class DashScopeCognition:
         self._failed_requests = 0
         self._total_wall_seconds = 0.0
 
-    def decide(self, context: CognitionContext) -> CognitionResult:
+    def decide(
+        self, context: CognitionContext
+    ) -> CognitionResult | ContextExpansionRequest:
         if self._circuit_is_open():
             raise CognitionUnavailable(
                 [{"model": self.model, "error": "DashScope circuit is open"}]
             )
         inference_id = str(uuid4())
         artifact = self.prompt_registry.snapshot()
-        schema = json.dumps(
-            artifact.schema, ensure_ascii=False, separators=(",", ":")
+        response_schema = (
+            progressive_response_schema(artifact.schema)
+            if context.attention_level != "full"
+            else artifact.schema
+        )
+        progressive = context.attention_level != "full"
+        schema = (
+            compact_schema_contract(response_schema)
+            if progressive
+            else json.dumps(
+                response_schema, ensure_ascii=False, separators=(",", ":")
+            )
+        )
+        attention_instruction = (
+            f" {ATTENTION_SYSTEM_INSTRUCTION}"
+            if context.attention_level != "full"
+            else ""
+        )
+        contract_legend = f" {COMPACT_SCHEMA_LEGEND}" if progressive else ""
+        effective_system_prompt = (
+            f"{artifact.system_prompt}{attention_instruction}{contract_legend}"
+        )
+        effective_version = artifact.version
+        effective_prompt_hash = artifact.prompt_hash
+        effective_schema_hash = artifact.schema_hash
+        if progressive:
+            effective_version += "+selective-attention-v1"
+            effective_prompt_hash = hashlib.sha256(
+                effective_system_prompt.encode()
+            ).hexdigest()
+            effective_schema_hash = hashlib.sha256(schema.encode()).hexdigest()
+        effective_artifact = replace(
+            artifact,
+            version=effective_version,
+            prompt_hash=effective_prompt_hash,
+            schema_hash=effective_schema_hash,
         )
         messages = [
             {
                 "role": "system",
                 "content": (
-                    f"{artifact.system_prompt} JSON Schema vincolante della risposta "
-                    f"finale: {schema}"
+                    f"{effective_system_prompt} "
+                    f"{'Contratto compatto' if progressive else 'JSON Schema'} "
+                    f"vincolante della risposta finale: {schema}"
                 ),
             },
             {
@@ -114,6 +161,20 @@ class DashScopeCognition:
                 body = self._budgeted_request(messages)
                 content = str(body["choices"][0]["message"]["content"])
                 parsed_response = json.loads(content)
+                if (
+                    context.attention_level != "full"
+                    and "context_expansion" in parsed_response
+                ):
+                    expansion = parse_context_expansion(parsed_response)
+                    self._consecutive_transport_failures = 0
+                    self.prompt_registry.observe(
+                        artifact.version,
+                        first_attempt_valid=attempt == 1,
+                        provider=self.provider_family,
+                        model=self.model,
+                        tokens=_reported_total_tokens(body),
+                    )
+                    return expansion
                 result = CognitionResult(
                     intention=parse_intention(parsed_response["intention"]),
                     memory_appraisals=parse_memory_appraisals(
@@ -129,9 +190,9 @@ class DashScopeCognition:
                     model=self.model,
                     inference_id=inference_id,
                     attempts=attempt,
-                    prompt_version=artifact.version,
-                    prompt_hash=artifact.prompt_hash,
-                    schema_hash=artifact.schema_hash,
+                    prompt_version=effective_version,
+                    prompt_hash=effective_prompt_hash,
+                    schema_hash=effective_schema_hash,
                 )
                 validate_cognition_result(result, context)
                 self._consecutive_transport_failures = 0
@@ -165,7 +226,7 @@ class DashScopeCognition:
                 json.JSONDecodeError,
             ) as error:
                 contract_failed = True
-                self._record_prompt_failure(artifact, attempt, error)
+                self._record_prompt_failure(effective_artifact, attempt, error)
                 message = self._redact(str(error))
                 message += _material_contract_detail(parsed_response, context)
                 failures.append({"model": self.model, "error": message})

@@ -202,6 +202,22 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 
 ## 10. Replay e test
 
+### Attenzione selettiva progressiva (ADR-0021)
+
+Con opt-in `--selective-attention`, una nuova deliberazione non riceve l'intera
+mente persistente. Il runtime costruisce un working set privato senza scegliere
+comportamento:
+
+- [ATT-001] `focal`: ancoraggio stabile del sé, trigger, corpo, percezioni e affordance locali;
+- [ATT-002] `contextual`: aggiunge soltanto strutture mentali e memorie legate agli anchor correnti;
+- [ATT-003] `reflective`: rende disponibile il contesto privato ampio per rischio, disputa, risonanza o richiesta precedente;
+- [ATT-004] `ContextExpansionRequested` può chiedere domini enumerati e anchor già visibili; massimo due promozioni terminano a `reflective`;
+- [ATT-005] una richiesta invalida o ulteriore oltre il ceiling produce `CognitionDeferred`, mai un'azione sostitutiva;
+- [ATT-006] provenance registra livello, espansioni, domini e source ID inclusi senza persistere il prompt.
+
+Il livello procedurale senza inferenza riguarda soltanto il completamento fisico
+di un'intenzione già generata e accettata. Non introduce nuove routine statiche.
+
 - [TST-001] Riducendo gli eventi dall'inizio si deve ricostruire lo stesso stato materiale.
 - [TST-002] Un evento privato non deve comparire nella percezione di un altro agente.
 - [TST-003] Un'azione fisicamente impossibile deve generare `ActionRejected` e nessuna conseguenza materiale.

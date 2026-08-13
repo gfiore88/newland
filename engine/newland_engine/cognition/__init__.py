@@ -5,6 +5,7 @@ from .types import (
     CooperationAffordance,
     DisputeAffordance,
     CognitionContext,
+    ContextExpansionRequest,
     MemoryAppraisal,
     BeliefRevision,
     RelationshipRevision,
@@ -33,6 +34,7 @@ from .prompt_learning import (
     PromptLesson,
     PromptLessonRejected,
 )
+from .attention import ProgressiveCognition
 
 __all__ = [
     "ResourceAffordance",
@@ -41,6 +43,7 @@ __all__ = [
     "CooperationAffordance",
     "DisputeAffordance",
     "CognitionContext",
+    "ContextExpansionRequest",
     "MemoryAppraisal",
     "BeliefRevision",
     "RelationshipRevision",
@@ -70,4 +73,5 @@ __all__ = [
     "PromptFailureLedger",
     "PromptLesson",
     "PromptLessonRejected",
+    "ProgressiveCognition",
 ]

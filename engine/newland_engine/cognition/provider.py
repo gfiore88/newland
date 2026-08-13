@@ -1,12 +1,14 @@
 from dataclasses import replace
 from typing import Literal, Protocol
 
-from .types import CognitionContext, CognitionResult
+from .types import CognitionContext, CognitionResult, ContextExpansionRequest
 from .exceptions import CognitionUnavailable
 
 
 class CognitionProvider(Protocol):
-    def decide(self, context: CognitionContext) -> CognitionResult: ...
+    def decide(
+        self, context: CognitionContext
+    ) -> CognitionResult | ContextExpansionRequest: ...
 
 
 class RoutedCognition:
@@ -20,17 +22,24 @@ class RoutedCognition:
         self.ordinary = ordinary
         self.reflective = reflective
 
-    def decide(self, context: CognitionContext) -> CognitionResult:
+    def decide(
+        self, context: CognitionContext
+    ) -> CognitionResult | ContextExpansionRequest:
         route = self.route_for(context)
         provider = self.reflective if route == "reflective" else self.ordinary
-        return replace(provider.decide(context), route=route)
+        output = provider.decide(context)
+        return replace(output, route=route) if isinstance(output, CognitionResult) else output
 
     @staticmethod
     def route_for(context: CognitionContext) -> Literal["ordinary", "reflective"]:
         observed_types = {
             observation.event.event_type for observation in context.observations
         }
-        if "ResonanceSignalReceived" in observed_types or context.active_disputes:
+        if (
+            context.attention_level == "reflective"
+            or "ResonanceSignalReceived" in observed_types
+            or context.active_disputes
+        ):
             return "reflective"
         return "ordinary"
 
@@ -41,7 +50,9 @@ class GenerativeCognitionPool:
             raise ValueError("at least one generative cognition provider is required")
         self.providers = providers
 
-    def decide(self, context: CognitionContext) -> CognitionResult:
+    def decide(
+        self, context: CognitionContext
+    ) -> CognitionResult | ContextExpansionRequest:
         failures: list[dict[str, str]] = []
         stopped_families: set[str] = set()
         for provider in self.providers:

@@ -1,16 +1,28 @@
 import json
+import hashlib
+from dataclasses import replace
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
 from .exceptions import CognitionUnavailable
-from .types import AttentionSchedule, CognitionContext, CognitionResult
+from .types import (
+    AttentionSchedule,
+    CognitionContext,
+    CognitionResult,
+    ContextExpansionRequest,
+)
 from .validation import validate_cognition_result
 from .prompting import build_private_context
 from .prompt_learning import PromptFailure, PromptFailureLedger
 from .prompt_registry import PromptRegistry
 from .schema import DEFAULT_PROMPT_REGISTRY
 from .parsing import parse_intention, parse_memory_appraisals, parse_mental_updates
+from .attention import (
+    ATTENTION_SYSTEM_INSTRUCTION,
+    parse_context_expansion,
+    progressive_response_schema,
+)
 
 
 class OllamaCognition:
@@ -34,11 +46,38 @@ class OllamaCognition:
         )
         self.failure_ledger = failure_ledger
 
-    def decide(self, context: CognitionContext) -> CognitionResult:
+    def decide(
+        self, context: CognitionContext
+    ) -> CognitionResult | ContextExpansionRequest:
         inference_id = str(uuid4())
         artifact = self.prompt_registry.snapshot()
+        system_prompt = artifact.system_prompt
+        response_schema = artifact.schema
+        if context.attention_level != "full":
+            system_prompt += f" {ATTENTION_SYSTEM_INSTRUCTION}"
+            response_schema = progressive_response_schema(artifact.schema)
+        effective_version = artifact.version
+        effective_prompt_hash = artifact.prompt_hash
+        effective_schema_hash = artifact.schema_hash
+        if context.attention_level != "full":
+            effective_version += "+selective-attention-v1"
+            effective_prompt_hash = hashlib.sha256(system_prompt.encode()).hexdigest()
+            effective_schema_hash = hashlib.sha256(
+                json.dumps(
+                    response_schema,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest()
+        effective_artifact = replace(
+            artifact,
+            version=effective_version,
+            prompt_hash=effective_prompt_hash,
+            schema_hash=effective_schema_hash,
+        )
         messages = [
-            {"role": "system", "content": artifact.system_prompt},
+            {"role": "system", "content": system_prompt},
             {
                 "role": "user",
                 "content": json.dumps(
@@ -50,8 +89,20 @@ class OllamaCognition:
         contract_failed = False
         for attempt in range(1, self.max_attempts + 1):
             try:
-                content = self._request(messages, artifact.schema)
+                content = self._request(messages, response_schema)
                 parsed = json.loads(content)
+                if (
+                    context.attention_level != "full"
+                    and "context_expansion" in parsed
+                ):
+                    expansion = parse_context_expansion(parsed)
+                    self.prompt_registry.observe(
+                        artifact.version,
+                        first_attempt_valid=attempt == 1,
+                        provider=self.provider_family,
+                        model=self.model,
+                    )
+                    return expansion
                 intention = parse_intention(parsed["intention"])
                 appraisals = parse_memory_appraisals(parsed["memory_appraisals"])
                 mental_updates = parse_mental_updates(
@@ -67,9 +118,9 @@ class OllamaCognition:
                     model=self.model,
                     inference_id=inference_id,
                     attempts=attempt,
-                    prompt_version=artifact.version,
-                    prompt_hash=artifact.prompt_hash,
-                    schema_hash=artifact.schema_hash,
+                    prompt_version=effective_version,
+                    prompt_hash=effective_prompt_hash,
+                    schema_hash=effective_schema_hash,
                 )
                 validate_cognition_result(result, context)
                 self.prompt_registry.observe(
@@ -84,7 +135,7 @@ class OllamaCognition:
                 break
             except (RuntimeError, TypeError, ValueError, json.JSONDecodeError) as error:
                 contract_failed = True
-                self._record_failure(artifact, attempt, error)
+                self._record_failure(effective_artifact, attempt, error)
                 failures.append({"model": self.model, "error": str(error)})
                 messages.extend(
                     [

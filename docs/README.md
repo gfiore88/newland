@@ -34,7 +34,8 @@ docs/
 │   ├── adr-0017-visual-agent-state-system.md               <-- ADR-0017 (Visual Agent State System)
 │   ├── adr-0018-bounded-cloud-cognition-benchmark.md       <-- ADR-0018 accettato (Cloud Cognition Benchmark)
 │   ├── adr-0019-live-cloud-cognition-with-persistent-budget.md <-- ADR-0019 accettato (Alibaba nella live)
-│   └── adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md <-- ADR-0020 accettato
+│   ├── adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md <-- ADR-0020 accettato
+│   └── adr-0021-selective-cognitive-attention-and-progressive-deliberation.md <-- ADR-0021 accettato
 ├── agents/                                  <-- Specifiche ed Agenti
 │   └── templates/                           <-- Template Schede Personaggio (.agent.md)
 │       └── character-template.agent.md
@@ -78,10 +79,14 @@ docs/
 | **Governance ADR-0018** | [adr-0018-bounded-cloud-cognition-benchmark.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0018-bounded-cloud-cognition-benchmark.md) | Benchmark cloud offline con opt-in, sanitizzazione, limiti locali e nessun effetto canonico. |
 | **Governance ADR-0019** | [adr-0019-live-cloud-cognition-with-persistent-budget.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0019-live-cloud-cognition-with-persistent-budget.md) | Cognition Alibaba live con provider qualificati, budget persistente e continuità solo generativa. |
 | **Governance ADR-0020** | [adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md) | Registry esterno dei prompt cognitivi, learning ledger e annealing autonomo limitato con canary e rollback. |
+| **Governance ADR-0021** | [adr-0021-selective-cognitive-attention-and-progressive-deliberation.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0021-selective-cognitive-attention-and-progressive-deliberation.md) | Attenzione selettiva approvata: working set privato, livelli progressivi ed espansione generativa del contesto. |
+| **Esperimento attenzione selettiva** | [2026-08-13-selective-attention-offline-payload.md](file:///Users/giovannifiore/Desktop/newland/docs/experiments/2026-08-13-selective-attention-offline-payload.md) | Misura offline della riduzione di contesto, contratto e payload complessivo stimato. |
 | **Esperimento Qwen Character** | [2026-08-13-qwen-flash-character-protocol-smoke.md](file:///Users/giovannifiore/Desktop/newland/docs/experiments/2026-08-13-qwen-flash-character-protocol-smoke.md) | Esito, consumo e limiti del primo smoke test offline del protocollo Alibaba. |
 | **Canary live Qwen Character** | [2026-08-13-qwen-flash-character-live-canary.md](file:///Users/giovannifiore/Desktop/newland/docs/experiments/2026-08-13-qwen-flash-character-live-canary.md) | Prova canonica finita di John Flower, hardening del contratto e consumo persistente Alibaba. |
 
 ## Wiki RAG: Fonti Aggiuntive
 - [Proposta UI dell'Observer](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-newland-ui-proposal.md)
 - [Alibaba Model Studio e benchmark cognitivo cloud](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-10-alibaba-model-studio-cognition-benchmark.md)
+- [Attenzione cognitiva selettiva](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-11-selective-cognitive-attention.md)
+- [Concetto di attenzione cognitiva selettiva](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-selective-cognitive-attention.md)
 - [Idoneità dei modelli Qwen Character](file:///Users/giovannifiore/Desktop/newland/docs/wiki/synthesis/syn-qwen-character-model-fit.md)

@@ -4,6 +4,7 @@ from .retrieval import retrieve_memories
 from ..physiology import project_somatic_state
 from .prompt_registry import PromptRegistry
 from .schema import DEFAULT_PROMPT_REGISTRY
+from .attention import select_attention_context
 
 
 def build_system_prompt() -> str:
@@ -12,7 +13,7 @@ def build_system_prompt() -> str:
 
 
 def build_private_context(context: CognitionContext) -> dict[str, Any]:
-    return {
+    full_context = {
         "self": {
             "agent_id": context.mind.agent_id,
             "name": context.mind.name,
@@ -191,3 +192,4 @@ def build_private_context(context: CognitionContext) -> dict[str, Any]:
             for agent_id, name in context.nearby_agents
         ],
     }
+    return select_attention_context(full_context, context)

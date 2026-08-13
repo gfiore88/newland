@@ -7,6 +7,32 @@ from ..models import AgentMind, Intention, MaterialAgentState
 from ..perception import Observation
 
 
+AttentionLevel = Literal["full", "focal", "contextual", "reflective"]
+AttentionDomain = Literal[
+    "memories",
+    "relationships",
+    "beliefs",
+    "goals",
+    "plans",
+    "commitments",
+    "roles",
+    "anamnesis",
+]
+
+
+@dataclass(frozen=True, slots=True)
+class ContextExpansionRequest:
+    domains: tuple[AttentionDomain, ...]
+    anchor_ids: tuple[str, ...]
+    reason: str
+
+    def __post_init__(self) -> None:
+        if not self.domains:
+            raise ValueError("context expansion requires at least one domain")
+        if not self.reason.strip():
+            raise ValueError("context expansion reason is required")
+
+
 @dataclass(frozen=True, slots=True)
 class ResourceAffordance:
     resource_id: str
@@ -66,6 +92,10 @@ class CognitionContext:
     social_proposals: tuple[CooperationAffordance, ...] = ()
     active_disputes: tuple[DisputeAffordance, ...] = ()
     action_contracts: dict[str, Any] = field(default_factory=dict)
+    attention_level: AttentionLevel = "full"
+    attention_domains: tuple[AttentionDomain, ...] = ()
+    attention_anchor_ids: tuple[str, ...] = ()
+    attention_reasons: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -264,6 +294,10 @@ class CognitionResult:
     prompt_hash: str = ""
     schema_hash: str = ""
     route: str = "ordinary"
+    attention_level: AttentionLevel = "full"
+    attention_expansions: int = 0
+    attention_domains: tuple[str, ...] = ()
+    attention_source_ids: tuple[str, ...] = ()
 
     def provenance(self) -> dict[str, Any]:
         return {
@@ -275,4 +309,8 @@ class CognitionResult:
             "prompt_hash": self.prompt_hash,
             "schema_hash": self.schema_hash,
             "route": self.route,
+            "attention_level": self.attention_level,
+            "attention_expansions": self.attention_expansions,
+            "attention_domains": list(self.attention_domains),
+            "attention_source_ids": list(self.attention_source_ids),
         }

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from dataclasses import replace
 from io import BytesIO
 from pathlib import Path
 from urllib.error import HTTPError
@@ -18,11 +19,13 @@ from newland_engine.cognition.configuration import (
     validate_live_model_specs,
 )
 from newland_engine.cognition.runtime import build_configured_cognition
+from newland_engine.cognition.prompt_learning import PromptFailureLedger
 from newland_engine.cognition import (
     AttentionSchedule,
     CognitionContext,
     CognitionResult,
     CognitionUnavailable,
+    ContextExpansionRequest,
     GenerativeCognitionPool,
     MentalUpdates,
 )
@@ -292,6 +295,124 @@ class CloudUsageLedgerTests(unittest.TestCase):
 
 
 class DashScopeLiveCognitionTests(unittest.TestCase):
+    def test_progressive_failure_records_the_effective_prompt_version(self) -> None:
+        invalid = {
+            "choices": [{"message": {"content": json.dumps({"unexpected": True})}}],
+            "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with (
+                CloudUsageLedger(root / "cloud.db", global_cap=20_000) as cloud,
+                PromptFailureLedger(root / "prompt.db") as failures,
+            ):
+                provider = DashScopeCognition(
+                    model="qwen-flash-character",
+                    api_key=API_KEY,
+                    base_url=ALIBABA_ENDPOINT,
+                    ledger=cloud,
+                    model_token_cap=20_000,
+                    max_attempts=1,
+                    requester=lambda request, timeout: invalid,
+                    prompt_registry=prompt_registry_for(directory),
+                    failure_ledger=failures,
+                )
+                with self.assertRaises(CognitionUnavailable):
+                    provider.decide(
+                        replace(cognition_context(), attention_level="focal")
+                    )
+                evidence = failures.pending(minimum_count=1)
+
+        self.assertEqual(
+            "agent-cognition-v4+selective-attention-v1",
+            evidence[0]["prompt_version"],
+        )
+
+    def test_full_context_provider_rejects_unsolicited_expansion(self) -> None:
+        expansion_response = {
+            "choices": [
+                {
+                    "message": {
+                        "content": json.dumps(
+                            {
+                                "context_expansion": {
+                                    "domains": ["memories"],
+                                    "anchor_ids": [],
+                                    "reason": "Richiesta non abilitata.",
+                                }
+                            }
+                        )
+                    }
+                }
+            ],
+            "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            with CloudUsageLedger(Path(directory) / "cloud.db", global_cap=20_000) as ledger:
+                provider = DashScopeCognition(
+                    model="qwen-flash-character",
+                    api_key=API_KEY,
+                    base_url=ALIBABA_ENDPOINT,
+                    ledger=ledger,
+                    model_token_cap=20_000,
+                    max_attempts=1,
+                    requester=lambda request, timeout: expansion_response,
+                    prompt_registry=prompt_registry_for(directory),
+                )
+
+                with self.assertRaises(CognitionUnavailable):
+                    provider.decide(cognition_context())
+
+    def test_focal_provider_can_return_a_context_expansion_request(self) -> None:
+        requests: list[dict[str, object]] = []
+        expansion_response = {
+            "choices": [
+                {
+                    "message": {
+                        "content": json.dumps(
+                            {
+                                "context_expansion": {
+                                    "domains": ["memories"],
+                                    "anchor_ids": [],
+                                    "reason": "Serve un ricordo pertinente.",
+                                }
+                            }
+                        )
+                    }
+                }
+            ],
+            "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30},
+        }
+
+        def requester(request, timeout):
+            requests.append(json.loads(request.data))
+            return expansion_response
+
+        with tempfile.TemporaryDirectory() as directory:
+            with CloudUsageLedger(Path(directory) / "cloud.db", global_cap=20_000) as ledger:
+                provider = DashScopeCognition(
+                    model="qwen-flash-character",
+                    api_key=API_KEY,
+                    base_url=ALIBABA_ENDPOINT,
+                    ledger=ledger,
+                    model_token_cap=20_000,
+                    requester=requester,
+                    prompt_registry=prompt_registry_for(directory),
+                )
+
+                output = provider.decide(
+                    replace(cognition_context(), attention_level="focal")
+                )
+
+        self.assertIsInstance(output, ContextExpansionRequest)
+        self.assertEqual(("memories",), output.domains)
+        system_prompt = requests[0]["messages"][0]["content"]
+        self.assertIn("context_expansion", system_prompt)
+        self.assertIn("oneof(", system_prompt)
+        self.assertIn("obj!{", system_prompt)
+        self.assertIn("field! obbligatorio", system_prompt)
+        self.assertNotIn('"properties"', system_prompt)
+
     def test_valid_cloud_result_has_canonical_live_provenance_and_usage(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             with CloudUsageLedger(
@@ -589,6 +710,63 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
 
 
 class ConfiguredCognitionRuntimeTests(unittest.TestCase):
+    def test_factory_runs_progressive_expansion_before_returning_intention(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            from tests.test_prompt_registry import write_registry
+
+            prompt_registry_path = Path(directory) / "prompt-registry"
+            write_registry(prompt_registry_path)
+            responses = [
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(
+                                    {
+                                        "context_expansion": {
+                                            "domains": ["memories"],
+                                            "anchor_ids": [],
+                                            "reason": "Cerco un precedente pertinente.",
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    ],
+                    "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30},
+                },
+                valid_response(),
+            ]
+            configured = build_configured_cognition(
+                ordinary_models=("dashscope:qwen-flash-character",),
+                reflective_models=(),
+                allow_cloud_live=True,
+                api_key=API_KEY,
+                base_url=ALIBABA_ENDPOINT,
+                cloud_token_cap=10_000,
+                ledger_path=Path(directory) / "cloud.db",
+                prompt_registry_path=prompt_registry_path,
+                selective_attention=True,
+                dashscope_requester=lambda request, timeout: responses.pop(0),
+            )
+            try:
+                result = configured.cognition.decide(cognition_context())
+            finally:
+                configured.close()
+
+        self.assertEqual("rest", result.intention.action_type)
+        self.assertEqual("contextual", result.attention_level)
+        self.assertEqual(1, result.attention_expansions)
+        self.assertEqual(("memories",), result.attention_domains)
+        self.assertEqual(
+            "agent-cognition-v4+selective-attention-v1", result.prompt_version
+        )
+        self.assertEqual(64, len(result.prompt_hash))
+        self.assertEqual(64, len(result.schema_hash))
+        self.assertEqual(
+            1, configured.health()["selective_attention"]["decisions"]
+        )
+
     def test_factory_builds_mixed_pool_and_exposes_safe_cloud_health(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             from tests.test_prompt_registry import write_registry
