@@ -159,6 +159,21 @@ async function initializeMap(): Promise<void> {
       if (snap) { renderInspector(snap, selection); renderInhabitants(snap, selection); }
     });
     mapScene = scene;
+    
+    // Add click handler to un-collapse chronicle
+    const chroniclePanel = document.querySelector(".fp-chronicle");
+    if (chroniclePanel) {
+      chroniclePanel.addEventListener("click", () => {
+        if (chroniclePanel.classList.contains("collapsed")) {
+          selection = null;
+          if (store.state.viewSnapshot) {
+            renderInspector(store.state.viewSnapshot, selection);
+            renderInhabitants(store.state.viewSnapshot, selection);
+          }
+        }
+      });
+    }
+
     clearTimeout(slowInit);
     if (mapError) mapError.hidden = true;
     const canvas = stage.querySelector<HTMLCanvasElement>("canvas");

@@ -319,9 +319,11 @@ svg { vertical-align: middle; }
   overflow-y: auto;
 }
 .fp-chronicle { flex-shrink: 1; }
+.fp-chronicle.collapsed { cursor: pointer; }
+.fp-chronicle.collapsed:hover { opacity: 0.8; }
 .fp-chronicle.collapsed .chronicle-entry { display: none; }
 .fp-chronicle.collapsed::after {
-  content: "Diario minimizzato per ispezione";
+  content: "Diario minimizzato per ispezione. Clicca per ripristinare.";
   display: block;
   font-size: 0.75rem;
   color: var(--muted-lt);
