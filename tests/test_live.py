@@ -92,6 +92,36 @@ class LiveSupervisorTests(unittest.TestCase):
                     chronicler=GeneratedTestChronicler(),
                 )
 
+    def test_finite_canary_stops_after_one_complete_activation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            static_directory = root / "dist"
+            static_directory.mkdir()
+            (static_directory / "index.html").write_text(
+                "<!doctype html><title>Newland live</title>", encoding="utf-8"
+            )
+            from helpers import TEST_FIXTURE_PROFILES
+
+            with NewlandSimulation(
+                root / "newland.db", cognition=ScriptedTestCognition()
+            ) as simulation:
+                simulation.admit_arrivals(TEST_FIXTURE_PROFILES[:1])
+            supervisor = LiveSupervisor(
+                root / "newland.db",
+                static_directory=static_directory,
+                port=0,
+                poll_interval=0.01,
+                max_activations=1,
+                cognition=ScriptedTestCognition(),
+                chronicler=GeneratedTestChronicler(),
+            )
+
+            supervisor.start()
+            supervisor.wait()
+            supervisor.shutdown()
+
+            self.assertEqual(1, supervisor.health()["successful_activations"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -36,6 +36,47 @@ class CliTests(unittest.TestCase):
         self.assertEqual(8, args.agent_weight)
         self.assertEqual("127.0.0.1", args.host)
         self.assertEqual(8765, args.port)
+        self.assertFalse(args.allow_cloud_live)
+        self.assertIsNone(args.cloud_token_cap)
+        self.assertIsNone(args.max_activations)
+
+    def test_live_accepts_explicit_dashscope_gates_and_finite_canary(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "live",
+                "--model",
+                "dashscope:qwen-flash-character",
+                "--allow-cloud-live",
+                "--cloud-token-cap",
+                "10000",
+                "--max-activations",
+                "1",
+            ]
+        )
+
+        self.assertEqual(["dashscope:qwen-flash-character"], args.models)
+        self.assertTrue(args.allow_cloud_live)
+        self.assertEqual(10_000, args.cloud_token_cap)
+        self.assertEqual(1, args.max_activations)
+
+    def test_run_accepts_provider_qualified_models(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "run",
+                "--model",
+                "dashscope:qwen-flash-character",
+                "--model",
+                "ollama:qwen2.5:3b",
+                "--allow-cloud-live",
+                "--cloud-token-cap",
+                "10000",
+            ]
+        )
+
+        self.assertEqual(
+            ["dashscope:qwen-flash-character", "ollama:qwen2.5:3b"],
+            args.models,
+        )
 
     def test_continuous_runner_stops_between_complete_activations(self) -> None:
         simulation = FakeContinuousSimulation()

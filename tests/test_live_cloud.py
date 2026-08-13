@@ -17,6 +17,7 @@ from newland_engine.cognition.configuration import (
     ModelSpec,
     validate_live_model_specs,
 )
+from newland_engine.cognition.runtime import build_configured_cognition
 from newland_engine.cognition import (
     AttentionSchedule,
     CognitionContext,
@@ -442,6 +443,55 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
         ).decide(cognition_context())
 
         self.assertEqual("ollama", result.provider)
+
+
+class ConfiguredCognitionRuntimeTests(unittest.TestCase):
+    def test_factory_builds_mixed_pool_and_exposes_safe_cloud_health(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            configured = build_configured_cognition(
+                ordinary_models=(
+                    "dashscope:qwen-flash-character",
+                    "ollama:qwen2.5:3b",
+                ),
+                reflective_models=("ollama:qwen2.5:7b",),
+                allow_cloud_live=True,
+                api_key=API_KEY,
+                base_url=ALIBABA_ENDPOINT,
+                cloud_token_cap=10_000,
+                ledger_path=Path(directory) / "cloud.db",
+                dashscope_requester=lambda request, timeout: valid_response(),
+            )
+            try:
+                result = configured.cognition.decide(cognition_context())
+                health = configured.health()
+            finally:
+                configured.close()
+            closed_health = configured.health()
+
+        self.assertEqual("dashscope", result.provider)
+        self.assertEqual(
+            ["dashscope:qwen-flash-character", "ollama:qwen2.5:3b"],
+            health["configured_models"]["ordinary"],
+        )
+        rendered = json.dumps(health)
+        self.assertNotIn(API_KEY, rendered)
+        self.assertEqual(83, health["cloud_budget"]["consumed_tokens"])
+        self.assertEqual(health, closed_health)
+
+    def test_factory_rejects_missing_cloud_gate_before_creating_ledger(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            ledger_path = Path(directory) / "cloud.db"
+            with self.assertRaises(LiveCloudConfigurationError):
+                build_configured_cognition(
+                    ordinary_models=("dashscope:qwen-flash-character",),
+                    reflective_models=(),
+                    allow_cloud_live=False,
+                    api_key=API_KEY,
+                    base_url=ALIBABA_ENDPOINT,
+                    cloud_token_cap=10_000,
+                    ledger_path=ledger_path,
+                )
+            self.assertFalse(ledger_path.exists())
 
 
 if __name__ == "__main__":

@@ -16,9 +16,11 @@ from .chronicle import (
 )
 from .cognition import (
     CognitionProvider,
-    GenerativeCognitionPool,
-    OllamaCognition,
-    RoutedCognition,
+)
+from .cognition.runtime import (
+    ConfiguredCognition,
+    build_configured_cognition,
+    default_cloud_ledger_path,
 )
 from .inference import AdmittedChronicler, AdmittedCognition, InferenceAdmission
 from .event_store import EventStore
@@ -43,12 +45,20 @@ class LiveSupervisor:
         agent_weight: int = 8,
         batch_size: int = 20,
         poll_interval: float = 2.0,
+        allow_cloud_live: bool = False,
+        dashscope_api_key: str = "",
+        dashscope_base_url: str = "",
+        cloud_token_cap: int | None = None,
+        cloud_ledger_path: str | Path | None = None,
+        max_activations: int | None = None,
         cognition: CognitionProvider | None = None,
         chronicler: ChroniclerProvider | None = None,
         emit: Callable[[list[object]], None] = lambda events: None,
     ) -> None:
         if poll_interval <= 0:
             raise ValueError("poll_interval must be positive")
+        if max_activations is not None and max_activations < 1:
+            raise ValueError("max_activations must be positive")
         if not models and cognition is None:
             raise ValueError("at least one cognition model is required")
         self.database_path = Path(database_path)
@@ -67,6 +77,7 @@ class LiveSupervisor:
         self.chronicle_models = chronicle_models or models
         self.batch_size = batch_size
         self.poll_interval = poll_interval
+        self.max_activations = max_activations
         self.emit = emit
         self.stop_event = Event()
         self._booted = Event()
@@ -82,15 +93,22 @@ class LiveSupervisor:
         self._chronicle_entries = 0
         self._failures: list[dict[str, str]] = []
         self.admission = InferenceAdmission(agent_weight=agent_weight)
+        self.configured_cognition: ConfiguredCognition | None = None
 
         if cognition is None:
-            ordinary = GenerativeCognitionPool(
-                [OllamaCognition(model=model) for model in self.models]
+            self.configured_cognition = build_configured_cognition(
+                ordinary_models=self.models,
+                reflective_models=self.reflective_models,
+                allow_cloud_live=allow_cloud_live,
+                api_key=dashscope_api_key,
+                base_url=dashscope_base_url,
+                cloud_token_cap=cloud_token_cap,
+                ledger_path=(
+                    cloud_ledger_path
+                    or default_cloud_ledger_path(self.database_path)
+                ),
             )
-            reflective = GenerativeCognitionPool(
-                [OllamaCognition(model=model) for model in self.reflective_models]
-            )
-            cognition = RoutedCognition(ordinary, reflective)
+            cognition = self.configured_cognition.cognition
         if chronicler is None:
             chronicler = GenerativeChroniclerPool(
                 [OllamaChronicler(model=model) for model in self.chronicle_models]
@@ -134,6 +152,8 @@ class LiveSupervisor:
             if thread is current:
                 continue
             thread.join()
+        if self.configured_cognition is not None:
+            self.configured_cognition.close()
 
     @property
     def address(self) -> tuple[str, int] | None:
@@ -149,6 +169,11 @@ class LiveSupervisor:
             deferrals = self._cognition_deferrals
             chronicle_entries = self._chronicle_entries
             failures = list(self._failures[-20:])
+        configured_cognition = (
+            self.configured_cognition.health()
+            if self.configured_cognition is not None
+            else None
+        )
         return {
             "components": components,
             "successful_activations": activations,
@@ -156,10 +181,19 @@ class LiveSupervisor:
             "chronicle_entries": chronicle_entries,
             "chronicle_progress": self._chronicle_progress(),
             "configured_models": {
-                "agent": list(self.models),
-                "reflective": list(self.reflective_models),
+                "agent": (
+                    configured_cognition["configured_models"]["ordinary"]
+                    if configured_cognition is not None
+                    else list(self.models)
+                ),
+                "reflective": (
+                    configured_cognition["configured_models"]["reflective"]
+                    if configured_cognition is not None
+                    else list(self.reflective_models)
+                ),
                 "chronicle": list(self.chronicle_models),
             },
+            "cloud_cognition": configured_cognition,
             "inference": self.admission.snapshot().to_dict(),
             "failures": failures,
             "stopping": self.stop_event.is_set(),
@@ -172,12 +206,14 @@ class LiveSupervisor:
             ) as simulation:
                 self._set_component("agent_loop", "running")
                 self._booted.set()
+                completed_activations = 0
                 while not self.stop_event.is_set():
                     events = simulation.run(max_activations=1)
                     if not events:
                         self.stop_event.wait(0.05)
                         continue
                     self.emit(list(events))
+                    completed_activations += 1
                     with self._lock:
                         if any(
                             event.event_type == "CognitionDeferred" for event in events
@@ -185,6 +221,11 @@ class LiveSupervisor:
                             self._cognition_deferrals += 1
                         else:
                             self._successful_activations += 1
+                    if (
+                        self.max_activations is not None
+                        and completed_activations >= self.max_activations
+                    ):
+                        self.stop_event.set()
         except BaseException as error:
             if self.stop_event.is_set():
                 self._set_component("agent_loop", "stopped")
