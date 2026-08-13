@@ -220,3 +220,11 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Lo stato di `docs/adr/adr-0018-bounded-cloud-cognition-benchmark.md` è passato da `Proposed` ad `Accepted`.
 - Sono autorizzati l'harness offline, i test senza rete e il pilot Alibaba entro sanitizzazione, opt-in, `Free Quota Only`, funnel e cap per modello definiti nell'ADR.
 - Il provider cloud resta vietato nei comandi live e nel Cronista; ogni adozione operativa richiederà un ADR successivo.
+
+## [2026-08-13] implementation | ADR-0019 - Cognition Alibaba live
+- Integrato DashScope nei comandi `run` e `live` tramite model spec qualificati, opt-in esplicito, endpoint HTTPS consentito e ledger token persistente non canonico.
+- Conservata la sovranità agentica: failover soltanto fra provider generativi dichiarati; ogni esaurimento produce `CognitionDeferred` senza azioni statiche.
+- Mantenuto il Cronista locale e separato dal cambio di provider delle menti.
+- Verificato il canary reale finito di John Flower: `ActionProposed` 71 generato da `dashscope:qwen-flash-character`, accettato e avviato, con inference ID e senza reasoning o credenziali persistiti.
+- Il ledger registra 57.579 token in nove chiamate, inclusi quattro canary differiti usati per irrobustire grounding e parsing; budget residuo locale 42.421 token.
+- Suite complessiva: 145 test Python verdi.

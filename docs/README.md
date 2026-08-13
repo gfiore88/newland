@@ -75,6 +75,7 @@ docs/
 | **Governance ADR-0018** | [adr-0018-bounded-cloud-cognition-benchmark.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0018-bounded-cloud-cognition-benchmark.md) | Benchmark cloud offline con opt-in, sanitizzazione, limiti locali e nessun effetto canonico. |
 | **Governance ADR-0019** | [adr-0019-live-cloud-cognition-with-persistent-budget.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0019-live-cloud-cognition-with-persistent-budget.md) | Cognition Alibaba live con provider qualificati, budget persistente e continuità solo generativa. |
 | **Esperimento Qwen Character** | [2026-08-13-qwen-flash-character-protocol-smoke.md](file:///Users/giovannifiore/Desktop/newland/docs/experiments/2026-08-13-qwen-flash-character-protocol-smoke.md) | Esito, consumo e limiti del primo smoke test offline del protocollo Alibaba. |
+| **Canary live Qwen Character** | [2026-08-13-qwen-flash-character-live-canary.md](file:///Users/giovannifiore/Desktop/newland/docs/experiments/2026-08-13-qwen-flash-character-live-canary.md) | Prova canonica finita di John Flower, hardening del contratto e consumo persistente Alibaba. |
 
 ## Wiki RAG: Fonti Aggiuntive
 - [Proposta UI dell'Observer](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-newland-ui-proposal.md)
