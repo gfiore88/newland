@@ -2,7 +2,7 @@
 
 - **Categoria**: Architettura cognitiva, inferenza e sperimentazione
 - **Stato**: concetto candidato; richiede ADR per modifiche al runtime
-- **Fonte**: [Brainstorming 09](../sources/src-brainstorming-09-cognitive-economy-and-model-tiers.md)
+- **Fonti**: [Brainstorming 09](../sources/src-brainstorming-09-cognitive-economy-and-model-tiers.md); [Brainstorming 10](../sources/src-brainstorming-10-alibaba-model-studio-cognition-benchmark.md)
 
 ## Definizione
 
@@ -62,9 +62,13 @@ Ogni candidato deve essere valutato sugli stessi contesti sanitizzati e almeno s
 
 Una promozione di modello o policy richiede più campioni e scenari; JSON valido o un singolo esito riuscito non bastano.
 
+### Upper bound cloud candidato
+
+ADR-0018 propone di usare temporaneamente Alibaba Model Studio soltanto come upper bound offline. Il free tier non è una risorsa del mondo live: quota, scadenza e thinking rendono necessario un pilot piccolo, sanitizzato e arrestabile. Un risultato cloud migliore produrrebbe evidenza comparativa, non una promozione automatica del modello o una nuova regola di routing.
+
 ## Decisioni ancora necessarie
 
-- [ADR-REQ-001] Provider cloud temporaneo, confine dei dati privati, gestione dei segreti, quota e arresto di spesa.
+- [ADR-REQ-001] Provider cloud temporaneo, confine dei dati privati, gestione dei segreti, quota e arresto di spesa: proposta formalizzata in [ADR-0018](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md), non ancora approvata.
 - [ADR-REQ-002] Corsie d'inferenza o provider indipendenti per mente, Cronista e analisi; regole di cancellazione dei soli workload derivati.
 - [ADR-REQ-003] Tassonomia minima del routing e criteri misurati di promozione/declassamento dei modelli.
 - [ADR-REQ-004] Semantica temporale degli errori tecnici e dei `CognitionDeferred`.
@@ -77,3 +81,4 @@ Una promozione di modello o policy richiede più campioni e scenari; JSON valido
 - [ADR-0009](../../adr/adr-0009-supervised-runtime-and-inference-priority.md)
 - [ADR-0013](../../adr/adr-0013-cognitive-refactoring-and-emergence-analyzer.md)
 - [ADR-0016](../../adr/adr-0016-embodied-somatic-perception-and-survival-deliberation.md)
+- [ADR-0018 proposto](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md)

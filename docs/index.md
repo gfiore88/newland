@@ -16,6 +16,7 @@
 - [src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md) - *Brainstorming 07: Conflitti Primordiali, Accoglienza Melanconica ed Architettura Rurale.*
 - [src-brainstorming-08-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-08-observer-architecture.md) - *Brainstorming 08 & ADR-0003: Architettura dell'Osservatore Integrato.*
 - [src-brainstorming-09-cognitive-economy-and-model-tiers.md](wiki/sources/src-brainstorming-09-cognitive-economy-and-model-tiers.md) - *Brainstorming 09: economia cognitiva, routing multi-modello e benchmark della vera emergenza.*
+- [src-brainstorming-10-alibaba-model-studio-cognition-benchmark.md](wiki/sources/src-brainstorming-10-alibaba-model-studio-cognition-benchmark.md) - *Brainstorming 10: Alibaba Model Studio come upper bound cloud offline, con privacy e budget vincolati.*
 
 ---
 
@@ -64,6 +65,7 @@
 - [adr-0009-supervised-runtime-and-inference-priority.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0009-supervised-runtime-and-inference-priority.md) - *ADR-0009: supervisore unico e priorità agent-first per l'inferenza locale condivisa.*
 - [adr-0010-dynamic-embodied-carrying-capacity.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0010-dynamic-embodied-carrying-capacity.md) - *ADR-0010 proposto: capacità di carico individuale derivata dal corpo e dalla sua storia fisica.*
 - [adr-0011-generative-arrival-identity.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0011-generative-arrival-identity.md) - *ADR-0011: Generative Arrival Identity (Nessun profilo statico agli arrivi).*
+- [adr-0018-bounded-cloud-cognition-benchmark.md](adr/adr-0018-bounded-cloud-cognition-benchmark.md) - *ADR-0018 proposto: benchmark cognitivo cloud offline, sanitizzato e strettamente budgetato.*
 
 ---
 

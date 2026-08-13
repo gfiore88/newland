@@ -202,3 +202,9 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Creata la sintesi fonte e il concetto candidato di economia cognitiva, distinguendo esempi dimensionali, ipotesi sperimentali e invarianti già approvati.
 - Collegati benchmark John, ADR-0008, ADR-0009, ADR-0013, ADR-0016 e Cronista Silenzioso.
 - Nessuna policy di routing, integrazione cloud o corsia d'inferenza indipendente è stata approvata o implementata tramite questo ingest.
+
+## [2026-08-13] ingest | Brainstorming 10 - Alibaba Model Studio e benchmark cognitivo cloud
+- Conservata la proposta grezza e verificati quote, durata, thinking mode e `Free Quota Only` sulle fonti ufficiali Alibaba disponibili alla data dell'ingest.
+- Qualificato il milione di token come budget per modello e non come numero di decisioni; input, output, reasoning e retry possono consumarlo rapidamente.
+- Proposto ADR-0018 per un pilot offline di 10–20 snapshot, sanitizzato, opt-in, senza chain-of-thought persistita e con arresto locale della spesa.
+- Nessun provider cloud, comando di benchmark o cambiamento del runtime live è stato implementato; ADR-0018 attende approvazione esplicita.
