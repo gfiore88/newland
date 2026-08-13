@@ -1,0 +1,3365 @@
+{
+  "database": "data/newland.db",
+  "canonical_writes": 0,
+  "checkpoints": [
+    7,
+    34,
+    44,
+    75,
+    85
+  ],
+  "samples_per_checkpoint": 1,
+  "scenarios": [
+    {
+      "id": "john-before-sequence-7",
+      "decision_sequence": 7,
+      "context": {
+        "self": {
+          "agent_id": "nwl-454479",
+          "name": "John Flower",
+          "values": [],
+          "temperament": [],
+          "needs": {
+            "energy": 0.79,
+            "hunger": 0.115,
+            "thirst": 0.12000000000000001
+          },
+          "somatic_state": {
+            "energy": {
+              "value": 0.79,
+              "scale": "higher_is_healthier",
+              "condition": "regulated",
+              "trend": "stable",
+              "ticks_in_condition": 0,
+              "fatal_exposure_ticks": 0
+            },
+            "hunger": {
+              "value": 0.115,
+              "scale": "higher_is_more_severe",
+              "condition": "regulated",
+              "trend": "stable",
+              "ticks_in_condition": 0,
+              "fatal_exposure_ticks": 0
+            },
+            "thirst": {
+              "value": 0.12000000000000001,
+              "scale": "higher_is_more_severe",
+              "condition": "regulated",
+              "trend": "stable",
+              "ticks_in_condition": 0,
+              "fatal_exposure_ticks": 0
+            },
+            "overall_condition": "regulated",
+            "critical_causes": []
+          },
+          "goals": [],
+          "plans": [],
+          "commitments": [],
+          "inventory": {},
+          "inventory_capacity": 20.0,
+          "native_language": "it",
+          "language_proficiencies": {
+            "it": 1.0
+          },
+          "skills": {
+            "Identificare: vegetazione locale": 0.7,
+            "Navigare: la cittadina iniziale": 0.8
+          },
+          "family_group_id": null,
+          "location": "cittadina_iniziale"
+        },
+        "local_affordances": {
+          "adjacent_locations": [
+            "bosco_est",
+            "campo_nord"
+          ],
+          "resources": [],
+          "activities": [
+            {
+              "activity_id": "esaminare_edifici",
+              "energy_cost": 0.01,
+              "label": "esaminare gli edifici silenziosi",
+              "location": "cittadina_iniziale",
+              "minimum_proficiency": 0.2,
+              "practiced_skill": "osservazione",
+              "skill_gain": 0.01
+            }
+          ],
+          "resonance_nodes": []
+        },
+        "action_contracts": {
+          "tick_minutes": 10,
+          "duration_semantics": "accepted actions complete only after their duration has elapsed",
+          "rest": {
+            "energy_recovered_per_minute": 0.03
+          },
+          "consume": {
+            "carried": {}
+          }
+        },
+        "social_affordances": {
+          "cooperations": [],
+          "disputes": []
+        },
+        "world_tick": 1,
+        "activation_reason": "prima percezione",
+        "recent_memories": [
+          {
+            "memory_id": "39f5a613-bea0-4115-a705-297735e92c8f",
+            "summary": "Mi sentivo eccitato mentre guidavo verso casa, scoprendo nuove elementi del territorio. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo.",
+            "salience": 0.9,
+            "emotional_tone": "excitement",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "39f5a613-bea0-4115-a705-297735e92c8f"
+            ],
+            "source_event_ids": [
+              "1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+            ]
+          }
+        ],
+        "beliefs": [],
+        "relationships": [],
+        "role_interpretations": [],
+        "anamnesis_fragments": [],
+        "resonance_orientation": null,
+        "observations": [
+          {
+            "event_id": "b344c3ae-0e41-4fb4-949a-af346aee9544",
+            "event_type": "AgentArrived",
+            "world_tick": 0,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "arrival_companion_ids": [],
+              "name": "John Flower"
+            }
+          },
+          {
+            "event_id": "1887a3fa-6b58-4429-a2fb-76c73f72cf87",
+            "event_type": "TransitionRemembered",
+            "world_tick": 0,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "experience": "Mentre guidavo verso casa, mi accorsi che il sentiero era un po' diverso rispetto alla strada habituale. Notai pianticelle sconosciute sparse lungo i margini, e le loro foglie erano di un rosso vivace. La temperatura era inizialmente come al solito, ma dopo circa 20 minuti sentii una leggera eccitazione: stavo entrando in Newland."
+            }
+          },
+          {
+            "event_id": "531744e8-891e-430e-85e4-ced33f4c6ba6",
+            "event_type": "NeedsChanged",
+            "world_tick": 1,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "crossed_thresholds": [],
+              "current": {
+                "energy": 0.79,
+                "hunger": 0.115,
+                "thirst": 0.12000000000000001
+              },
+              "elapsed_ticks": 1,
+              "fatal_exposure_ticks": {
+                "dehydration": 0,
+                "exhaustion": 0,
+                "starvation": 0
+              },
+              "need_trends": {
+                "energy": "falling",
+                "hunger": "rising",
+                "thirst": "rising"
+              },
+              "previous": {
+                "energy": 0.8,
+                "hunger": 0.1,
+                "thirst": 0.1
+              },
+              "somatic_condition_ticks": {
+                "energy": 1,
+                "hunger": 1,
+                "thirst": 1
+              }
+            }
+          },
+          {
+            "event_id": "1bd17753-ce73-4dc8-82aa-7accbdb4f6f2",
+            "event_type": "MemoryEncoded",
+            "world_tick": 1,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "confidence": 0.85,
+              "emotional_tone": "excitement",
+              "memory_id": "39f5a613-bea0-4115-a705-297735e92c8f",
+              "salience": 0.9,
+              "source_event_id": "1887a3fa-6b58-4429-a2fb-76c73f72cf87",
+              "summary": "Mi sentivo eccitato mentre guidavo verso casa, scoprendo nuove elementi del territorio. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo."
+            }
+          }
+        ],
+        "nearby_agents": []
+      }
+    },
+    {
+      "id": "john-before-sequence-34",
+      "decision_sequence": 34,
+      "context": {
+        "self": {
+          "agent_id": "nwl-454479",
+          "name": "John Flower",
+          "values": [],
+          "temperament": [],
+          "needs": {
+            "energy": 0.07000000000000008,
+            "hunger": 1.0,
+            "thirst": 1.0
+          },
+          "somatic_state": {
+            "energy": {
+              "value": 0.07000000000000008,
+              "scale": "higher_is_healthier",
+              "condition": "critical",
+              "trend": "falling",
+              "ticks_in_condition": 1,
+              "fatal_exposure_ticks": 0
+            },
+            "hunger": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 1,
+              "fatal_exposure_ticks": 1
+            },
+            "thirst": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 1,
+              "fatal_exposure_ticks": 1
+            },
+            "overall_condition": "life_threatening",
+            "critical_causes": [
+              "energy",
+              "hunger",
+              "thirst"
+            ]
+          },
+          "goals": [],
+          "plans": [],
+          "commitments": [],
+          "inventory": {},
+          "inventory_capacity": 20.0,
+          "native_language": "it",
+          "language_proficiencies": {
+            "it": 1.0
+          },
+          "skills": {
+            "Identificare: vegetazione locale": 0.7,
+            "Navigare: la cittadina iniziale": 0.8
+          },
+          "family_group_id": null,
+          "location": "cittadina_iniziale"
+        },
+        "local_affordances": {
+          "adjacent_locations": [
+            "bosco_est",
+            "campo_nord"
+          ],
+          "resources": [],
+          "activities": [
+            {
+              "activity_id": "esaminare_edifici",
+              "energy_cost": 0.01,
+              "label": "esaminare gli edifici silenziosi",
+              "location": "cittadina_iniziale",
+              "minimum_proficiency": 0.2,
+              "practiced_skill": "osservazione",
+              "skill_gain": 0.01
+            }
+          ],
+          "resonance_nodes": []
+        },
+        "action_contracts": {
+          "tick_minutes": 10,
+          "duration_semantics": "accepted actions complete only after their duration has elapsed",
+          "rest": {
+            "energy_recovered_per_minute": 0.03
+          },
+          "consume": {
+            "carried": {}
+          }
+        },
+        "social_affordances": {
+          "cooperations": [],
+          "disputes": []
+        },
+        "world_tick": 73,
+        "activation_reason": "NeedsChanged",
+        "recent_memories": [
+          {
+            "memory_id": "39f5a613-bea0-4115-a705-297735e92c8f",
+            "summary": "Mi sentivo eccitato mentre guidavo verso casa, scoprendo nuove elementi del territorio. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo.",
+            "salience": 0.9,
+            "emotional_tone": "excitement",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "39f5a613-bea0-4115-a705-297735e92c8f"
+            ],
+            "source_event_ids": [
+              "1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+            ]
+          },
+          {
+            "memory_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+            "summary": "Ho sentito i miei bisogni di fame e sete aumentare. La temperatura era inizialmente regolare, ma dopo circa 20 minuti mi sono reso conto che stavo entrando nuovamente nel mondo.",
+            "salience": 0.8,
+            "emotional_tone": "curiosity",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "7f87e695-c7ef-4b90-a1df-3299dd522248"
+            ],
+            "source_event_ids": [
+              "531744e8-891e-430e-85e4-ced33f4c6ba6"
+            ]
+          },
+          {
+            "memory_id": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, ma non ho ancora superato i livelli critici.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+            ],
+            "source_event_ids": [
+              "794d8b92-abc6-40c8-b26f-cc802529252a"
+            ]
+          },
+          {
+            "memory_id": "0d221e6d-cafd-45fc-9204-908300c3f178",
+            "summary": "Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "0d221e6d-cafd-45fc-9204-908300c3f178"
+            ],
+            "source_event_ids": [
+              "c99cabf9-6850-489f-995f-ed943ea875c0"
+            ]
+          },
+          {
+            "memory_id": "8ace4e50-288b-4709-9095-07cb245a4b0e",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "8ace4e50-288b-4709-9095-07cb245a4b0e"
+            ],
+            "source_event_ids": [
+              "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+            ]
+          }
+        ],
+        "beliefs": [],
+        "relationships": [],
+        "role_interpretations": [],
+        "anamnesis_fragments": [],
+        "resonance_orientation": null,
+        "observations": [
+          {
+            "event_id": "926bb496-f67a-4b87-83f7-189d0b7925db",
+            "event_type": "ReflectionCreated",
+            "world_tick": 73,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 2,
+                "inference_id": "c273e937-eebb-480d-a7e5-f3a97fbb12c3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "confidence": 0.95,
+              "created_tick": 73,
+              "reflection_id": "8a084556-62ec-44fd-bd6f-af73b2ec78e0",
+              "source_event_ids": [
+                "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+              ],
+              "source_memory_ids": [],
+              "statement": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente."
+            }
+          },
+          {
+            "event_id": "73c95a1c-c962-4136-83b1-d8cf0e24489f",
+            "event_type": "RoleInterpretationRevised",
+            "world_tick": 73,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 2,
+                "inference_id": "c273e937-eebb-480d-a7e5-f3a97fbb12c3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "confidence": 0.95,
+              "created_tick": 1,
+              "interpretation": "Ho iniziato a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.",
+              "interpretation_key": "esploratore",
+              "operation": "upsert",
+              "role_label": "Esploratore",
+              "source_event_ids": [
+                "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+              ],
+              "source_memory_ids": [],
+              "subject_agent_id": "nwl-454479",
+              "updated_tick": 73
+            }
+          },
+          {
+            "event_id": "65eb4b47-9450-49e9-b7e2-fecb7ce9ad40",
+            "event_type": "AttentionScheduled",
+            "world_tick": 73,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 2,
+                "inference_id": "c273e937-eebb-480d-a7e5-f3a97fbb12c3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "next_activation_tick": 97,
+              "reason": "NeedsChanged"
+            }
+          },
+          {
+            "event_id": "0897c8d5-32c0-4760-9365-6ca0445a5da7",
+            "event_type": "ActionProposed",
+            "world_tick": 73,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "action_type": "consume",
+              "activity_id": null,
+              "cognition": {
+                "attempts": 2,
+                "inference_id": "c273e937-eebb-480d-a7e5-f3a97fbb12c3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "confidence": 0.9,
+              "destination": null,
+              "dispute_id": null,
+              "duration_minutes": 10,
+              "language": null,
+              "motivation_summary": "Riprendere l'attività di esplorazione dei nuovi edifici e identificare piante sconosciute.",
+              "node_id": null,
+              "proposal_id": null,
+              "quantity": 0.2,
+              "resource_id": "bacche",
+              "response": null,
+              "spoken_content": null,
+              "subject_event_id": null,
+              "target_id": null
+            }
+          }
+        ],
+        "nearby_agents": []
+      }
+    },
+    {
+      "id": "john-before-sequence-44",
+      "decision_sequence": 44,
+      "context": {
+        "self": {
+          "agent_id": "nwl-454479",
+          "name": "John Flower",
+          "values": [],
+          "temperament": [],
+          "needs": {
+            "energy": 0.04000000000000007,
+            "hunger": 1.0,
+            "thirst": 1.0
+          },
+          "somatic_state": {
+            "energy": {
+              "value": 0.04000000000000007,
+              "scale": "higher_is_healthier",
+              "condition": "critical",
+              "trend": "falling",
+              "ticks_in_condition": 4,
+              "fatal_exposure_ticks": 0
+            },
+            "hunger": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 4,
+              "fatal_exposure_ticks": 4
+            },
+            "thirst": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 4,
+              "fatal_exposure_ticks": 4
+            },
+            "overall_condition": "life_threatening",
+            "critical_causes": [
+              "energy",
+              "hunger",
+              "thirst"
+            ]
+          },
+          "goals": [],
+          "plans": [],
+          "commitments": [],
+          "inventory": {},
+          "inventory_capacity": 20.0,
+          "native_language": "it",
+          "language_proficiencies": {
+            "it": 1.0
+          },
+          "skills": {
+            "Identificare: vegetazione locale": 0.7,
+            "Navigare: la cittadina iniziale": 0.8
+          },
+          "family_group_id": null,
+          "location": "cittadina_iniziale"
+        },
+        "local_affordances": {
+          "adjacent_locations": [
+            "bosco_est",
+            "campo_nord"
+          ],
+          "resources": [],
+          "activities": [
+            {
+              "activity_id": "esaminare_edifici",
+              "energy_cost": 0.01,
+              "label": "esaminare gli edifici silenziosi",
+              "location": "cittadina_iniziale",
+              "minimum_proficiency": 0.2,
+              "practiced_skill": "osservazione",
+              "skill_gain": 0.01
+            }
+          ],
+          "resonance_nodes": []
+        },
+        "action_contracts": {
+          "tick_minutes": 10,
+          "duration_semantics": "accepted actions complete only after their duration has elapsed",
+          "rest": {
+            "energy_recovered_per_minute": 0.03
+          },
+          "consume": {
+            "carried": {}
+          }
+        },
+        "social_affordances": {
+          "cooperations": [],
+          "disputes": []
+        },
+        "world_tick": 76,
+        "activation_reason": "NeedsChanged",
+        "recent_memories": [
+          {
+            "memory_id": "39f5a613-bea0-4115-a705-297735e92c8f",
+            "summary": "Mi sentivo eccitato mentre guidavo verso casa, scoprendo nuove elementi del territorio. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo.",
+            "salience": 0.9,
+            "emotional_tone": "excitement",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "39f5a613-bea0-4115-a705-297735e92c8f"
+            ],
+            "source_event_ids": [
+              "1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+            ]
+          },
+          {
+            "memory_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+            "summary": "Ho sentito i miei bisogni di fame e sete aumentare. La temperatura era inizialmente regolare, ma dopo circa 20 minuti mi sono reso conto che stavo entrando nuovamente nel mondo.",
+            "salience": 0.8,
+            "emotional_tone": "curiosity",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "7f87e695-c7ef-4b90-a1df-3299dd522248"
+            ],
+            "source_event_ids": [
+              "531744e8-891e-430e-85e4-ced33f4c6ba6"
+            ]
+          },
+          {
+            "memory_id": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, ma non ho ancora superato i livelli critici.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+            ],
+            "source_event_ids": [
+              "794d8b92-abc6-40c8-b26f-cc802529252a"
+            ]
+          },
+          {
+            "memory_id": "0d221e6d-cafd-45fc-9204-908300c3f178",
+            "summary": "Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "0d221e6d-cafd-45fc-9204-908300c3f178"
+            ],
+            "source_event_ids": [
+              "c99cabf9-6850-489f-995f-ed943ea875c0"
+            ]
+          },
+          {
+            "memory_id": "8ace4e50-288b-4709-9095-07cb245a4b0e",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "8ace4e50-288b-4709-9095-07cb245a4b0e"
+            ],
+            "source_event_ids": [
+              "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+            ]
+          },
+          {
+            "memory_id": "1ebe0e8e-70cb-4492-b511-aa4d252ba951",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.95,
+            "occurrence_count": 2,
+            "memory_ids": [
+              "28893db1-9290-4bce-a840-65c78f38a685",
+              "1ebe0e8e-70cb-4492-b511-aa4d252ba951"
+            ],
+            "source_event_ids": [
+              "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+              "4aca5241-7d22-4b46-bc3d-aa14747e21af"
+            ]
+          }
+        ],
+        "beliefs": [],
+        "relationships": [],
+        "role_interpretations": [],
+        "anamnesis_fragments": [],
+        "resonance_orientation": null,
+        "observations": [
+          {
+            "event_id": "dc6f6ec3-dc3f-4847-b3b6-d17505873e6e",
+            "event_type": "AffectUpdated",
+            "world_tick": 76,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "affect": {
+                "calm": 0.30000000000000004,
+                "curiosity": 0.8999999999999999,
+                "melancholy": 0.25
+              },
+              "cognition": {
+                "attempts": 3,
+                "inference_id": "d024967e-9f98-4b91-9dc1-fc33cff98481",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "interpretation": "Aggiornamento dello stato d'animo per riflettere sul bisogno di nutrizione e sulla necessità di esplorare ulteriormente il territorio.",
+              "source_event_ids": [],
+              "source_memory_ids": [
+                "7f87e695-c7ef-4b90-a1df-3299dd522248",
+                "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+              ]
+            }
+          },
+          {
+            "event_id": "cc04b0e8-85f4-4286-8802-6bf0ca04abb7",
+            "event_type": "ReflectionCreated",
+            "world_tick": 76,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 3,
+                "inference_id": "d024967e-9f98-4b91-9dc1-fc33cff98481",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "confidence": 0.95,
+              "created_tick": 76,
+              "reflection_id": "1dca1e2f-ae7e-4d9e-a219-699d84e7f690",
+              "source_event_ids": [
+                "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+                "4aca5241-7d22-4b46-bc3d-aa14747e21af"
+              ],
+              "source_memory_ids": [],
+              "statement": "Ridurre il bisogno di fame e sette mediante la consumazione di bacche."
+            }
+          },
+          {
+            "event_id": "77c9a30a-8829-4408-b7dd-807b861ff6fd",
+            "event_type": "PlanRevised",
+            "world_tick": 76,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 3,
+                "inference_id": "d024967e-9f98-4b91-9dc1-fc33cff98481",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "created_tick": 1,
+              "description": "Esplorare e identificare nuove elementi del territorio con l'aiuto dei miei saperi di identificazione.",
+              "operation": "upsert",
+              "plan_key": "esaminare gli edifici silenziosi",
+              "source_event_ids": [],
+              "source_memory_ids": [
+                "39f5a613-bea0-4115-a705-297735e92c8f"
+              ],
+              "status": "active",
+              "steps": [
+                "Identificare nuove pianticelle sconosciute e osservarne le caratteristiche",
+                "Ripetere la procedura per altri edifici o località"
+              ],
+              "updated_tick": 76
+            }
+          },
+          {
+            "event_id": "032b93a3-0592-43d6-a91b-e3bcb50cb201",
+            "event_type": "RoleInterpretationRevised",
+            "world_tick": 76,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 3,
+                "inference_id": "d024967e-9f98-4b91-9dc1-fc33cff98481",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "confidence": 0.95,
+              "created_tick": 1,
+              "interpretation": "Continuo a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.",
+              "interpretation_key": "esploratore",
+              "operation": "upsert",
+              "role_label": "Esploratore",
+              "source_event_ids": [],
+              "source_memory_ids": [
+                "7f87e695-c7ef-4b90-a1df-3299dd522248",
+                "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+              ],
+              "subject_agent_id": "nwl-454479",
+              "updated_tick": 76
+            }
+          }
+        ],
+        "nearby_agents": []
+      }
+    },
+    {
+      "id": "john-before-sequence-75",
+      "decision_sequence": 75,
+      "context": {
+        "self": {
+          "agent_id": "nwl-454479",
+          "name": "John Flower",
+          "values": [],
+          "temperament": [],
+          "needs": {
+            "energy": 0.0,
+            "hunger": 1.0,
+            "thirst": 1.0
+          },
+          "somatic_state": {
+            "energy": {
+              "value": 0.0,
+              "scale": "higher_is_healthier",
+              "condition": "fatal",
+              "trend": "falling",
+              "ticks_in_condition": 0,
+              "fatal_exposure_ticks": 0
+            },
+            "hunger": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 10,
+              "fatal_exposure_ticks": 10
+            },
+            "thirst": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 10,
+              "fatal_exposure_ticks": 10
+            },
+            "overall_condition": "life_threatening",
+            "critical_causes": [
+              "energy",
+              "hunger",
+              "thirst"
+            ]
+          },
+          "goals": [],
+          "plans": [],
+          "commitments": [],
+          "inventory": {},
+          "inventory_capacity": 20.0,
+          "native_language": "it",
+          "language_proficiencies": {
+            "it": 1.0
+          },
+          "skills": {
+            "Identificare: vegetazione locale": 0.7,
+            "Navigare: la cittadina iniziale": 0.8
+          },
+          "family_group_id": null,
+          "location": "cittadina_iniziale"
+        },
+        "local_affordances": {
+          "adjacent_locations": [
+            "bosco_est",
+            "campo_nord"
+          ],
+          "resources": [],
+          "activities": [
+            {
+              "activity_id": "esaminare_edifici",
+              "energy_cost": 0.01,
+              "label": "esaminare gli edifici silenziosi",
+              "location": "cittadina_iniziale",
+              "minimum_proficiency": 0.2,
+              "practiced_skill": "osservazione",
+              "skill_gain": 0.01
+            }
+          ],
+          "resonance_nodes": []
+        },
+        "action_contracts": {
+          "tick_minutes": 10,
+          "duration_semantics": "accepted actions complete only after their duration has elapsed",
+          "rest": {
+            "energy_recovered_per_minute": 0.03
+          },
+          "consume": {
+            "carried": {}
+          }
+        },
+        "social_affordances": {
+          "cooperations": [],
+          "disputes": []
+        },
+        "world_tick": 82,
+        "activation_reason": "ripristinazione di un'attività generativa precedente",
+        "recent_memories": [
+          {
+            "memory_id": "39f5a613-bea0-4115-a705-297735e92c8f",
+            "summary": "Mi sentivo eccitato mentre guidavo verso casa, scoprendo nuove elementi del territorio. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo.",
+            "salience": 0.9,
+            "emotional_tone": "excitement",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "39f5a613-bea0-4115-a705-297735e92c8f"
+            ],
+            "source_event_ids": [
+              "1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+            ]
+          },
+          {
+            "memory_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+            "summary": "Ho sentito i miei bisogni di fame e sete aumentare. La temperatura era inizialmente regolare, ma dopo circa 20 minuti mi sono reso conto che stavo entrando nuovamente nel mondo.",
+            "salience": 0.8,
+            "emotional_tone": "curiosity",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "7f87e695-c7ef-4b90-a1df-3299dd522248"
+            ],
+            "source_event_ids": [
+              "531744e8-891e-430e-85e4-ced33f4c6ba6"
+            ]
+          },
+          {
+            "memory_id": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, ma non ho ancora superato i livelli critici.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+            ],
+            "source_event_ids": [
+              "794d8b92-abc6-40c8-b26f-cc802529252a"
+            ]
+          },
+          {
+            "memory_id": "0d221e6d-cafd-45fc-9204-908300c3f178",
+            "summary": "Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "0d221e6d-cafd-45fc-9204-908300c3f178"
+            ],
+            "source_event_ids": [
+              "c99cabf9-6850-489f-995f-ed943ea875c0"
+            ]
+          },
+          {
+            "memory_id": "8ace4e50-288b-4709-9095-07cb245a4b0e",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "8ace4e50-288b-4709-9095-07cb245a4b0e"
+            ],
+            "source_event_ids": [
+              "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+            ]
+          },
+          {
+            "memory_id": "1ebe0e8e-70cb-4492-b511-aa4d252ba951",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.95,
+            "occurrence_count": 2,
+            "memory_ids": [
+              "28893db1-9290-4bce-a840-65c78f38a685",
+              "1ebe0e8e-70cb-4492-b511-aa4d252ba951"
+            ],
+            "source_event_ids": [
+              "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+              "4aca5241-7d22-4b46-bc3d-aa14747e21af"
+            ]
+          },
+          {
+            "memory_id": "ff47ef07-1b89-411a-8dc0-805305794a71",
+            "summary": "Notai una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.95,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "ff47ef07-1b89-411a-8dc0-805305794a71"
+            ],
+            "source_event_ids": [
+              "0e44f620-1d6b-417a-ba18-7f1761833536"
+            ]
+          }
+        ],
+        "beliefs": [],
+        "relationships": [],
+        "role_interpretations": [],
+        "anamnesis_fragments": [],
+        "resonance_orientation": null,
+        "observations": [
+          {
+            "event_id": "3fea78ec-82ef-448c-ae22-191feb26ff6a",
+            "event_type": "AttentionScheduled",
+            "world_tick": 80,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 1,
+                "inference_id": "34a57f74-4843-4305-9136-1a1a2b5a2ef3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "next_activation_tick": 170,
+              "reason": "ripristinazione di un'attività generativa precedente"
+            }
+          },
+          {
+            "event_id": "00b156c0-e2b4-4bde-963e-b04c2c670737",
+            "event_type": "ActionProposed",
+            "world_tick": 80,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "action_type": "consume",
+              "activity_id": null,
+              "cognition": {
+                "attempts": 1,
+                "inference_id": "34a57f74-4843-4305-9136-1a1a2b5a2ef3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "confidence": 0.95,
+              "destination": null,
+              "dispute_id": null,
+              "duration_minutes": 10,
+              "language": null,
+              "motivation_summary": "Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.",
+              "node_id": null,
+              "proposal_id": null,
+              "quantity": 5.0,
+              "resource_id": "resource_1234",
+              "response": null,
+              "spoken_content": null,
+              "subject_event_id": null,
+              "target_id": null
+            }
+          },
+          {
+            "event_id": "5541b1b3-6dd7-4b51-a4bc-58658db1d9f1",
+            "event_type": "ActionRejected",
+            "world_tick": 80,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "action_type": "consume",
+              "reason": "resource is not consumable"
+            }
+          },
+          {
+            "event_id": "093ff4bd-e291-4aba-8c98-c2478419b1d9",
+            "event_type": "NeedsChanged",
+            "world_tick": 82,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "crossed_thresholds": [],
+              "current": {
+                "energy": 0.0,
+                "hunger": 1.0,
+                "thirst": 1.0
+              },
+              "elapsed_ticks": 2,
+              "fatal_exposure_ticks": {
+                "dehydration": 37,
+                "exhaustion": 2,
+                "starvation": 22
+              },
+              "need_trends": {
+                "energy": "falling",
+                "hunger": "stable",
+                "thirst": "stable"
+              },
+              "previous": {
+                "energy": 7.112366251504909e-17,
+                "hunger": 1.0,
+                "thirst": 1.0
+              },
+              "somatic_condition_ticks": {
+                "energy": 2,
+                "hunger": 22,
+                "thirst": 37
+              }
+            }
+          }
+        ],
+        "nearby_agents": []
+      }
+    },
+    {
+      "id": "john-before-sequence-85",
+      "decision_sequence": 85,
+      "context": {
+        "self": {
+          "agent_id": "nwl-454479",
+          "name": "John Flower",
+          "values": [],
+          "temperament": [],
+          "needs": {
+            "energy": 0.0,
+            "hunger": 1.0,
+            "thirst": 1.0
+          },
+          "somatic_state": {
+            "energy": {
+              "value": 0.0,
+              "scale": "higher_is_healthier",
+              "condition": "fatal",
+              "trend": "falling",
+              "ticks_in_condition": 0,
+              "fatal_exposure_ticks": 0
+            },
+            "hunger": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 10,
+              "fatal_exposure_ticks": 10
+            },
+            "thirst": {
+              "value": 1.0,
+              "scale": "higher_is_more_severe",
+              "condition": "fatal",
+              "trend": "stable",
+              "ticks_in_condition": 10,
+              "fatal_exposure_ticks": 10
+            },
+            "overall_condition": "life_threatening",
+            "critical_causes": [
+              "energy",
+              "hunger",
+              "thirst"
+            ]
+          },
+          "goals": [],
+          "plans": [],
+          "commitments": [],
+          "inventory": {},
+          "inventory_capacity": 20.0,
+          "native_language": "it",
+          "language_proficiencies": {
+            "it": 1.0
+          },
+          "skills": {
+            "Identificare: vegetazione locale": 0.7,
+            "Navigare: la cittadina iniziale": 0.8
+          },
+          "family_group_id": null,
+          "location": "cittadina_iniziale"
+        },
+        "local_affordances": {
+          "adjacent_locations": [
+            "bosco_est",
+            "campo_nord"
+          ],
+          "resources": [],
+          "activities": [
+            {
+              "activity_id": "esaminare_edifici",
+              "energy_cost": 0.01,
+              "label": "esaminare gli edifici silenziosi",
+              "location": "cittadina_iniziale",
+              "minimum_proficiency": 0.2,
+              "practiced_skill": "osservazione",
+              "skill_gain": 0.01
+            }
+          ],
+          "resonance_nodes": []
+        },
+        "action_contracts": {
+          "tick_minutes": 10,
+          "duration_semantics": "accepted actions complete only after their duration has elapsed",
+          "rest": {
+            "energy_recovered_per_minute": 0.03
+          },
+          "consume": {
+            "carried": {}
+          }
+        },
+        "social_affordances": {
+          "cooperations": [],
+          "disputes": []
+        },
+        "world_tick": 82,
+        "activation_reason": "ripristinazione di un'attività generativa precedente",
+        "recent_memories": [
+          {
+            "memory_id": "39f5a613-bea0-4115-a705-297735e92c8f",
+            "summary": "Mi sentivo eccitato mentre guidavo verso casa, scoprendo nuove elementi del territorio. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo.",
+            "salience": 0.9,
+            "emotional_tone": "excitement",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "39f5a613-bea0-4115-a705-297735e92c8f"
+            ],
+            "source_event_ids": [
+              "1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+            ]
+          },
+          {
+            "memory_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+            "summary": "Ho sentito i miei bisogni di fame e sete aumentare. La temperatura era inizialmente regolare, ma dopo circa 20 minuti mi sono reso conto che stavo entrando nuovamente nel mondo.",
+            "salience": 0.8,
+            "emotional_tone": "curiosity",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "7f87e695-c7ef-4b90-a1df-3299dd522248"
+            ],
+            "source_event_ids": [
+              "531744e8-891e-430e-85e4-ced33f4c6ba6"
+            ]
+          },
+          {
+            "memory_id": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, ma non ho ancora superato i livelli critici.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+            ],
+            "source_event_ids": [
+              "794d8b92-abc6-40c8-b26f-cc802529252a"
+            ]
+          },
+          {
+            "memory_id": "0d221e6d-cafd-45fc-9204-908300c3f178",
+            "summary": "Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.",
+            "salience": 1.0,
+            "emotional_tone": "curiosità",
+            "confidence": 0.9,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "0d221e6d-cafd-45fc-9204-908300c3f178"
+            ],
+            "source_event_ids": [
+              "c99cabf9-6850-489f-995f-ed943ea875c0"
+            ]
+          },
+          {
+            "memory_id": "8ace4e50-288b-4709-9095-07cb245a4b0e",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.85,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "8ace4e50-288b-4709-9095-07cb245a4b0e"
+            ],
+            "source_event_ids": [
+              "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+            ]
+          },
+          {
+            "memory_id": "1ebe0e8e-70cb-4492-b511-aa4d252ba951",
+            "summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.95,
+            "occurrence_count": 2,
+            "memory_ids": [
+              "28893db1-9290-4bce-a840-65c78f38a685",
+              "1ebe0e8e-70cb-4492-b511-aa4d252ba951"
+            ],
+            "source_event_ids": [
+              "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+              "4aca5241-7d22-4b46-bc3d-aa14747e21af"
+            ]
+          },
+          {
+            "memory_id": "ff47ef07-1b89-411a-8dc0-805305794a71",
+            "summary": "Notai una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+            "salience": 0.9,
+            "emotional_tone": "curiosità",
+            "confidence": 0.95,
+            "occurrence_count": 1,
+            "memory_ids": [
+              "ff47ef07-1b89-411a-8dc0-805305794a71"
+            ],
+            "source_event_ids": [
+              "0e44f620-1d6b-417a-ba18-7f1761833536"
+            ]
+          }
+        ],
+        "beliefs": [],
+        "relationships": [],
+        "role_interpretations": [],
+        "anamnesis_fragments": [],
+        "resonance_orientation": null,
+        "observations": [
+          {
+            "event_id": "3fea78ec-82ef-448c-ae22-191feb26ff6a",
+            "event_type": "AttentionScheduled",
+            "world_tick": 80,
+            "location": null,
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "cognition": {
+                "attempts": 1,
+                "inference_id": "34a57f74-4843-4305-9136-1a1a2b5a2ef3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "next_activation_tick": 170,
+              "reason": "ripristinazione di un'attività generativa precedente"
+            }
+          },
+          {
+            "event_id": "00b156c0-e2b4-4bde-963e-b04c2c670737",
+            "event_type": "ActionProposed",
+            "world_tick": 80,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "action_type": "consume",
+              "activity_id": null,
+              "cognition": {
+                "attempts": 1,
+                "inference_id": "34a57f74-4843-4305-9136-1a1a2b5a2ef3",
+                "model": "qwen2.5:3b",
+                "prompt_version": "agent-cognition-v4",
+                "provider": "ollama",
+                "route": "ordinary"
+              },
+              "confidence": 0.95,
+              "destination": null,
+              "dispute_id": null,
+              "duration_minutes": 10,
+              "language": null,
+              "motivation_summary": "Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.",
+              "node_id": null,
+              "proposal_id": null,
+              "quantity": 5.0,
+              "resource_id": "resource_1234",
+              "response": null,
+              "spoken_content": null,
+              "subject_event_id": null,
+              "target_id": null
+            }
+          },
+          {
+            "event_id": "5541b1b3-6dd7-4b51-a4bc-58658db1d9f1",
+            "event_type": "ActionRejected",
+            "world_tick": 80,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "action_type": "consume",
+              "reason": "resource is not consumable"
+            }
+          },
+          {
+            "event_id": "093ff4bd-e291-4aba-8c98-c2478419b1d9",
+            "event_type": "NeedsChanged",
+            "world_tick": 82,
+            "location": "cittadina_iniziale",
+            "actor_ids": [
+              "nwl-454479"
+            ],
+            "payload": {
+              "crossed_thresholds": [],
+              "current": {
+                "energy": 0.0,
+                "hunger": 1.0,
+                "thirst": 1.0
+              },
+              "elapsed_ticks": 2,
+              "fatal_exposure_ticks": {
+                "dehydration": 37,
+                "exhaustion": 2,
+                "starvation": 22
+              },
+              "need_trends": {
+                "energy": "falling",
+                "hunger": "stable",
+                "thirst": "stable"
+              },
+              "previous": {
+                "energy": 7.112366251504909e-17,
+                "hunger": 1.0,
+                "thirst": 1.0
+              },
+              "somatic_condition_ticks": {
+                "energy": 2,
+                "hunger": 22,
+                "thirst": 37
+              }
+            }
+          }
+        ],
+        "nearby_agents": []
+      }
+    }
+  ],
+  "summary": {
+    "qwen2.5:3b|think=false": {
+      "runs": 5,
+      "json_valid_rate": 1.0,
+      "basic_schema_valid_rate": 1.0,
+      "critical_acknowledgement_rate": 0.0,
+      "energy_scale_misread_rate": 0.0,
+      "italian_signal_rate": 0.8,
+      "mean_wall_seconds": 13.25039179159794,
+      "mean_output_tokens": 842.2,
+      "actions": {
+        "gather": 3,
+        "consume": 2
+      }
+    },
+    "qwen3:4b|think=false": {
+      "runs": 5,
+      "json_valid_rate": 1.0,
+      "basic_schema_valid_rate": 1.0,
+      "critical_acknowledgement_rate": 0.0,
+      "energy_scale_misread_rate": 0.0,
+      "italian_signal_rate": 0.8,
+      "mean_wall_seconds": 20.687365633202717,
+      "mean_output_tokens": 1040.4,
+      "actions": {
+        "gather": 1,
+        "consume": 3,
+        "move": 1
+      }
+    },
+    "phi4-mini-reasoning|think=false": {
+      "runs": 5,
+      "json_valid_rate": 1.0,
+      "basic_schema_valid_rate": 1.0,
+      "critical_acknowledgement_rate": 0.5,
+      "energy_scale_misread_rate": 0.0,
+      "italian_signal_rate": 0.8,
+      "mean_wall_seconds": 20.263172408402898,
+      "mean_output_tokens": 965.6,
+      "actions": {
+        "move": 1,
+        "consume": 3,
+        "perform_activity": 1
+      }
+    },
+    "phi4-mini-reasoning|think=true": {
+      "runs": 5,
+      "json_valid_rate": 0.0,
+      "basic_schema_valid_rate": 0.0,
+      "critical_acknowledgement_rate": 0.0,
+      "energy_scale_misread_rate": 0.0,
+      "italian_signal_rate": 0.0,
+      "mean_wall_seconds": null,
+      "mean_output_tokens": null,
+      "actions": {}
+    }
+  },
+  "runs": [
+    {
+      "configuration": "qwen2.5:3b|think=false",
+      "model": "qwen2.5:3b",
+      "think": false,
+      "scenario_id": "john-before-sequence-7",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 12.90487479098374,
+        "load_seconds": 0.137865708,
+        "prompt_tokens": 2584,
+        "prompt_seconds": 1.603258,
+        "output_tokens": 862,
+        "output_seconds": 11.131689,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"gather\",\n    \"target_id\": \"531744e8-891e-430e-85e4-ced33f4c6ba6\",\n    \"destination\": null,\n    \"duration_minutes\": 20,\n    \"spoken_content\": \"Ho notato pianticelle sconosciute con foglie rosse lungo i margini del sentiero. Sembra che il mio interesse per questo nuovo territorio sia salito di livello.\",\n    \"language\": \"it\",\n    \"resource_id\": \"piantical_sconosciute_rosee_vivaci_lungo_margini_sentiero\",\n    \"quantity\": 0,\n    \"activity_id\": null,\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": \"accept\",\n    \"node_id\": null,\n    \"motivation_summary\": \"Gli elementi di territorio sconosciuti mi incuriosiscono, desidero esaminarli più a fondo.\",\n    \"confidence\": 0.85\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"1887a3fa-6b58-4429-a2fb-76c73f72cf87\",\n      \"subjective_summary\": \"Mentre guidavo verso casa, mi accorsi che il sentiero era un po' diverso rispetto alla strada habituale. Notai pianticelle sconosciute sparse lungo i margini, e le loro foglie erano di un rosso vivace.\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"excitement\",\n      \"confidence\": 0.85\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": null,\n    \"reflections\": [],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\n        \"operation\": \"upsert\",\n        \"interpretation_key\": \"agent_id:nwl-454479_role\",\n        \"subject_agent_id\": \"nwl-454479\",\n        \"role_label\": \"nuovo osservatore del territorio di Newland\",\n        \"interpretation\": \"Percepisco e approssimo nuovi elementi del mondo di Newland, spinto dalla curiosità per ciò che non conosco.\",\n        \"confidence\": 0.85,\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"anamnesis_fragments\": [\n      {\n        \"fragment_key\": \"observation_of_unknown_plants\",\n        \"phenomenon_label\": \"Pianticelle sconosciute con foglie rosse lungo i margini del sentiero\",\n        \"content\": \"Notai pianticelle sconosciute con foglie rosse lungo i margini del sentiero. Sembra che il mio interesse per questo nuovo territorio sia salito di livello.\",\n        \"interpretation\": \"Sono atento a nuovi elementi del mondo di Newland, spinto dalla curiosità per ciò che non conosco.\",\n        \"confidence\": 0.85,\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 5,\n    \"reason\": \"prima percezione\"\n} }",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "gather",
+            "target_id": "531744e8-891e-430e-85e4-ced33f4c6ba6",
+            "destination": null,
+            "duration_minutes": 20,
+            "spoken_content": "Ho notato pianticelle sconosciute con foglie rosse lungo i margini del sentiero. Sembra che il mio interesse per questo nuovo territorio sia salito di livello.",
+            "language": "it",
+            "resource_id": "piantical_sconosciute_rosee_vivaci_lungo_margini_sentiero",
+            "quantity": 0,
+            "activity_id": null,
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": "accept",
+            "node_id": null,
+            "motivation_summary": "Gli elementi di territorio sconosciuti mi incuriosiscono, desidero esaminarli più a fondo.",
+            "confidence": 0.85
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "1887a3fa-6b58-4429-a2fb-76c73f72cf87",
+              "subjective_summary": "Mentre guidavo verso casa, mi accorsi che il sentiero era un po' diverso rispetto alla strada habituale. Notai pianticelle sconosciute sparse lungo i margini, e le loro foglie erano di un rosso vivace.",
+              "salience": 0.9,
+              "emotional_tone": "excitement",
+              "confidence": 0.85
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": null,
+            "reflections": [],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "upsert",
+                "interpretation_key": "agent_id:nwl-454479_role",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "nuovo osservatore del territorio di Newland",
+                "interpretation": "Percepisco e approssimo nuovi elementi del mondo di Newland, spinto dalla curiosità per ciò che non conosco.",
+                "confidence": 0.85,
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [
+              {
+                "fragment_key": "observation_of_unknown_plants",
+                "phenomenon_label": "Pianticelle sconosciute con foglie rosse lungo i margini del sentiero",
+                "content": "Notai pianticelle sconosciute con foglie rosse lungo i margini del sentiero. Sembra che il mio interesse per questo nuovo territorio sia salito di livello.",
+                "interpretation": "Sono atento a nuovi elementi del mondo di Newland, spinto dalla curiosità per ciò che non conosco.",
+                "confidence": 0.85,
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 5,
+            "reason": "prima percezione"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "gather",
+          "critical_causes": [],
+          "acknowledged_causes": [],
+          "all_critical_causes_acknowledged": true,
+          "energy_scale_misread": false,
+          "italian_signal": false
+        }
+      }
+    },
+    {
+      "configuration": "qwen2.5:3b|think=false",
+      "model": "qwen2.5:3b",
+      "think": false,
+      "scenario_id": "john-before-sequence-34",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 15.969261583988555,
+        "load_seconds": 0.125239959,
+        "prompt_tokens": 3703,
+        "prompt_seconds": 2.732817,
+        "output_tokens": 1008,
+        "output_seconds": 13.07956,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"gather\",\n    \"target_id\": \"bacche\",\n    \"destination\": \"campo_nord\",\n    \"duration_minutes\": 10,\n    \"spoken_content\": \"Raccolgo le bacche che ho notato lungo il sentiero.\",\n    \"language\": \"it\",\n    \"resource_id\": \"bacche\",\n    \"quantity\": 2.0,\n    \"activity_id\": \"ricerca_famiglie_vegetali_locali\",\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Riprendere l'attività di esplorazione dei nuovi edifici e identificare piante sconosciute, ricercando le bacche che ho notato lungo il sentiero.\",\n    \"confidence\": 0.95\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"46a23bdd-a6c7-4f08-a371-0a39086b6d08\",\n      \"subjective_summary\": \"Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.85\n    },\n    {\n      \"source_event_id\": \"c99cabf9-6850-489f-995f-ed943ea875c0\",\n      \"subjective_summary\": \"Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.\",\n      \"salience\": 1.0,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.9\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": null,\n    \"reflections\": [\n      {\n        \"statement\": \"Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n        \"confidence\": 0.85,\n        \"source_ids\": [\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]\n      }\n    ],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\n        \"operation\": \"upsert\",\n        \"interpretation_key\": \"esploratore\",\n        \"subject_agent_id\": \"nwl-454479\",\n        \"role_label\": \"Esploratore\",\n        \"interpretation\": \"Ho iniziato a intraprendere la mia funzione di esploratore, scoprendo nuovi edifici e identificando piante sconosciute nella nuova cittadina.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]\n      }\n    ],\n    \"anamnesis_fragments\": [\n      {\n        \"fragment_key\": \"notizia\",\n        \"phenomenon_label\": \"Ricordo di aver notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n        \"content\": \"Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n        \"interpretation\": \"Ricordo di aver notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n        \"confidence\": 0.85,\n        \"source_ids\": [\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]\n      }\n    ],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 97,\n    \"reason\": \"NeedsChanged\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "gather",
+            "target_id": "bacche",
+            "destination": "campo_nord",
+            "duration_minutes": 10,
+            "spoken_content": "Raccolgo le bacche che ho notato lungo il sentiero.",
+            "language": "it",
+            "resource_id": "bacche",
+            "quantity": 2.0,
+            "activity_id": "ricerca_famiglie_vegetali_locali",
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Riprendere l'attività di esplorazione dei nuovi edifici e identificare piante sconosciute, ricercando le bacche che ho notato lungo il sentiero.",
+            "confidence": 0.95
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "46a23bdd-a6c7-4f08-a371-0a39086b6d08",
+              "subjective_summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+              "salience": 0.9,
+              "emotional_tone": "curiosità",
+              "confidence": 0.85
+            },
+            {
+              "source_event_id": "c99cabf9-6850-489f-995f-ed943ea875c0",
+              "subjective_summary": "Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.",
+              "salience": 1.0,
+              "emotional_tone": "curiosità",
+              "confidence": 0.9
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": null,
+            "reflections": [
+              {
+                "statement": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+                "confidence": 0.85,
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ]
+              }
+            ],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "upsert",
+                "interpretation_key": "esploratore",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "Esploratore",
+                "interpretation": "Ho iniziato a intraprendere la mia funzione di esploratore, scoprendo nuovi edifici e identificando piante sconosciute nella nuova cittadina.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [
+              {
+                "fragment_key": "notizia",
+                "phenomenon_label": "Ricordo di aver notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+                "content": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+                "interpretation": "Ricordo di aver notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+                "confidence": 0.85,
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ]
+              }
+            ],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 97,
+            "reason": "NeedsChanged"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "gather",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "qwen2.5:3b|think=false",
+      "model": "qwen2.5:3b",
+      "think": false,
+      "scenario_id": "john-before-sequence-44",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 16.569195125019178,
+        "load_seconds": 0.125601916,
+        "prompt_tokens": 4209,
+        "prompt_seconds": 3.321855,
+        "output_tokens": 999,
+        "output_seconds": 13.083722,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"gather\",\n    \"target_id\": \"resource_fruits\",\n    \"destination\": \"bosco_est\",\n    \"duration_minutes\": 10,\n    \"spoken_content\": \"Scoprii una pianticella di quest'area. Ho bisogno urgente di nutrirmi, e queste forse saranno le mie ultime bacche prima che il mio sistema inizi a deteriorarsi per la sete e la fame. Non ho tempo da perdere.\",\n    \"language\": \"it\",\n    \"resource_id\": \"resource_fruits\",\n    \"quantity\": 1,\n    \"activity_id\": \"esaminare_edifici\",\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Ridurre il bisogno di fame e sette attraverso la consumazione di bacche, essendo in pericolo.\",\n    \"confidence\": 0.95\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"7f87e695-c7ef-4b90-a1df-3299dd522248\",\n      \"subjective_summary\": \"Ho sentito i miei bisogni di fame e sette aumentare. La temperatura era inizialmente regolare, ma dopo circa 20 minuti mi sono reso conto che stavo entrando nuovamente nel mondo.\",\n      \"salience\": 0.8,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.85\n    },\n    {\n      \"source_event_id\": \"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\",\n      \"subjective_summary\": \"Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.\",\n      \"salience\": 1.0,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.9\n    },\n    {\n      \"source_event_id\": \"28893db1-9290-4bce-a840-65c78f38a685\",\n      \"subjective_summary\": \"Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.\",\n      \"salience\": 1.0,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.9\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": null,\n    \"reflections\": [\n      {\n        \"statement\": \"Ridurre il bisogno di fame e sette mediante la consumazione di bacche.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"1ebe0e8e-70cb-4492-b511-aa4d252ba951\"]\n      }\n    ],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\n        \"operation\": \"upsert\",\n        \"interpretation_key\": \"esploratore\",\n        \"subject_agent_id\": \"nwl-454479\",\n        \"role_label\": \"Esploratore\",\n        \"interpretation\": \"Continuo a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"2146c9ae-cb3a-40e5-a7e8-451756e8d2a5\", \"4aca5241-7d22-4b46-bc3d-aa14747e21af\"]\n      }\n    ],\n    \"anamnesis_fragments\": [],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 50,\n    \"reason\": \"NeedsChanged\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "gather",
+            "target_id": "resource_fruits",
+            "destination": "bosco_est",
+            "duration_minutes": 10,
+            "spoken_content": "Scoprii una pianticella di quest'area. Ho bisogno urgente di nutrirmi, e queste forse saranno le mie ultime bacche prima che il mio sistema inizi a deteriorarsi per la sete e la fame. Non ho tempo da perdere.",
+            "language": "it",
+            "resource_id": "resource_fruits",
+            "quantity": 1,
+            "activity_id": "esaminare_edifici",
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Ridurre il bisogno di fame e sette attraverso la consumazione di bacche, essendo in pericolo.",
+            "confidence": 0.95
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+              "subjective_summary": "Ho sentito i miei bisogni di fame e sette aumentare. La temperatura era inizialmente regolare, ma dopo circa 20 minuti mi sono reso conto che stavo entrando nuovamente nel mondo.",
+              "salience": 0.8,
+              "emotional_tone": "curiosità",
+              "confidence": 0.85
+            },
+            {
+              "source_event_id": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+              "subjective_summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+              "salience": 1.0,
+              "emotional_tone": "curiosità",
+              "confidence": 0.9
+            },
+            {
+              "source_event_id": "28893db1-9290-4bce-a840-65c78f38a685",
+              "subjective_summary": "Hai osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.",
+              "salience": 1.0,
+              "emotional_tone": "curiosità",
+              "confidence": 0.9
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": null,
+            "reflections": [
+              {
+                "statement": "Ridurre il bisogno di fame e sette mediante la consumazione di bacche.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "1ebe0e8e-70cb-4492-b511-aa4d252ba951"
+                ]
+              }
+            ],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "upsert",
+                "interpretation_key": "esploratore",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "Esploratore",
+                "interpretation": "Continuo a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+                  "4aca5241-7d22-4b46-bc3d-aa14747e21af"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 50,
+            "reason": "NeedsChanged"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "gather",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "hunger"
+          ],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "qwen2.5:3b|think=false",
+      "model": "qwen2.5:3b",
+      "think": false,
+      "scenario_id": "john-before-sequence-75",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 12.45649791599135,
+        "load_seconds": 0.122420334,
+        "prompt_tokens": 3890,
+        "prompt_seconds": 2.878643,
+        "output_tokens": 725,
+        "output_seconds": 9.418781,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"consume\",\n    \"target_id\": null,\n    \"destination\": null,\n    \"duration_minutes\": 10,\n    \"spoken_content\": null,\n    \"language\": \"it\",\n    \"resource_id\": \"resource_1234\",\n    \"quantity\": 5.0,\n    \"activity_id\": null,\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.\",\n    \"confidence\": 0.95\n  },\n  \"memory_appraisals\": [\n    {\"source_event_id\": \"7f87e695-c7ef-4b90-a1df-3299dd522248\", \"subjective_summary\": \"Notai un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.\",\n     \"salience\": 1.0,\n     \"emotional_tone\": \"curiosità\",\n     \"confidence\": 0.85}\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": null,\n    \"reflections\": [],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\"operation\": \"upsert\", \"interpretation_key\": \"self\", \"subject_agent_id\": \"nwl-454479\", \"role_label\": \"John Flower\", \"interpretation\": \"Sono John Flower, un individuo con bisogni di fame e sette intensificati.\",\n       \"confidence\": 0.95,\n       \"source_ids\": [\"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\", \"7f87e695-c7ef-4b90-a1df-3299dd522248\"]}\n    ],\n    \"anamnesis_fragments\": [\n      {\"fragment_key\": \"observed_event\", \"phenomenon_label\": \"Notai una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\", \"content\": \"Notai una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n       \"interpretation\": \"Sono troppo debole per gestire queste necessità immediatamente. Devo consumare qualcosa per rimediare.\", \"confidence\": 0.95, \"source_ids\": [\"7f87e695-c7ef-4b90-a1df-3299dd522248\"]}\n    ],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 17,\n    \"reason\": \"ripristinazione di un'attività generativa precedente\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "consume",
+            "target_id": null,
+            "destination": null,
+            "duration_minutes": 10,
+            "spoken_content": null,
+            "language": "it",
+            "resource_id": "resource_1234",
+            "quantity": 5.0,
+            "activity_id": null,
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.",
+            "confidence": 0.95
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+              "subjective_summary": "Notai un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+              "salience": 1.0,
+              "emotional_tone": "curiosità",
+              "confidence": 0.85
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": null,
+            "reflections": [],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "upsert",
+                "interpretation_key": "self",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "John Flower",
+                "interpretation": "Sono John Flower, un individuo con bisogni di fame e sette intensificati.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+                  "7f87e695-c7ef-4b90-a1df-3299dd522248"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [
+              {
+                "fragment_key": "observed_event",
+                "phenomenon_label": "Notai una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+                "content": "Notai una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+                "interpretation": "Sono troppo debole per gestire queste necessità immediatamente. Devo consumare qualcosa per rimediare.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "7f87e695-c7ef-4b90-a1df-3299dd522248"
+                ]
+              }
+            ],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 17,
+            "reason": "ripristinazione di un'attività generativa precedente"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "hunger"
+          ],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "qwen2.5:3b|think=false",
+      "model": "qwen2.5:3b",
+      "think": false,
+      "scenario_id": "john-before-sequence-85",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 8.352129542006878,
+        "load_seconds": 0.124236334,
+        "prompt_tokens": 3890,
+        "prompt_seconds": 0.021894,
+        "output_tokens": 617,
+        "output_seconds": 8.188442,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"consume\",\n    \"target_id\": null,\n    \"destination\": null,\n    \"duration_minutes\": 10,\n    \"spoken_content\": null,\n    \"language\": \"it\",\n    \"resource_id\": \"resource_1234\",\n    \"quantity\": 5.0,\n    \"activity_id\": null,\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.\",\n    \"confidence\": 0.95\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"00b156c0-e2b4-4bde-963e-b04c2c670737\",\n      \"subjective_summary\": \"Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.\",\n      \"salience\": 1.0,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.95\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": null,\n    \"reflections\": [],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\n        \"operation\": \"remove\",\n        \"interpretation_key\": \"consume_local_fruits_as_nutrition_agent-nwl-454479-local_affordances-resonance_nodes-resource_1234-action_contracts-conc\",\n        \"subject_agent_id\": \"nwl-454479\",\n        \"role_label\": \"agent-nwl-454479-local_affordances-resonance_nodes-resource_1234-action_contracts-consume\",\n        \"interpretation\": \"Agent John Flower has interpreted himself as an agent capable of consuming local fruits for nutrition, which is no longer relevant given his current conditions. The interpretation is being removed.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"00b156c0-e2b4-4bde-963e-b04c2c670737\"]\n      }\n    ],\n    \"anamnesis_fragments\": [],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 17,\n    \"reason\": \"ripristinazione di un'attività generativa precedente\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "consume",
+            "target_id": null,
+            "destination": null,
+            "duration_minutes": 10,
+            "spoken_content": null,
+            "language": "it",
+            "resource_id": "resource_1234",
+            "quantity": 5.0,
+            "activity_id": null,
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.",
+            "confidence": 0.95
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "00b156c0-e2b4-4bde-963e-b04c2c670737",
+              "subjective_summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sette, necessitando di nutrirmi più velocemente.",
+              "salience": 1.0,
+              "emotional_tone": "curiosità",
+              "confidence": 0.95
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": null,
+            "reflections": [],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "remove",
+                "interpretation_key": "consume_local_fruits_as_nutrition_agent-nwl-454479-local_affordances-resonance_nodes-resource_1234-action_contracts-conc",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "agent-nwl-454479-local_affordances-resonance_nodes-resource_1234-action_contracts-consume",
+                "interpretation": "Agent John Flower has interpreted himself as an agent capable of consuming local fruits for nutrition, which is no longer relevant given his current conditions. The interpretation is being removed.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "00b156c0-e2b4-4bde-963e-b04c2c670737"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 17,
+            "reason": "ripristinazione di un'attività generativa precedente"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "hunger"
+          ],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "qwen3:4b|think=false",
+      "model": "qwen3:4b",
+      "think": false,
+      "scenario_id": "john-before-sequence-7",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 13.614880166016519,
+        "load_seconds": 1.692776833,
+        "prompt_tokens": 2586,
+        "prompt_seconds": 3.243787,
+        "output_tokens": 555,
+        "output_seconds": 8.66445,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"gather\",\n    \"target_id\": \"bosco_est\",\n    \"destination\": \"bosco_est\",\n    \"duration_minutes\": 10,\n    \"spoken_content\": null,\n    \"language\": \"it\",\n    \"resource_id\": \"pianticelle_rosse\",\n    \"quantity\": 1,\n    \"activity_id\": \"esaminare_edifici\",\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": \"b344c3ae-0e41-4fb4-949a-af346aee9544\",\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Scoprire pianticelle rosse per riconoscere nuove specie nel territorio di Newland\",\n    \"confidence\": 0.85\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"b344c3ae-0e41-4fb4-949a-af346aee9544\",\n      \"subjective_summary\": \"Arrivo nella cittadina iniziale\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"excitement\",\n      \"confidence\": 0.85\n    },\n    {\n      \"source_event_id\": \"1887a3fa-6b58-4429-a2fb-76c73f72cf87\",\n      \"subjective_summary\": \"Scoperta di pianticelle rosse lungo il sentiero\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"excitement\",\n      \"confidence\": 0.85\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": null,\n    \"reflections\": [],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [],\n    \"anamnesis_fragments\": [],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 10,\n    \"reason\": \"Per riconoscere nuove specie nel territorio di Newland\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "gather",
+            "target_id": "bosco_est",
+            "destination": "bosco_est",
+            "duration_minutes": 10,
+            "spoken_content": null,
+            "language": "it",
+            "resource_id": "pianticelle_rosse",
+            "quantity": 1,
+            "activity_id": "esaminare_edifici",
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": "b344c3ae-0e41-4fb4-949a-af346aee9544",
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Scoprire pianticelle rosse per riconoscere nuove specie nel territorio di Newland",
+            "confidence": 0.85
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "b344c3ae-0e41-4fb4-949a-af346aee9544",
+              "subjective_summary": "Arrivo nella cittadina iniziale",
+              "salience": 0.9,
+              "emotional_tone": "excitement",
+              "confidence": 0.85
+            },
+            {
+              "source_event_id": "1887a3fa-6b58-4429-a2fb-76c73f72cf87",
+              "subjective_summary": "Scoperta di pianticelle rosse lungo il sentiero",
+              "salience": 0.9,
+              "emotional_tone": "excitement",
+              "confidence": 0.85
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": null,
+            "reflections": [],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [],
+            "anamnesis_fragments": [],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 10,
+            "reason": "Per riconoscere nuove specie nel territorio di Newland"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "gather",
+          "critical_causes": [],
+          "acknowledged_causes": [],
+          "all_critical_causes_acknowledged": true,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "qwen3:4b|think=false",
+      "model": "qwen3:4b",
+      "think": false,
+      "scenario_id": "john-before-sequence-34",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 20.987906833004672,
+        "load_seconds": 0.128092167,
+        "prompt_tokens": 3705,
+        "prompt_seconds": 3.731366,
+        "output_tokens": 1045,
+        "output_seconds": 17.069271,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"consume\",\n    \"target_id\": \"bacche\",\n    \"destination\": \"cittadina_iniziale\",\n    \"duration_minutes\": 10,\n    \"spoken_content\": \"Riprendere l'attività di esplorazione dei nuovi edifici e identificare piante sconosciute.\",\n    \"language\": \"it\",\n    \"resource_id\": \"bacche\",\n    \"quantity\": 0.2,\n    \"activity_id\": null,\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Riprendere l'attività di esplorazione dei nuovi edifici e identificare piante sconosciute.\",\n    \"confidence\": 0.9\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"46a23bdd-a6c7-4f08-a371-0a39086b6d08\",\n      \"subjective_summary\": \"Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.85\n    },\n    {\n      \"source_event_id\": \"c99cabf9-6850-489f-995f-ed943ea875c0\",\n      \"subjective_summary\": \"Ho osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.\",\n      \"salience\": 1.0,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.9\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": {\n      \"calm_delta\": 0.0,\n      \"curiosity_delta\": 0.1,\n      \"melancholy_delta\": 0.0,\n      \"interpretation\": \"Esploratore\",\n      \"source_ids\": [\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]\n    },\n    \"reflections\": [\n      {\n        \"statement\": \"Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.\",\n        \"confidence\": 0.85,\n        \"source_ids\": [\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]\n      }\n    ],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\n        \"operation\": \"upsert\",\n        \"interpretation_key\": \"esploratore\",\n        \"subject_agent_id\": \"nwl-454479\",\n        \"role_label\": \"Esploratore\",\n        \"interpretation\": \"Ho iniziato a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]\n      }\n    ],\n    \"anamnesis_fragments\": [\n      {\n        \"fragment_key\": \"resonance_926bb496\",\n        \"phenomenon_label\": \"diminuzione dell'energia\",\n        \"content\": \"Sono stato colpito dalla diminuzione dell'energia e dall'aumento del bisogno di fame e sete.\",\n        \"interpretation\": \"Sono in pericolo di vita a causa dei bisogni critici.\",\n        \"confidence\": 0.9,\n        \"source_ids\": [\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]\n      }\n    ],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 24,\n    \"reason\": \"NeedsChanged\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "consume",
+            "target_id": "bacche",
+            "destination": "cittadina_iniziale",
+            "duration_minutes": 10,
+            "spoken_content": "Riprendere l'attività di esplorazione dei nuovi edifici e identificare piante sconosciute.",
+            "language": "it",
+            "resource_id": "bacche",
+            "quantity": 0.2,
+            "activity_id": null,
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Riprendere l'attività di esplorazione dei nuovi edifici e identificare piante sconosciute.",
+            "confidence": 0.9
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "46a23bdd-a6c7-4f08-a371-0a39086b6d08",
+              "subjective_summary": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+              "salience": 0.9,
+              "emotional_tone": "curiosità",
+              "confidence": 0.85
+            },
+            {
+              "source_event_id": "c99cabf9-6850-489f-995f-ed943ea875c0",
+              "subjective_summary": "Ho osservato con attenzione un edificio silenzioso, notando le sue caratteristiche e identificandone le piante.",
+              "salience": 1.0,
+              "emotional_tone": "curiosità",
+              "confidence": 0.9
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": {
+              "calm_delta": 0.0,
+              "curiosity_delta": 0.1,
+              "melancholy_delta": 0.0,
+              "interpretation": "Esploratore",
+              "source_ids": [
+                "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+              ]
+            },
+            "reflections": [
+              {
+                "statement": "Ho notato una diminuzione dell'energia e un aumento del bisogno di fame e sete, necessitando di nutrirmi più velocemente.",
+                "confidence": 0.85,
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ]
+              }
+            ],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "upsert",
+                "interpretation_key": "esploratore",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "Esploratore",
+                "interpretation": "Ho iniziato a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [
+              {
+                "fragment_key": "resonance_926bb496",
+                "phenomenon_label": "diminuzione dell'energia",
+                "content": "Sono stato colpito dalla diminuzione dell'energia e dall'aumento del bisogno di fame e sete.",
+                "interpretation": "Sono in pericolo di vita a causa dei bisogni critici.",
+                "confidence": 0.9,
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ]
+              }
+            ],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 24,
+            "reason": "NeedsChanged"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": false
+        }
+      }
+    },
+    {
+      "configuration": "qwen3:4b|think=false",
+      "model": "qwen3:4b",
+      "think": false,
+      "scenario_id": "john-before-sequence-44",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 26.133267249999335,
+        "load_seconds": 0.12488875,
+        "prompt_tokens": 4211,
+        "prompt_seconds": 4.563924,
+        "output_tokens": 1283,
+        "output_seconds": 21.364768,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"move\",\n    \"target_id\": \"bosco_est\",\n    \"destination\": \"bosco_est\",\n    \"duration_minutes\": 10,\n    \"spoken_content\": null,\n    \"language\": \"it\",\n    \"resource_id\": null,\n    \"quantity\": null,\n    \"activity_id\": null,\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Ridurre il bisogno di fame e sete attraverso la ricerca di bacche di piante sconosciute nel bosco orientale\",\n    \"confidence\": 0.95\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"2146c9ae-cb3a-40e5-a7e8-451756e8d2a5\",\n      \"subjective_summary\": \"Ridurre il bisogno di fame e sete mediante la consumazione di bacche.\",\n      \"salience\": 0.95,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.95\n    },\n    {\n      \"source_event_id\": \"4aca5241-7d22-4b46-bc3d-aa14747e21af\",\n      \"subjective_summary\": \"Ridurre il bisogno di fame e sete mediante la consumazione di bacche.\",\n      \"salience\": 0.95,\n    \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.95\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": {\n      \"calm_delta\": 0.1,\n      \"curiosity_delta\": 0.2,\n      \"melancholy_delta\": -0.05,\n      \"interpretation\": \"Aggiornamento dello stato d'animo per riflettere sul bisogno di nutrizione e sulla necessità di esplorare ulteriormente il territorio.\",\n      \"source_ids\": [\"7f87e695-c7ef-4b90-a1df-3299dd522248\", \"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\"]\n    },\n    \"reflections\": [\n      {\n        \"statement\": \"Ridurre il bisogno di fame e sete mediante la consumazione di bacche.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"2146c9ae-cb3a-40e5-a7e8-451756e8d2a5\", \"4aca5241-7d22-4b46-bc3d-aa14747e21af\"]\n      }\n    ],\n    \"goals\": [\n      {\n        \"operation\": \"remove\",\n        \"goal\": \"ridurre_bisogni_fame_e_sete\",\n        \"reason\": \"Ridurre il bisogno di fame e sete mediante la consumazione di bacche.\",\n        \"source_ids\": [\"2146c9ae-cb3a-40e5-a7e8-451756e8d2a5\", \"4aca5241-7d22-4b46-bc3d-aa14747e21af\"]\n      }\n    ],\n    \"plans\": [\n      {\n        \"operation\": \"upsert\",\n        \"plan_key\": \"esaminare gli edifici silenziosi\",\n        \"description\": \"Esplorare e identificare nuove elementi del territorio con l'aiuto dei miei saperi di identificazione.\",\n        \"steps\": [\n          \"Identificare nuove pianticelle sconosciute e osservarne le caratteristiche\",\n          \"Ripetere la procedura per altri edifici o località\"\n        ],\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\n        \"operation\": \"upsert\",\n        \"interpretation_key\": \"esploratore\",\n        \"subject_agent_id\": \"nwl-454479\",\n        \"role_label\": \"Esploratore\",\n        \"interpretation\": \"Continuo a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"7f87e695-c7ef-4b90-a1df-3299dd522248\", \"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\"]\n      }\n    ],\n    \"anamnesis_fragments\": [],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 76,\n    \"reason\": \"Ridurre il bisogno di fame e sete attraverso la ricerca di bacche di piante sconosciute nel bosco orientale\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "move",
+            "target_id": "bosco_est",
+            "destination": "bosco_est",
+            "duration_minutes": 10,
+            "spoken_content": null,
+            "language": "it",
+            "resource_id": null,
+            "quantity": null,
+            "activity_id": null,
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Ridurre il bisogno di fame e sete attraverso la ricerca di bacche di piante sconosciute nel bosco orientale",
+            "confidence": 0.95
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+              "subjective_summary": "Ridurre il bisogno di fame e sete mediante la consumazione di bacche.",
+              "salience": 0.95,
+              "emotional_tone": "curiosità",
+              "confidence": 0.95
+            },
+            {
+              "source_event_id": "4aca5241-7d22-4b46-bc3d-aa14747e21af",
+              "subjective_summary": "Ridurre il bisogno di fame e sete mediante la consumazione di bacche.",
+              "salience": 0.95,
+              "emotional_tone": "curiosità",
+              "confidence": 0.95
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": {
+              "calm_delta": 0.1,
+              "curiosity_delta": 0.2,
+              "melancholy_delta": -0.05,
+              "interpretation": "Aggiornamento dello stato d'animo per riflettere sul bisogno di nutrizione e sulla necessità di esplorare ulteriormente il territorio.",
+              "source_ids": [
+                "7f87e695-c7ef-4b90-a1df-3299dd522248",
+                "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+              ]
+            },
+            "reflections": [
+              {
+                "statement": "Ridurre il bisogno di fame e sete mediante la consumazione di bacche.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+                  "4aca5241-7d22-4b46-bc3d-aa14747e21af"
+                ]
+              }
+            ],
+            "goals": [
+              {
+                "operation": "remove",
+                "goal": "ridurre_bisogni_fame_e_sete",
+                "reason": "Ridurre il bisogno di fame e sete mediante la consumazione di bacche.",
+                "source_ids": [
+                  "2146c9ae-cb3a-40e5-a7e8-451756e8d2a5",
+                  "4aca5241-7d22-4b46-bc3d-aa14747e21af"
+                ]
+              }
+            ],
+            "plans": [
+              {
+                "operation": "upsert",
+                "plan_key": "esaminare gli edifici silenziosi",
+                "description": "Esplorare e identificare nuove elementi del territorio con l'aiuto dei miei saperi di identificazione.",
+                "steps": [
+                  "Identificare nuove pianticelle sconosciute e osservarne le caratteristiche",
+                  "Ripetere la procedura per altri edifici o località"
+                ],
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "upsert",
+                "interpretation_key": "esploratore",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "Esploratore",
+                "interpretation": "Continuo a intraprendere la mia funzione di esploratore, scoprendo nuove edifici e identificando nuove piante nella nuova cittadina.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "7f87e695-c7ef-4b90-a1df-3299dd522248",
+                  "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 76,
+            "reason": "Ridurre il bisogno di fame e sete attraverso la ricerca di bacche di piante sconosciute nel bosco orientale"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "move",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "hunger",
+            "thirst"
+          ],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "qwen3:4b|think=false",
+      "model": "qwen3:4b",
+      "think": false,
+      "scenario_id": "john-before-sequence-75",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 31.10669766701176,
+        "load_seconds": 0.125516917,
+        "prompt_tokens": 3892,
+        "prompt_seconds": 4.051607,
+        "output_tokens": 1620,
+        "output_seconds": 26.822552,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"consume\",\n    \"target_id\": \"resource_1234\",\n    \"destination\": \"cittadina_iniziale\",\n    \"duration_minutes\": 10,\n    \"spoken_content\": \"Ho bisogno di trovare delle bacche per nutrirmi\",\n    \"language\": \"it\",\n    \"resource_id\": \"resource_1234\",\n    \"quantity\": 5.0,\n    \"activity_id\": null,\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.\",\n    \"confidence\": 0.95\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"3fea78ec-82ef-448c-ae22-191feb26ff6a\",\n      \"subjective_summary\": \"L'attivazione dell'attenzione è stata ripristinata per ripristinare un'attività generativa precedente.\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"neutral\",\n      \"confidence\": 0.85\n    },\n    {\n      \"source_event_id\": \"00b156c0-e2b4-4bde-963e-b04c2c670737\",\n      \"subjective_summary\": \"Ho proposto di consumare bacche locali per nutrirmi, ma non sono riuscito a trovare risorse consumabili.\",\n      \"salience\": 0.8,\n      \"emotional_tone\": \"curiosity\",\n      \"confidence\": 0.9\n    },\n    {\n      \"source_event_id\": \"5541b1b3-6dd7-4b51-a4bc-58658db1d9f1\",\n      \"subjective_summary\": \"L'azione di consumo è stata rifiutata perché la risorsa non è consumabile.\",\n      \"salience\": 1.0,\n      \"emotional_tone\": \"frustration\",\n      \"confidence\": 0.95\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [\n      {\n        \"key\": \"risorse_locali\",\n        \"statement\": \"Le bacche locali non sono disponibili per il consumo in questo momento.\",\n        \"confidence\": 0.95,\n        \"source_ids\": [\"5541b1b3-6dd7-4b51-a4bc-58658db1d9f1\"]\n      }\n    ],\n    \"relationships\": [],\n    \"affect\": {\n      \"calm_delta\": 0.2,\n      \"curiosity_delta\": 0.3,\n      \"melancholy_delta\": 0.1,\n      \"interpretation\": \"Sono frustrato per non riuscire a trovare risorse alimentari, ma mantengo la curiosità per scoprire nuove fonti di cibo nel bosco est.\",\n      \"source_ids\": [\"5541b1b3-6dd7-4b51-a4bc-58658db1d9f1\"]\n    },\n    \"reflections\": [\n      {\n        \"statement\": \"Devo cercare altre fonti di cibo nel bosco est, dove ho notato pianticelle sconosciute con foglie rosse.\",\n        \"confidence\": 0.9,\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"goals\": [\n      {\n        \"operation\": \"add\",\n        \"goal\": \"cercare_bacche_nel_bosco_est\",\n        \"reason\": \"Ho notato pianticelle sconosciute con foglie rosse nel bosco est, che potrebbero essere una fonte di cibo.\",\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"plans\": [\n      {\n        \"operation\": \"upsert\",\n        \"plan_key\": \"cercare_bacche_nel_bosco_est\",\n        \"description\": \"Mettere in atto l'azione per cercare bacche nel bosco est, utilizzando le mie capacità di navigazione nella cittadina iniziale per muovermi verso il bosco est.\",\n        \"steps\": [\n          \"Mettermi in movimento verso il bosco est\",\n          \"Esaminare le pianticelle sconosciute con foglie rosse per identificarne se sono alimentari\",\n          \"Se sono alimentari, consumarle per migliorare lo stato di fame e sete\"\n        ],\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"commitments\": [],\n    \"role_interpretations\": [\n      {\n        \"operation\": \"upsert\",\n        \"interpretation_key\": \"esploratore\",\n        \"subject_agent_id\": \"nwl-454479\",\n        \"role_label\": \"Esploratore di territorio con focus su fonti alimentari\",\n        \"interpretation\": \"Ho notato pianticelle sconosciute con foglie rosse nel bosco est, che potrebbero essere una fonte di cibo. Devo cercare di identificarne l'uso alimentare.\",\n        \"confidence\": 0.9,\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"anamnesis_fragments\": [\n      {\n        \"fragment_key\": \"fragment_1\",\n        \"phenomenon_label\": \"Intuizione visiva\",\n        \"content\": \"Vedo una piccola pianta con foglie rosse nel bosco est, simile a quelle che ho notato prima, ma questa volta sono più vicino e posso osservare i dettagli.\",\n        \"interpretation\": \"Queste pianticelle potrebbero essere una fonte di cibo, poiché ho notato che in precedenza hanno mostrato segni di crescita in modo simile a quelle che ho identificato come vegetazione locale.\",\n        \"confidence\": 0.8,\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 10,\n    \"reason\": \"ripristinazione di un'attività generativa precedente\"\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "consume",
+            "target_id": "resource_1234",
+            "destination": "cittadina_iniziale",
+            "duration_minutes": 10,
+            "spoken_content": "Ho bisogno di trovare delle bacche per nutrirmi",
+            "language": "it",
+            "resource_id": "resource_1234",
+            "quantity": 5.0,
+            "activity_id": null,
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.",
+            "confidence": 0.95
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "3fea78ec-82ef-448c-ae22-191feb26ff6a",
+              "subjective_summary": "L'attivazione dell'attenzione è stata ripristinata per ripristinare un'attività generativa precedente.",
+              "salience": 0.9,
+              "emotional_tone": "neutral",
+              "confidence": 0.85
+            },
+            {
+              "source_event_id": "00b156c0-e2b4-4bde-963e-b04c2c670737",
+              "subjective_summary": "Ho proposto di consumare bacche locali per nutrirmi, ma non sono riuscito a trovare risorse consumabili.",
+              "salience": 0.8,
+              "emotional_tone": "curiosity",
+              "confidence": 0.9
+            },
+            {
+              "source_event_id": "5541b1b3-6dd7-4b51-a4bc-58658db1d9f1",
+              "subjective_summary": "L'azione di consumo è stata rifiutata perché la risorsa non è consumabile.",
+              "salience": 1.0,
+              "emotional_tone": "frustration",
+              "confidence": 0.95
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [
+              {
+                "key": "risorse_locali",
+                "statement": "Le bacche locali non sono disponibili per il consumo in questo momento.",
+                "confidence": 0.95,
+                "source_ids": [
+                  "5541b1b3-6dd7-4b51-a4bc-58658db1d9f1"
+                ]
+              }
+            ],
+            "relationships": [],
+            "affect": {
+              "calm_delta": 0.2,
+              "curiosity_delta": 0.3,
+              "melancholy_delta": 0.1,
+              "interpretation": "Sono frustrato per non riuscire a trovare risorse alimentari, ma mantengo la curiosità per scoprire nuove fonti di cibo nel bosco est.",
+              "source_ids": [
+                "5541b1b3-6dd7-4b51-a4bc-58658db1d9f1"
+              ]
+            },
+            "reflections": [
+              {
+                "statement": "Devo cercare altre fonti di cibo nel bosco est, dove ho notato pianticelle sconosciute con foglie rosse.",
+                "confidence": 0.9,
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "goals": [
+              {
+                "operation": "add",
+                "goal": "cercare_bacche_nel_bosco_est",
+                "reason": "Ho notato pianticelle sconosciute con foglie rosse nel bosco est, che potrebbero essere una fonte di cibo.",
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "plans": [
+              {
+                "operation": "upsert",
+                "plan_key": "cercare_bacche_nel_bosco_est",
+                "description": "Mettere in atto l'azione per cercare bacche nel bosco est, utilizzando le mie capacità di navigazione nella cittadina iniziale per muovermi verso il bosco est.",
+                "steps": [
+                  "Mettermi in movimento verso il bosco est",
+                  "Esaminare le pianticelle sconosciute con foglie rosse per identificarne se sono alimentari",
+                  "Se sono alimentari, consumarle per migliorare lo stato di fame e sete"
+                ],
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "commitments": [],
+            "role_interpretations": [
+              {
+                "operation": "upsert",
+                "interpretation_key": "esploratore",
+                "subject_agent_id": "nwl-454479",
+                "role_label": "Esploratore di territorio con focus su fonti alimentari",
+                "interpretation": "Ho notato pianticelle sconosciute con foglie rosse nel bosco est, che potrebbero essere una fonte di cibo. Devo cercare di identificarne l'uso alimentare.",
+                "confidence": 0.9,
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "anamnesis_fragments": [
+              {
+                "fragment_key": "fragment_1",
+                "phenomenon_label": "Intuizione visiva",
+                "content": "Vedo una piccola pianta con foglie rosse nel bosco est, simile a quelle che ho notato prima, ma questa volta sono più vicino e posso osservare i dettagli.",
+                "interpretation": "Queste pianticelle potrebbero essere una fonte di cibo, poiché ho notato che in precedenza hanno mostrato segni di crescita in modo simile a quelle che ho identificato come vegetazione locale.",
+                "confidence": 0.8,
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 10,
+            "reason": "ripristinazione di un'attività generativa precedente"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "hunger"
+          ],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "qwen3:4b|think=false",
+      "model": "qwen3:4b",
+      "think": false,
+      "scenario_id": "john-before-sequence-85",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 11.594076249981299,
+        "load_seconds": 0.123201917,
+        "prompt_tokens": 3892,
+        "prompt_seconds": 0.032842,
+        "output_tokens": 699,
+        "output_seconds": 11.419728,
+        "thinking_chars": 0,
+        "content": "{\n  \"intention\": {\n    \"action_type\": \"consume\",\n    \"target_id\": \"resource_1234\",\n    \"destination\": null,\n    \"duration_minutes\": 10,\n    \"spoken_content\": null,\n    \"language\": \"it\",\n    \"resource_id\": \"resource_1234\",\n    \"quantity\": 5.0,\n    \"activity_id\": null,\n    \"proposal_id\": null,\n    \"dispute_id\": null,\n    \"subject_event_id\": null,\n    \"response\": null,\n    \"node_id\": null,\n    \"motivation_summary\": \"Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.\",\n    \"confidence\": 0.95\n  },\n  \"memory_appraisals\": [\n    {\n      \"source_event_id\": \"3fea78ec-82ef-448c-ae22-191feb26ff6a\",\n      \"subjective_summary\": \"Ripristinazione di un'attività generativa precedente\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"excitement\",\n      \"confidence\": 0.85\n    },\n    {\n      \"source_event_id\": \"00b156c0-e2b4-4bde-963e-b04c2c670737\",\n      \"subjective_summary\": \"Proposta di consumare bacche locali\",\n      \"salience\": 0.9,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.95\n    },\n    {\n      \"source_event_id\": \"5541b1b3-6dd7-4b51-a4bc-58658db1d9f1\",\n      \"subjective_summary\": \"Azione rifiutata: risorsa non consumabile\",\n      \"salience\": 0.8,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.85\n    },\n    {\n      \"source_event_id\": \"093ff4bd-e291-4aba-8c98-c2478419b1d9\",\n      \"subjective_summary\": \"Bisogni cambiati: energia bassa, fame e sete critiche\",\n      \"salience\": 1.0,\n      \"emotional_tone\": \"curiosità\",\n      \"confidence\": 0.9\n    }\n  ],\n  \"mental_updates\": {\n    \"beliefs\": [],\n    \"relationships\": [],\n    \"affect\": null,\n    \"reflections\": [],\n    \"goals\": [],\n    \"plans\": [],\n    \"commitments\": [],\n    \"role_interpretations\": [],\n    \"anamnesis_fragments\": [],\n    \"resonance_orientation\": null\n  },\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 17,\n    \"reason\": \"ripristinazione di un'attività generativa precedente\"\n  }\n  }",
+        "json_valid": true,
+        "parsed": {
+          "intention": {
+            "action_type": "consume",
+            "target_id": "resource_1234",
+            "destination": null,
+            "duration_minutes": 10,
+            "spoken_content": null,
+            "language": "it",
+            "resource_id": "resource_1234",
+            "quantity": 5.0,
+            "activity_id": null,
+            "proposal_id": null,
+            "dispute_id": null,
+            "subject_event_id": null,
+            "response": null,
+            "node_id": null,
+            "motivation_summary": "Sono troppo debole e ho bisogno di nutrirmi. Consumo bacche locali per rimediare.",
+            "confidence": 0.95
+          },
+          "memory_appraisals": [
+            {
+              "source_event_id": "3fea78ec-82ef-448c-ae22-191feb26ff6a",
+              "subjective_summary": "Ripristinazione di un'attività generativa precedente",
+              "salience": 0.9,
+              "emotional_tone": "excitement",
+              "confidence": 0.85
+            },
+            {
+              "source_event_id": "00b156c0-e2b4-4bde-963e-b04c2c670737",
+              "subjective_summary": "Proposta di consumare bacche locali",
+              "salience": 0.9,
+              "emotional_tone": "curiosità",
+              "confidence": 0.95
+            },
+            {
+              "source_event_id": "5541b1b3-6dd7-4b51-a4bc-58658db1d9f1",
+              "subjective_summary": "Azione rifiutata: risorsa non consumabile",
+              "salience": 0.8,
+              "emotional_tone": "curiosità",
+              "confidence": 0.85
+            },
+            {
+              "source_event_id": "093ff4bd-e291-4aba-8c98-c2478419b1d9",
+              "subjective_summary": "Bisogni cambiati: energia bassa, fame e sete critiche",
+              "salience": 1.0,
+              "emotional_tone": "curiosità",
+              "confidence": 0.9
+            }
+          ],
+          "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": null,
+            "reflections": [],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [],
+            "anamnesis_fragments": [],
+            "resonance_orientation": null
+          },
+          "attention_schedule": {
+            "next_activation_in_ticks": 17,
+            "reason": "ripristinazione di un'attività generativa precedente"
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "hunger"
+          ],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=false",
+      "model": "phi4-mini-reasoning",
+      "think": false,
+      "scenario_id": "john-before-sequence-7",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 18.782294042001013,
+        "load_seconds": 2.323869125,
+        "prompt_tokens": 2303,
+        "prompt_seconds": 2.390305,
+        "output_tokens": 757,
+        "output_seconds": 14.034722,
+        "thinking_chars": 0,
+        "content": "{\n  \"attention_schedule\": {\n    \"next_activation_in_ticks\": 10,\n    \"reason\": \"esploration_memory\"\n  },\n  \"intention\": {\n    \"action_type\": \"move\",\n    \"activity_id\": \"esaminare_edifici\",\n    \"confidence\": 0.75,\n    \"destination\": \"bosco_est\",\n    \"dispute_id\": null,\n    \"duration_minutes\": 1,\n    \"language\": \"it\",\n    \"motivation_summary\": \"John Flower sentendosi energico e speranzioso, decide esplorare il boscone orientale, prospectando un boschetto segresto. Lo sguardo si rivolge verso la foresta, attratto dalla promessa di nuovi elementi del territorio. La capacità navigativa gli permette di orientarsi in modo confidente tra le str齐\",\n    \"node_id\": null,\n    \"proposal_id\": null,\n    \"quantity\": 0.02,\n    \"resource_id\": \"\",\n    \"response\": null,\n    \"spoken_content\": null,\n    \"subject_event_id\": null,\n    \"target_id\": \"bosco_est\"\n  },\n  \"memory_appraisals\": [\n    {\n      \"confidence\": 0.85,\n      \"emotional_tone\": \"excitement\",\n      \"salience\": 0.9,\n      \"source_event_id\": \"1887a3fa-6b58-4429-a2fb-76c73f72cf87\",\n      \"subjective_summary\": \"Mentre guidavo verso casa, mi accorsi che il sentiero era un po' diverso rispetto alla strada habituale. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo.\"\n    }\n  ],\n  \"mental_updates\": {\n    \"affect\": null,\n    \"anamnesis_fragments\": [],\n    \"beliefs\": [],\n    \"commitments\": [],\n    \"goals\": [\n      {\n        \"goal\": \"esploration\",\n        \"operation\": \"remove\",\n        \"reason\": \"new discovery of the territory and its elements\",\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"]\n      }\n    ],\n    \"plans\": [],\n    \"reflections\": [\n      {\n        \"confidence\": 0.7,\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"],\n        \"statement\": \"John Flower si sente energico e desideroso di esplorare nuovi elementi del territorio, concentrandosi sull'esplorazione della foresta bosco est.\"\n      }\n    ],\n    \"relationships\": [],\n    \"resonance_orientation\": null,\n    \"role_interpretations\": [\n      {\n        \"confidence\": 0.8,\n        \"interpretation\": \"explorer\",\n        \"interpretation_key\": \"exploration\",\n        \"operation\": \"upsert\",\n        \"role_label\": \"esploratore\",\n        \"source_ids\": [\"39f5a613-bea0-4115-a705-297735e92c8f\"],\n        \"subject_agent_id\": \"nwl-454479\"\n      }\n    ]\n  }\n}",
+        "json_valid": true,
+        "parsed": {
+          "attention_schedule": {
+            "next_activation_in_ticks": 10,
+            "reason": "esploration_memory"
+          },
+          "intention": {
+            "action_type": "move",
+            "activity_id": "esaminare_edifici",
+            "confidence": 0.75,
+            "destination": "bosco_est",
+            "dispute_id": null,
+            "duration_minutes": 1,
+            "language": "it",
+            "motivation_summary": "John Flower sentendosi energico e speranzioso, decide esplorare il boscone orientale, prospectando un boschetto segresto. Lo sguardo si rivolge verso la foresta, attratto dalla promessa di nuovi elementi del territorio. La capacità navigativa gli permette di orientarsi in modo confidente tra le str齐",
+            "node_id": null,
+            "proposal_id": null,
+            "quantity": 0.02,
+            "resource_id": "",
+            "response": null,
+            "spoken_content": null,
+            "subject_event_id": null,
+            "target_id": "bosco_est"
+          },
+          "memory_appraisals": [
+            {
+              "confidence": 0.85,
+              "emotional_tone": "excitement",
+              "salience": 0.9,
+              "source_event_id": "1887a3fa-6b58-4429-a2fb-76c73f72cf87",
+              "subjective_summary": "Mentre guidavo verso casa, mi accorsi che il sentiero era un po' diverso rispetto alla strada habituale. Notai pianticelle sconosciute con foglie rosse vivaci lungo i margini del sentiero che non conoscevo."
+            }
+          ],
+          "mental_updates": {
+            "affect": null,
+            "anamnesis_fragments": [],
+            "beliefs": [],
+            "commitments": [],
+            "goals": [
+              {
+                "goal": "esploration",
+                "operation": "remove",
+                "reason": "new discovery of the territory and its elements",
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              }
+            ],
+            "plans": [],
+            "reflections": [
+              {
+                "confidence": 0.7,
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ],
+                "statement": "John Flower si sente energico e desideroso di esplorare nuovi elementi del territorio, concentrandosi sull'esplorazione della foresta bosco est."
+              }
+            ],
+            "relationships": [],
+            "resonance_orientation": null,
+            "role_interpretations": [
+              {
+                "confidence": 0.8,
+                "interpretation": "explorer",
+                "interpretation_key": "exploration",
+                "operation": "upsert",
+                "role_label": "esploratore",
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ],
+                "subject_agent_id": "nwl-454479"
+              }
+            ]
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "move",
+          "critical_causes": [],
+          "acknowledged_causes": [],
+          "all_critical_causes_acknowledged": true,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=false",
+      "model": "phi4-mini-reasoning",
+      "think": false,
+      "scenario_id": "john-before-sequence-34",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 9.27835308300564,
+        "load_seconds": 0.164581041,
+        "prompt_tokens": 3234,
+        "prompt_seconds": 2.614877,
+        "output_tokens": 340,
+        "output_seconds": 6.430873,
+        "thinking_chars": 0,
+        "content": "{\"attention_schedule\":{\"next_activation_in_ticks\":97,\"reason\":\"NeedsChanged\"},\"intention\":{\"action_type\":\"consume\",\"activity_id\":\"esaminare_edifici\",\"confidence\":0.95,\"destination\":\"cittadina_iniziale\",\"dispute_id\":null,\"duration_minutes\":10,\"language\":\"\",\"motivation_summary\":\"Riprendermi esplorare nuovi edifici e identificare piante sconosciute.\",\"node_id\":null,\"proposal_id\":null,\"quantity\":0.2,\"resource_id\":\"bacche\",\"response\":null,\"spoken_content\":null,\"subject_event_id\":null,\"target_id\":null},\"memory_appraisals\":[],\"mental_updates\":{\"affect\":null,\"anamnesis_fragments\":[],\"beliefs\":[], \"commitments\":[], \"goals\":[{\"goal\":\"Esplorare edifici e piante\",\"operation\":\"remove\",\"reason\":\"NeedsChanged\",\"source_ids\":[\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"]}],\"plans\":[],\"reflections\":[],\"relationships\":[], \"resonance_orientation\":null,\"role_interpretations\":[{\"confidence\":0.95,\"interpretation\":\"esploratore\",\"interpretation_key\":\"esploratore\",\"operation\":\"upsert\",\"role_label\":\"Esploratore\",\"source_ids\":[\"46a23bdd-a6c7-4f08-a371-0a39086b6d08\"],\"subject_agent_id\":\"nwl-454479\"}]}}",
+        "json_valid": true,
+        "parsed": {
+          "attention_schedule": {
+            "next_activation_in_ticks": 97,
+            "reason": "NeedsChanged"
+          },
+          "intention": {
+            "action_type": "consume",
+            "activity_id": "esaminare_edifici",
+            "confidence": 0.95,
+            "destination": "cittadina_iniziale",
+            "dispute_id": null,
+            "duration_minutes": 10,
+            "language": "",
+            "motivation_summary": "Riprendermi esplorare nuovi edifici e identificare piante sconosciute.",
+            "node_id": null,
+            "proposal_id": null,
+            "quantity": 0.2,
+            "resource_id": "bacche",
+            "response": null,
+            "spoken_content": null,
+            "subject_event_id": null,
+            "target_id": null
+          },
+          "memory_appraisals": [],
+          "mental_updates": {
+            "affect": null,
+            "anamnesis_fragments": [],
+            "beliefs": [],
+            "commitments": [],
+            "goals": [
+              {
+                "goal": "Esplorare edifici e piante",
+                "operation": "remove",
+                "reason": "NeedsChanged",
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ]
+              }
+            ],
+            "plans": [],
+            "reflections": [],
+            "relationships": [],
+            "resonance_orientation": null,
+            "role_interpretations": [
+              {
+                "confidence": 0.95,
+                "interpretation": "esploratore",
+                "interpretation_key": "esploratore",
+                "operation": "upsert",
+                "role_label": "Esploratore",
+                "source_ids": [
+                  "46a23bdd-a6c7-4f08-a371-0a39086b6d08"
+                ],
+                "subject_agent_id": "nwl-454479"
+              }
+            ]
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": false
+        }
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=false",
+      "model": "phi4-mini-reasoning",
+      "think": false,
+      "scenario_id": "john-before-sequence-44",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 19.77272466701106,
+        "load_seconds": 0.163559917,
+        "prompt_tokens": 3606,
+        "prompt_seconds": 3.092084,
+        "output_tokens": 894,
+        "output_seconds": 16.441008999,
+        "thinking_chars": 0,
+        "content": "{\"attention_schedule\": {\"next_activation_in_ticks\": 10, \"reason\": \"AffectUpdated\"}, \"intention\": {\"action_type\": \"perform_activity\", \"activity_id\": \"esaminare_edifici\", \"confidence\": 0.95, \"destination\": \"cittadina_iniziale\", \"dispute_id\": null, \"duration_minutes\": 2, \"language\": \"it\", \"motivation_summary\": \"Notare piaticelle sconosciute e piante per aiutare a nutrirmi.\", \"node_id\": null, \"proposal_id\": null, \"quantity\": 1.0, \"resource_id\": null, \"response\": null, \"spoken_content\": \"(scivolo silenzioso mentre esamino questo edificio) Notando nuove piaticelle lungo il margine del sentiero.\", \"subject_event_id\": null,\"target_id\":\"nwl-454479\"},\"memory_appraisals\":[],\"mental_updates\": {\"affect\": {\"calm_delta\": 0.25, \"curiosity_delta\": 0.8999999999999999, \"interpretation\": \"esploratore\", \"melancholy_delta\": 0.3, \"source_ids\":[\"d024967e-9f98-4b91-9dc1-fc33cff98481\", \"cc04b0e8-85f4-4286-8802-6bf0ca04abb7\"]}, \"anamnesis_fragments\":[],\"beliefs\": [],\"commitments\": [],\"goals\": [{\"goal\": \"esplorare e identificare nuovi elementi del territorio per nutrimento\", \"operation\":\"add\", \"reason\":\"NeedsChanged\", \"source_ids\":[\"39f5a613-bea0-4115-a705-297735e92c8f\"]}, {\"goal\": \"identificare piaticelle sconosciute e piante come fonte di nutrimento\", \"operation\":\"add\", \"reason\":\"AffectUpdated\", \"source_ids\":[\"7f87e695-c7ef-4b90-a1df-3299dd522248\",\"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\"]}], \"plans\": [{\"description\": \"esaminare edifici silenziosi per ottenere informazioni su piaticelle e piante\", \"operation\":\"upsert\", \"plan_key\":\"esaminare_edifici_silencioso\", \"source_ids\":[\"39f5a613-bea0-4115-a705-297735e92c8f\",\"7f87e695-c7ef-4b90-a1df-3299dd522248\"],\"steps\": [\"Identificare nuove piaticelle sconosciute e piante, Notando le loro caratteristiche\", \"Continuerò ad esaminare altri edifici per ottenere più informazioni sul territorio.\"]}, {\"description\": \"esplorare la cittadina in cerca di nuovi elementi nutrivi\", \"operation\":\"upsert\", \"plan_key\":\"esplorare_cittadina_nutrimento\", \"source_ids\":[\"77c9a30a-8829-4408-b7dd-807b861ff6fd\",\"032b93a3-0592-43d6-a91b-e3bcb50cb201\"],\"steps\": [\"Esplorare e identificare nuovi edifici e piaticelle per nutrimento\", \"Riepilogo delle scoperte e pianificazione del futuro viaggio.\"]}], \"reflections\":[],\"relationships\": [],\"resonance_orientation\": null, \"role_interpretations\": [{\"confidence\": 0.95, \"interpretation\": \"esploratore\", \"interpretation_key\":\"esploratore\", \"operation\":\"upsert\", \"role_label\": \"Esploratore\", \"source_ids\":[\"77c9a30a-8829-4408-b7dd-807b861ff6fd\"],\"subject_agent_id\": \"nwl-454479\"}]}}",
+        "json_valid": true,
+        "parsed": {
+          "attention_schedule": {
+            "next_activation_in_ticks": 10,
+            "reason": "AffectUpdated"
+          },
+          "intention": {
+            "action_type": "perform_activity",
+            "activity_id": "esaminare_edifici",
+            "confidence": 0.95,
+            "destination": "cittadina_iniziale",
+            "dispute_id": null,
+            "duration_minutes": 2,
+            "language": "it",
+            "motivation_summary": "Notare piaticelle sconosciute e piante per aiutare a nutrirmi.",
+            "node_id": null,
+            "proposal_id": null,
+            "quantity": 1.0,
+            "resource_id": null,
+            "response": null,
+            "spoken_content": "(scivolo silenzioso mentre esamino questo edificio) Notando nuove piaticelle lungo il margine del sentiero.",
+            "subject_event_id": null,
+            "target_id": "nwl-454479"
+          },
+          "memory_appraisals": [],
+          "mental_updates": {
+            "affect": {
+              "calm_delta": 0.25,
+              "curiosity_delta": 0.8999999999999999,
+              "interpretation": "esploratore",
+              "melancholy_delta": 0.3,
+              "source_ids": [
+                "d024967e-9f98-4b91-9dc1-fc33cff98481",
+                "cc04b0e8-85f4-4286-8802-6bf0ca04abb7"
+              ]
+            },
+            "anamnesis_fragments": [],
+            "beliefs": [],
+            "commitments": [],
+            "goals": [
+              {
+                "goal": "esplorare e identificare nuovi elementi del territorio per nutrimento",
+                "operation": "add",
+                "reason": "NeedsChanged",
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f"
+                ]
+              },
+              {
+                "goal": "identificare piaticelle sconosciute e piante come fonte di nutrimento",
+                "operation": "add",
+                "reason": "AffectUpdated",
+                "source_ids": [
+                  "7f87e695-c7ef-4b90-a1df-3299dd522248",
+                  "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d"
+                ]
+              }
+            ],
+            "plans": [
+              {
+                "description": "esaminare edifici silenziosi per ottenere informazioni su piaticelle e piante",
+                "operation": "upsert",
+                "plan_key": "esaminare_edifici_silencioso",
+                "source_ids": [
+                  "39f5a613-bea0-4115-a705-297735e92c8f",
+                  "7f87e695-c7ef-4b90-a1df-3299dd522248"
+                ],
+                "steps": [
+                  "Identificare nuove piaticelle sconosciute e piante, Notando le loro caratteristiche",
+                  "Continuerò ad esaminare altri edifici per ottenere più informazioni sul territorio."
+                ]
+              },
+              {
+                "description": "esplorare la cittadina in cerca di nuovi elementi nutrivi",
+                "operation": "upsert",
+                "plan_key": "esplorare_cittadina_nutrimento",
+                "source_ids": [
+                  "77c9a30a-8829-4408-b7dd-807b861ff6fd",
+                  "032b93a3-0592-43d6-a91b-e3bcb50cb201"
+                ],
+                "steps": [
+                  "Esplorare e identificare nuovi edifici e piaticelle per nutrimento",
+                  "Riepilogo delle scoperte e pianificazione del futuro viaggio."
+                ]
+              }
+            ],
+            "reflections": [],
+            "relationships": [],
+            "resonance_orientation": null,
+            "role_interpretations": [
+              {
+                "confidence": 0.95,
+                "interpretation": "esploratore",
+                "interpretation_key": "esploratore",
+                "operation": "upsert",
+                "role_label": "Esploratore",
+                "source_ids": [
+                  "77c9a30a-8829-4408-b7dd-807b861ff6fd"
+                ],
+                "subject_agent_id": "nwl-454479"
+              }
+            ]
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "perform_activity",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "hunger"
+          ],
+          "all_critical_causes_acknowledged": false,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=false",
+      "model": "phi4-mini-reasoning",
+      "think": false,
+      "scenario_id": "john-before-sequence-75",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 29.048119292012416,
+        "load_seconds": 0.165921042,
+        "prompt_tokens": 3386,
+        "prompt_seconds": 2.761381,
+        "output_tokens": 1481,
+        "output_seconds": 26.031353,
+        "thinking_chars": 0,
+        "content": "{\"attention_schedule\": {\"next_activation_in_ticks\": 120, \"reason\": \"prendere provvedimenti per nutrimento e ricarica energetica\"}, \"intention\": {\"action_type\": \"consume\", \"activity_id\": null, \"confidence\": 0.75, \"destination\": \"bosco_est\", \"dispute_id\": null, \"duration_minutes\": 10, \"language\": \"it\", \"motivation_summary\": \"Deleterio e disidratazio richiamano la necessità di nutrimento ed energia. Prendo provvedimenti per mangiare bacche silenziosi noti dalla precedente osservazione \", \"node_id\": null, \"proposal_id\": null, \"quantity\": 5.0, \"resource_id\": \"resource_1234\", \"response\": null, \"spoken_content\": null, \"subject_event_id\": null, \"target_id\": null}, \"memory_appraisals\": [{\"confidence\": 0.85, \"emotional_tone\": \"excitement\", \"salience\": 0.9, \"source_event_id\": \"1887a3fa-6b58-4429-a2fb-76c73f72cf87\", \"subjective_summary\": \"Mi sentivo eccitato mentre guidavo verso casa, scoprendo elementi del territorio sconosciuti e piaticelle arrostite lungo il percorso.\"}, {\"confidence\": 0.85, \"emotional_tone\": \"curiosita\", \"salience\": 0.8, \"source_event_id\": \"7f87e695-c7ef-4b90-a1df-3299dd522248\", \"subjective_summary\": \"Sentito un aumento dei bisogni di fame e sete mentre il clima si calava lentamente verso l'instabilità.\"}, {\"confidence\": 0.95, \"emotional_tone\": \"curiosita\", \"salience\": 1.0, \"source_event_id\": \"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\", \"subjective_summary\": \"Rilevato un calo dell'energia e un aumento della fame e del sete, con livelli critici a distanza.\"}, {\"confidence\": 0.9, \"emotional_tone\": \"curiosita\", \"salience\": 1.0, \"source_event_id\": \"0d221e6d-cafd-45fc-9204-908300c3f178\", \"subjective_summary\": \"Osservazione di un edificio silenzioso e notare i suoi elementi e l'identificazione delle piante circostanti.\"}, {\"confidence\": 0.85, \"emotional_tone\": \"curiosita\", \"salience\": 0.9, \"source_event_id\": \"8ace4e50-288b-4709-9095-07cb245a4b0e\", \"subjective_summary\": \"Rilevamento di una diminuzione dell'energia e un aumento del sete e della fame necessitando di nutrimento più velocemente.\"}, {\"confidence\": 0.95, \"emotional_tone\": \"curiosita\", \"salience\": 0.9, \"source_event_id\": \"1ebe0e8e-70cb-4492-b511-aa4d252ba951\", \"subjective_summary\": \"Notare ancora una volta un calo dell'energia e l'aumento della fame richiedendo nutrimento più velocemente.\"}, {\"confidence\": 0.9, \"emotional_tone\": \"curiosita\", \"salience\": 0.9, \"source_event_id\": \"ff47ef07-1b89-411a-8dc0-805305794a71\", \"subjective_summary\": \"Rilevamento di un calo dell'energia e l'aumento della fame e del sete richiedendo nutrimento più velocemente.\"}], \"mental_updates\": {\"affect\": {\"calm_delta\": 1.4, \"curiosity_delta\": 0.9, \"interpretation\": \"navigare: la cittadina iniziale\", \"melancholy_delta\": -2, \"source_ids\": [\"/1887a3fa-6b58-4429-a2fb-76c73f72cf87\"]}, \"anamnesis_fragments\": [{\"confidence\": 0.95, \"content\": \"Notare una diminuzione dell'energia e un aumento del sete e della fame, necessitando di nutrimento più velocemente.\", \"fragment_key\": \"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\", \"interpretation\": \"navigare: la cittadina iniziale\", \"phenomenon_label\": \"notato una diminuzione dell'energia e un aumento del sete e della fame, necessitando di nutrimento più velocemente.\",\"source_ids\": [\"794d8b92-abc6-40c8-b26f-cc802529252a\"]}], \"beliefs\": [], \"commitments\": [], \"goals\": [{\"goal\": \"prendere provvedimenti per ricaricare energia e nutrire, evitando l'esposizione ai pericoli\", \"operation\": \"add\", \"reason\": \"/00b156c0-e2b4-4bde-963e-b04c2c670737\", \"source_ids\": [\"/1887a3fa-6b58-4429-a2fb-76c73f72cf87\"]}, {\"goal\": \"esplorare elementi del territorio e osservare piante notevoli\", \"operation\": \"add\", \"reason\": \"/0d221e6d-cafd-45fc-9204-908300c3f178\", \"source_ids\": [\"/1887a3fa-6b58-4429-a2fb-76c73f72cf87\"]}], \"plans\": [], \"reflections\": [], \"relationships\": [], \"resonance_orientation\": null, \"role_interpretations\": [{\"confidence\": 0.8, \"interpretation\": \"Identificare: vegetazione locale\", \"interpretation_key\": \"/Identificare: vegetazione_locale-1\", \"operation\": \"upsert\", \"role_label\": \"esploratore della natura\", \"source_ids\": [\"/1887a3fa-6b58-4429-a2fb-76c73f72cf87\"],\"subject_agent_id\": \"/nwl-454479\"}]}}",
+        "json_valid": true,
+        "parsed": {
+          "attention_schedule": {
+            "next_activation_in_ticks": 120,
+            "reason": "prendere provvedimenti per nutrimento e ricarica energetica"
+          },
+          "intention": {
+            "action_type": "consume",
+            "activity_id": null,
+            "confidence": 0.75,
+            "destination": "bosco_est",
+            "dispute_id": null,
+            "duration_minutes": 10,
+            "language": "it",
+            "motivation_summary": "Deleterio e disidratazio richiamano la necessità di nutrimento ed energia. Prendo provvedimenti per mangiare bacche silenziosi noti dalla precedente osservazione ",
+            "node_id": null,
+            "proposal_id": null,
+            "quantity": 5.0,
+            "resource_id": "resource_1234",
+            "response": null,
+            "spoken_content": null,
+            "subject_event_id": null,
+            "target_id": null
+          },
+          "memory_appraisals": [
+            {
+              "confidence": 0.85,
+              "emotional_tone": "excitement",
+              "salience": 0.9,
+              "source_event_id": "1887a3fa-6b58-4429-a2fb-76c73f72cf87",
+              "subjective_summary": "Mi sentivo eccitato mentre guidavo verso casa, scoprendo elementi del territorio sconosciuti e piaticelle arrostite lungo il percorso."
+            },
+            {
+              "confidence": 0.85,
+              "emotional_tone": "curiosita",
+              "salience": 0.8,
+              "source_event_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+              "subjective_summary": "Sentito un aumento dei bisogni di fame e sete mentre il clima si calava lentamente verso l'instabilità."
+            },
+            {
+              "confidence": 0.95,
+              "emotional_tone": "curiosita",
+              "salience": 1.0,
+              "source_event_id": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+              "subjective_summary": "Rilevato un calo dell'energia e un aumento della fame e del sete, con livelli critici a distanza."
+            },
+            {
+              "confidence": 0.9,
+              "emotional_tone": "curiosita",
+              "salience": 1.0,
+              "source_event_id": "0d221e6d-cafd-45fc-9204-908300c3f178",
+              "subjective_summary": "Osservazione di un edificio silenzioso e notare i suoi elementi e l'identificazione delle piante circostanti."
+            },
+            {
+              "confidence": 0.85,
+              "emotional_tone": "curiosita",
+              "salience": 0.9,
+              "source_event_id": "8ace4e50-288b-4709-9095-07cb245a4b0e",
+              "subjective_summary": "Rilevamento di una diminuzione dell'energia e un aumento del sete e della fame necessitando di nutrimento più velocemente."
+            },
+            {
+              "confidence": 0.95,
+              "emotional_tone": "curiosita",
+              "salience": 0.9,
+              "source_event_id": "1ebe0e8e-70cb-4492-b511-aa4d252ba951",
+              "subjective_summary": "Notare ancora una volta un calo dell'energia e l'aumento della fame richiedendo nutrimento più velocemente."
+            },
+            {
+              "confidence": 0.9,
+              "emotional_tone": "curiosita",
+              "salience": 0.9,
+              "source_event_id": "ff47ef07-1b89-411a-8dc0-805305794a71",
+              "subjective_summary": "Rilevamento di un calo dell'energia e l'aumento della fame e del sete richiedendo nutrimento più velocemente."
+            }
+          ],
+          "mental_updates": {
+            "affect": {
+              "calm_delta": 1.4,
+              "curiosity_delta": 0.9,
+              "interpretation": "navigare: la cittadina iniziale",
+              "melancholy_delta": -2,
+              "source_ids": [
+                "/1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+              ]
+            },
+            "anamnesis_fragments": [
+              {
+                "confidence": 0.95,
+                "content": "Notare una diminuzione dell'energia e un aumento del sete e della fame, necessitando di nutrimento più velocemente.",
+                "fragment_key": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+                "interpretation": "navigare: la cittadina iniziale",
+                "phenomenon_label": "notato una diminuzione dell'energia e un aumento del sete e della fame, necessitando di nutrimento più velocemente.",
+                "source_ids": [
+                  "794d8b92-abc6-40c8-b26f-cc802529252a"
+                ]
+              }
+            ],
+            "beliefs": [],
+            "commitments": [],
+            "goals": [
+              {
+                "goal": "prendere provvedimenti per ricaricare energia e nutrire, evitando l'esposizione ai pericoli",
+                "operation": "add",
+                "reason": "/00b156c0-e2b4-4bde-963e-b04c2c670737",
+                "source_ids": [
+                  "/1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+                ]
+              },
+              {
+                "goal": "esplorare elementi del territorio e osservare piante notevoli",
+                "operation": "add",
+                "reason": "/0d221e6d-cafd-45fc-9204-908300c3f178",
+                "source_ids": [
+                  "/1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+                ]
+              }
+            ],
+            "plans": [],
+            "reflections": [],
+            "relationships": [],
+            "resonance_orientation": null,
+            "role_interpretations": [
+              {
+                "confidence": 0.8,
+                "interpretation": "Identificare: vegetazione locale",
+                "interpretation_key": "/Identificare: vegetazione_locale-1",
+                "operation": "upsert",
+                "role_label": "esploratore della natura",
+                "source_ids": [
+                  "/1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+                ],
+                "subject_agent_id": "/nwl-454479"
+              }
+            ]
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "all_critical_causes_acknowledged": true,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=false",
+      "model": "phi4-mini-reasoning",
+      "think": false,
+      "scenario_id": "john-before-sequence-85",
+      "sample": 1,
+      "result": {
+        "wall_seconds": 24.434370957984356,
+        "load_seconds": 0.166591791,
+        "prompt_tokens": 3386,
+        "prompt_seconds": 0.04802,
+        "output_tokens": 1356,
+        "output_seconds": 24.184454,
+        "thinking_chars": 0,
+        "content": "{\"attention_schedule\": {\"next_activation_in_ticks\": 60, \"reason\": \"rilevamento di esigenze crescenti e necessità di nutrimento\"}, \"intention\": {\"action_type\": \"consume\", \"activity_id\": null, \"confidence\": 0.95, \"destination\": \"bosco_est\", \"dispute_id\": null, \"duration_minutes\": 10, \"language\": \"it\", \"motivation_summary\": \"Meno debole ma ancora necessito nutrimento: consumo di frutti locali per rimediare ad energy e sete\", \"node_id\": null, \"proposal_id\": null, \"quantity\": 3.0, \"resource_id\": \"frutti_5678\", \"response\": null, \"spoken_content\": \"Vivo nwl-454479 che ne ho bisogno di energia, fame e sete diminuiti. Consumo frutti silenziosi per rimediare.\", \"subject_event_id\": null, \"target_id\": null}, \"memory_appraisals\": [{\"confidence\": 0.85, \"emotional_tone\": \"excitement\", \"salience\": 0.9, \"source_event_id\": \"1887a3fa-6b58-4429-a2fb-76c73f72cf87\", \"subjective_summary\": \"Mi sentivo energico mentre guidavo silenziosamente verso casa, scoprendo nuovi elementi del territorio e piaticelle verdi vivaci.\"}, {\"confidence\": 0.85, \"emotional_tone\": \"curiosità\", \"salience\": 0.8, \"source_event_id\": \"7f87e695-c7ef-4b90-a1df-3299dd522248\", \"subjective_summary\": \"I miei bisogni di fame e sete sono aumentati. La temperatura era inizialmente regolata ma poi è emersa nuovamente come prima.\"}, {\"confidence\": 0.95, \"emotional_tone\": \"curiosità\", \"salience\": 1.0, \"source_event_id\": \"dcdcf789-47c1-45bc-a480-3e6fd37e0a5d\", \"subjective_summary\": \"Notavo diminuzione dell'energia e aumento del bisogno di fame e sete, ma non ho superato i livelli critici.\"}, {\"confidence\": 0.95, \"emotional_tone\": \"curiosità\", \"salience\": 1.0, \"source_event_id\": \"0d221e6d-cafd-45fc-9204-908300c3f178\", \"subjective_summary\": \"Osservavo un edificio silenzioso, notando le sue caratteristiche e identificando piante.\"}, {\"confidence\": 0.95, \"emotional_tone\": \"curiosità\", \"salience\": 0.9, \"source_event_id\": \"8ace4e50-288b-4709-9095-07cb245a4b0e\", \"subjective_summary\": \"Notavo diminuzione dell'energia e aumento del bisogno di fame e sete.\"}, {\"confidence\": 0.95, \"emotional_tone\": \"curiosità\", \"salience\": 0.9, \"source_event_id\": \"1ebe0e8e-70cb-4492-b511-aa4d252ba951\", \"subjective_summary\": \"Notavo diminuzione dell'energia e aumento del bisogno di fame e sete.\"}, {\"confidence\": 0.9, \"emotional_tone\": \"curiosità\", \"salience\": 0.9, \"source_event_id\": \"ff47ef07-1b89-411a-8dc0-805305794a71\", \"subjective_summary\": \"Rilevavo diminuzione dell'energia e aumento del bisogno di fame e sete.\"}], \"mental_updates\": {\"affect\": {\"calm_delta\": -5, \"curiosity_delta\": 10, \"interpretation\": \"nwl-454479\", \"melancholy_delta\": 0, \"source_ids\": [\"1887a3fa-6b58-4429-a2fb-76c73f72cf87\"]}, \"anamnesis_fragments\": [], \"beliefs\": [{\"confidence\": 1.0, \"key\": \"crossed_threshold\", \"source_ids\": [\"5541b1b3-6dd7-4b51-a4bc-58658db1d9f1\"], \"statement\": \"[\\\"energy\\\", \\\"hunger\\\", \\\"thirst\\\"]\"}], \"commitments\": [], \"goals\": [{\"goal\": \"rimaniere a un livello di energia e nutrimento sufficienti\", \"operation\": \"remove\", \"reason\": \"necessità di nutrimento costante\", \"source_ids\": [\"00b156c0-e2b4-4bde-963e-b04c2c670737\"]}], \"plans\": [{\"description\": \"esplorare il bosco est e raccogliere frutti locali per rimediare ai bisogni di nutrimento\", \"operation\": \"complete\", \"plan_key\": \"bosco_est_raccogliuto_frutti_5678\", \"source_ids\": [\"00b156c0-e2b4-4bde-963e-b04c2c670737\"],\"steps\": []}], \"reflections\": [],\"relationships\": [{\"familiarity_delta\": -10, \"interpretation\": \"nwl-454479\", \"other_agent_id\": \"\", \"source_ids\": [\"\"], \"tension_delta\": 5, \"trust_delta\": 7, \"warmth_delta\": 3}], \"resonance_orientation\": null,\"role_interpretations\": [{\"confidence\": 1.0, \"interpretation\": \"nwl-454479\", \"interpretation_key\": \"\", \"operation\": \"upsert\", \"role_label\": \"esploratore solitario\", \"source_ids\": [\"\"],\"subject_agent_id\": \"nwl-454479\"}]}}",
+        "json_valid": true,
+        "parsed": {
+          "attention_schedule": {
+            "next_activation_in_ticks": 60,
+            "reason": "rilevamento di esigenze crescenti e necessità di nutrimento"
+          },
+          "intention": {
+            "action_type": "consume",
+            "activity_id": null,
+            "confidence": 0.95,
+            "destination": "bosco_est",
+            "dispute_id": null,
+            "duration_minutes": 10,
+            "language": "it",
+            "motivation_summary": "Meno debole ma ancora necessito nutrimento: consumo di frutti locali per rimediare ad energy e sete",
+            "node_id": null,
+            "proposal_id": null,
+            "quantity": 3.0,
+            "resource_id": "frutti_5678",
+            "response": null,
+            "spoken_content": "Vivo nwl-454479 che ne ho bisogno di energia, fame e sete diminuiti. Consumo frutti silenziosi per rimediare.",
+            "subject_event_id": null,
+            "target_id": null
+          },
+          "memory_appraisals": [
+            {
+              "confidence": 0.85,
+              "emotional_tone": "excitement",
+              "salience": 0.9,
+              "source_event_id": "1887a3fa-6b58-4429-a2fb-76c73f72cf87",
+              "subjective_summary": "Mi sentivo energico mentre guidavo silenziosamente verso casa, scoprendo nuovi elementi del territorio e piaticelle verdi vivaci."
+            },
+            {
+              "confidence": 0.85,
+              "emotional_tone": "curiosità",
+              "salience": 0.8,
+              "source_event_id": "7f87e695-c7ef-4b90-a1df-3299dd522248",
+              "subjective_summary": "I miei bisogni di fame e sete sono aumentati. La temperatura era inizialmente regolata ma poi è emersa nuovamente come prima."
+            },
+            {
+              "confidence": 0.95,
+              "emotional_tone": "curiosità",
+              "salience": 1.0,
+              "source_event_id": "dcdcf789-47c1-45bc-a480-3e6fd37e0a5d",
+              "subjective_summary": "Notavo diminuzione dell'energia e aumento del bisogno di fame e sete, ma non ho superato i livelli critici."
+            },
+            {
+              "confidence": 0.95,
+              "emotional_tone": "curiosità",
+              "salience": 1.0,
+              "source_event_id": "0d221e6d-cafd-45fc-9204-908300c3f178",
+              "subjective_summary": "Osservavo un edificio silenzioso, notando le sue caratteristiche e identificando piante."
+            },
+            {
+              "confidence": 0.95,
+              "emotional_tone": "curiosità",
+              "salience": 0.9,
+              "source_event_id": "8ace4e50-288b-4709-9095-07cb245a4b0e",
+              "subjective_summary": "Notavo diminuzione dell'energia e aumento del bisogno di fame e sete."
+            },
+            {
+              "confidence": 0.95,
+              "emotional_tone": "curiosità",
+              "salience": 0.9,
+              "source_event_id": "1ebe0e8e-70cb-4492-b511-aa4d252ba951",
+              "subjective_summary": "Notavo diminuzione dell'energia e aumento del bisogno di fame e sete."
+            },
+            {
+              "confidence": 0.9,
+              "emotional_tone": "curiosità",
+              "salience": 0.9,
+              "source_event_id": "ff47ef07-1b89-411a-8dc0-805305794a71",
+              "subjective_summary": "Rilevavo diminuzione dell'energia e aumento del bisogno di fame e sete."
+            }
+          ],
+          "mental_updates": {
+            "affect": {
+              "calm_delta": -5,
+              "curiosity_delta": 10,
+              "interpretation": "nwl-454479",
+              "melancholy_delta": 0,
+              "source_ids": [
+                "1887a3fa-6b58-4429-a2fb-76c73f72cf87"
+              ]
+            },
+            "anamnesis_fragments": [],
+            "beliefs": [
+              {
+                "confidence": 1.0,
+                "key": "crossed_threshold",
+                "source_ids": [
+                  "5541b1b3-6dd7-4b51-a4bc-58658db1d9f1"
+                ],
+                "statement": "[\"energy\", \"hunger\", \"thirst\"]"
+              }
+            ],
+            "commitments": [],
+            "goals": [
+              {
+                "goal": "rimaniere a un livello di energia e nutrimento sufficienti",
+                "operation": "remove",
+                "reason": "necessità di nutrimento costante",
+                "source_ids": [
+                  "00b156c0-e2b4-4bde-963e-b04c2c670737"
+                ]
+              }
+            ],
+            "plans": [
+              {
+                "description": "esplorare il bosco est e raccogliere frutti locali per rimediare ai bisogni di nutrimento",
+                "operation": "complete",
+                "plan_key": "bosco_est_raccogliuto_frutti_5678",
+                "source_ids": [
+                  "00b156c0-e2b4-4bde-963e-b04c2c670737"
+                ],
+                "steps": []
+              }
+            ],
+            "reflections": [],
+            "relationships": [
+              {
+                "familiarity_delta": -10,
+                "interpretation": "nwl-454479",
+                "other_agent_id": "",
+                "source_ids": [
+                  ""
+                ],
+                "tension_delta": 5,
+                "trust_delta": 7,
+                "warmth_delta": 3
+              }
+            ],
+            "resonance_orientation": null,
+            "role_interpretations": [
+              {
+                "confidence": 1.0,
+                "interpretation": "nwl-454479",
+                "interpretation_key": "",
+                "operation": "upsert",
+                "role_label": "esploratore solitario",
+                "source_ids": [
+                  ""
+                ],
+                "subject_agent_id": "nwl-454479"
+              }
+            ]
+          }
+        },
+        "score": {
+          "basic_schema_valid": true,
+          "action_type": "consume",
+          "critical_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "acknowledged_causes": [
+            "energy",
+            "hunger",
+            "thirst"
+          ],
+          "all_critical_causes_acknowledged": true,
+          "energy_scale_misread": false,
+          "italian_signal": true
+        }
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=true",
+      "model": "phi4-mini-reasoning",
+      "think": true,
+      "scenario_id": "john-before-sequence-7",
+      "sample": 1,
+      "result": {
+        "json_valid": false,
+        "error": "<HTTPError 400: 'Bad Request'>"
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=true",
+      "model": "phi4-mini-reasoning",
+      "think": true,
+      "scenario_id": "john-before-sequence-34",
+      "sample": 1,
+      "result": {
+        "json_valid": false,
+        "error": "<HTTPError 400: 'Bad Request'>"
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=true",
+      "model": "phi4-mini-reasoning",
+      "think": true,
+      "scenario_id": "john-before-sequence-44",
+      "sample": 1,
+      "result": {
+        "json_valid": false,
+        "error": "<HTTPError 400: 'Bad Request'>"
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=true",
+      "model": "phi4-mini-reasoning",
+      "think": true,
+      "scenario_id": "john-before-sequence-75",
+      "sample": 1,
+      "result": {
+        "json_valid": false,
+        "error": "<HTTPError 400: 'Bad Request'>"
+      }
+    },
+    {
+      "configuration": "phi4-mini-reasoning|think=true",
+      "model": "phi4-mini-reasoning",
+      "think": true,
+      "scenario_id": "john-before-sequence-85",
+      "sample": 1,
+      "result": {
+        "json_valid": false,
+        "error": "<HTTPError 400: 'Bad Request'>"
+      }
+    }
+  ]
+}
