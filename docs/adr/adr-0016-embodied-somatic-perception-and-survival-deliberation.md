@@ -129,13 +129,13 @@ Chosen Option: **Alternative 4: Percezione somatica semantica, tempo coerente e 
 ## Compliance & RAG Impact
 
 - [CMP-001] **Related Decisions**: ADR-0005, ADR-0007, ADR-0008, ADR-0009 e ADR-0012.
-- [CMP-002] **Evidence Added**: `docs/diagnostics/john-flower-death-2026-08-13.md`.
-- [CMP-003] **Prospective Runtime Updates**: `physiology.py`, `simulation.py`, `world.py`, `models.py`, `cognition/prompting.py`, `cognition/retrieval.py` e relativi test soltanto dopo approvazione.
-- [CMP-004] **RAG Index**: l'indice `docs/README.md` verrà aggiornato senza sovrapporsi alla modifica UI attualmente in corso.
-- [CMP-005] **Approval Required**: questo ADR resta `Proposed` e non autorizza implementazione o download di modelli fino all'approvazione esplicita di Giovanni Fiore.
+- [CMP-002] **ADR-0012 Refinement**: dopo l'accettazione, questo ADR sostituirà il guardrail prescrittivo di ADR-0012 [DEC-001] con percezione somatica non prescrittiva e amplierà [DEC-002] dalle sole riflessioni all'intero contesto mnemonico.
+- [CMP-003] **Evidence Added**: `docs/diagnostics/john-flower-death-2026-08-13.md`.
+- [CMP-004] **Prospective Runtime Updates**: `physiology.py`, `simulation.py`, `world.py`, `models.py`, `cognition/prompting.py`, `cognition/retrieval.py` e relativi test soltanto dopo approvazione.
+- [CMP-005] **RAG Index**: l'indice `docs/README.md` verrà aggiornato senza sovrapporsi alla modifica UI attualmente in corso.
+- [CMP-006] **Approval Required**: questo ADR resta `Proposed` e non autorizza implementazione o download di modelli fino all'approvazione esplicita di Giovanni Fiore.
 
 ## Sources for Model Feasibility
 
 - [SRC-001] Microsoft model card: [Phi-4-mini-reasoning](https://huggingface.co/microsoft/Phi-4-mini-reasoning).
 - [SRC-002] Ollama library package: [phi4-mini-reasoning](https://ollama.com/library/phi4-mini-reasoning).
-
