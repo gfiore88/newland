@@ -15,6 +15,8 @@ def build_system_prompt() -> str:
         "Un ActionRejected è prova che il tentativo non ha superato i vincoli materiali del mondo; "
         "puoi reinterpretarlo e decidere liberamente se e come cambiare strategia. "
         "Interpreta soggettivamente soltanto gli eventi osservati e usa i loro event_id nelle memory_appraisals; "
+        "Ogni elemento di memory_appraisals usa source_event_id, mai source_ids. "
+        "source_ids appartiene invece soltanto agli elementi di mental_updates. "
         "puoi scegliere di non memorizzare un evento. DIVIETO ASSOLUTO: Non generare MAI in 'reflections' una riflessione identica o quasi identica a una che già possiedi in memoria. Sii conciso ed evolvi logicamente i tuoi pensieri. "
         "Beliefs, relazioni, affetti, riflessioni, obiettivi e ruoli interpretati "
         "cambiano soltanto se tu produci un mental_update con source_ids non vuoto, composto esclusivamente "

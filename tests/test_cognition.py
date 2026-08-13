@@ -115,6 +115,9 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
         self.assertIn("scegli autonomamente", prompt)
         self.assertIn("action_contracts.consume.carried", prompt)
         self.assertIn("source_event_ids delle memorie", prompt)
+        self.assertIn(
+            "memory_appraisals usa source_event_id, mai source_ids", prompt
+        )
         self.assertIn("memoria posseduta di ResonanceSignalReceived", prompt)
         self.assertNotIn("UNICA azione", prompt)
         self.assertNotIn("DEVI assolutamente", prompt)
