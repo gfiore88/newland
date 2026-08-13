@@ -1,93 +1,125 @@
 <!doctype html>
 <html lang="it">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#101612" />
-    <meta name="description" content="Newland · Observer: Osserva un mondo vivo e le menti dei suoi abitanti" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <title>Newland · Observer</title>
-  </head>
-  <body>
-    <div id="app-layout">
 
-      <!-- ======================== SIDEBAR ======================== -->
-      <aside id="main-sidebar">
-        <div class="sidebar-logo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
-            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
-            <line x1="12" y1="2" x2="12" y2="22"/>
-            <line x1="2" y1="8.5" x2="22" y2="8.5"/>
-            <line x1="2" y1="15.5" x2="22" y2="15.5"/>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101612" />
+  <meta name="description" content="Newland · Observer: Osserva un mondo vivo e le menti dei suoi abitanti" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet">
+  <title>Newland · Observer</title>
+</head>
+
+<body>
+  <div id="app-layout">
+
+    <!-- ======================== SIDEBAR ======================== -->
+    <aside id="main-sidebar">
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+          <line x1="12" y1="2" x2="12" y2="22" />
+          <line x1="2" y1="8.5" x2="22" y2="8.5" />
+          <line x1="2" y1="15.5" x2="22" y2="15.5" />
+        </svg>
+        <span class="logo-text">NEWLAND</span>
+      </div>
+      <nav class="main-nav">
+        <button id="nav-mondo" class="nav-item active" data-target="view-mondo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            <path d="M2 12h20" />
           </svg>
-          <span class="logo-text">NEWLAND</span>
-        </div>
-        <nav class="main-nav">
-          <button id="nav-mondo" class="nav-item active" data-target="view-mondo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
-            <span class="nav-label">MONDO</span>
-            <span class="nav-dot"></span>
-          </button>
-          <button id="nav-cronaca" class="nav-item" data-target="view-cronaca">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            <span class="nav-label">CRONACA</span>
-          </button>
-          <button id="nav-relazioni" class="nav-item" data-target="view-relazioni">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span class="nav-label">RELAZIONI</span>
-          </button>
-          <button id="nav-eventi" class="nav-item" data-target="view-eventi">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span class="nav-label">EVENTI</span>
-          </button>
-        </nav>
-        <div class="sidebar-bottom">
-          <button class="nav-icon" title="Aiuto">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </button>
-          <button class="nav-icon" title="Impostazioni">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </button>
-        </div>
-      </aside>
+          <span class="nav-label">MONDO</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button id="nav-cronaca" class="nav-item" data-target="view-cronaca">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+          <span class="nav-label">CRONACA</span>
+        </button>
+        <button id="nav-relazioni" class="nav-item" data-target="view-relazioni">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span class="nav-label">RELAZIONI</span>
+        </button>
+        <button id="nav-eventi" class="nav-item" data-target="view-eventi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <span class="nav-label">EVENTI</span>
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="nav-icon" title="Aiuto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </button>
+        <button class="nav-icon" title="Impostazioni">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </div>
+    </aside>
 
-      <!-- ======================== MAIN CONTENT ======================== -->
-      <div id="app-content">
+    <!-- ======================== MAIN CONTENT ======================== -->
+    <div id="app-content">
 
-        <!-- TOPBAR -->
-        <header class="topbar">
-          <span class="top-left">Observer / Architetto</span>
-          <span class="top-center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            Modalità osservazione · Solo lettura
-          </span>
-          <div class="top-right">
-            <span id="world-date">Giorno 1 · 00:00</span>
-            <div id="connection" class="live-indicator" data-state="connecting">
-              <span class="live-dot"></span>
-              <span id="connection-label">connecting</span>
-            </div>
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <span class="top-left">Observer / Architetto</span>
+        <span class="top-center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          Modalità osservazione · Solo lettura
+        </span>
+        <div class="top-right">
+          <span id="world-date">Giorno 1 · 00:00</span>
+          <div id="connection" class="live-indicator" data-state="connecting">
+            <span class="live-dot"></span>
+            <span id="connection-label">connecting</span>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <!-- VIEWS -->
-        <div id="views-container">
+      <!-- VIEWS -->
+      <div id="views-container">
 
-          <!-- ====================================================== -->
-          <!-- VISTA 1: MONDO VIVO                                    -->
-          <!-- ====================================================== -->
-          <section id="view-mondo" class="view active">
-            <!-- WebGL Canvas Target -->
-            <div id="world-stage"></div>
-            <div id="map-error" hidden class="map-error-banner"></div>
+        <!-- ====================================================== -->
+        <!-- VISTA 1: MONDO VIVO                                    -->
+        <!-- ====================================================== -->
+        <section id="view-mondo" class="view active">
+          <!-- WebGL Canvas Target -->
+          <div id="world-stage"></div>
+          <div id="map-error" hidden class="map-error-banner"></div>
 
+          <!-- Left Side Panels -->
+          <div class="left-panels">
             <!-- Panel: Intro -->
             <div class="fp fp-intro">
-              <h1 class="serif-lg">Il mondo continua</h1>
+              <h1 class="serif-lg">Newland</h1>
               <div class="divider"></div>
-              <p class="panel-prose">Un sistema di agenti autonomi interagisce, si adatta e genera nuove possibilità emergenti.</p>
+              <p class="panel-prose">Un sistema di agenti autonomi interagisce, si adatta e genera nuove possibilità
+                emergenti.</p>
               <p class="panel-prose mt-2"><em class="moss">Osserva. Comprendi. Progetta.</em></p>
             </div>
 
@@ -107,321 +139,342 @@
               <h3 class="eyebrow mt-3">PRESENZE (<span id="inhabitant-count">0</span>)</h3>
               <div id="inhabitants" class="inhabitants-list"></div>
             </div>
+          </div>
 
+          <!-- Right Side Panels -->
+          <div class="right-panels">
             <!-- Panel: Cronaca -->
             <div class="fp fp-chronicle">
               <p class="eyebrow">DALLA CRONACA · <span id="world-tick-display"></span></p>
-              <div id="chronicle-entry" class="chronicle-entry empty-state mt-2">Il Cronista Silenzioso è in ascolto…</div>
+              <div id="chronicle-entry" class="chronicle-entry empty-state mt-2">Il Cronista Silenzioso è in ascolto…
+              </div>
             </div>
 
             <!-- Panel: Inspector -->
             <div class="fp fp-inspector">
               <div id="inspector" class="inspector empty-state">
-                <p>Seleziona una presenza, un luogo o una traccia materiale. L'osservazione non produce effetti nel mondo.</p>
+                <p>Seleziona una presenza, un luogo o una traccia materiale. L'osservazione non produce effetti nel
+                  mondo.</p>
               </div>
             </div>
-
-            <!-- Timeline Bottom Bar -->
-            <div class="timeline-bar">
-              <div class="tbar-left">
-                <div class="tbar-tick">TICK <span id="event-sequence">—</span></div>
-                <div class="tbar-sub">Linea del tempo degli eventi</div>
-              </div>
-              <div class="tbar-center">
-                <div class="timeline-track-wrapper">
-                  <input id="time-slider" class="time-slider" type="range" min="0" max="0" value="0" />
-                  <div class="event-density-vis" id="event-density-vis"></div>
-                </div>
-                <div class="tbar-legend">
-                  <span><span class="ldot ldot-moss"></span> Eventi comuni</span>
-                  <span><span class="ldot ldot-ochre"></span> Eventi significativi</span>
-                  <span><span class="ldot ldot-resonance"></span> Risonanze</span>
-                  <span id="time-label" class="muted"></span>
-                </div>
-              </div>
-              <div class="tbar-right">
-                <button id="time-toggle" class="btn-solid">Pausa visiva</button>
-                <button id="replay-toggle" class="btn-ghost mt-1">Riproduci</button>
-              </div>
-            </div>
-          </section>
-
-          <!-- ====================================================== -->
-          <!-- VISTA 2: MENTE PRIVATA (Profilo Agente)                -->
-          <!-- ====================================================== -->
-          <section id="view-mente-privata" class="view">
-            <div class="pm-shell">
-              <div class="pm-breadcrumbs" id="pm-breadcrumbs">Mondo / — / <strong>Mente privata</strong></div>
-
-              <!-- Hero Header -->
-              <div class="pm-hero">
-                <div class="pm-avatar-ring">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="36" height="36">
-                    <path d="M12 2v20M17 5c-3 0-5 2-5 5s2 5 5 5M7 5c3 0 5 2 5 5s-2 5-5 5"/>
-                    <circle cx="12" cy="12" r="1" fill="currentColor"/>
-                  </svg>
-                </div>
-                <div>
-                  <h1 id="pm-agent-name" class="serif-xl">—</h1>
-                  <p class="italic muted">Una mente, non una scheda personaggio</p>
-                  <span class="badge-private">🔒 PRIVATO · VISIBILE SOLO ALL'ARCHITETTO</span>
-                </div>
-              </div>
-
-              <!-- Tabs -->
-              <nav class="pm-tabs">
-                <button class="pm-tab active" data-tab="panoramica">PANORAMICA</button>
-                <button class="pm-tab" data-tab="memoria">MEMORIA</button>
-                <button class="pm-tab" data-tab="beliefs">BELIEFS</button>
-                <button class="pm-tab" data-tab="relazioni">RELAZIONI</button>
-                <button class="pm-tab" data-tab="piani">PIANI</button>
-              </nav>
-
-              <!-- Tab Content: PANORAMICA -->
-              <div class="pm-tab-content active" id="tab-panoramica">
-                <div class="pm-grid">
-                  <!-- COL 1: Stato -->
-                  <div class="pm-col">
-                    <h3 class="eyebrow mb-3">IDENTITÀ & STATO ATTUALE</h3>
-
-                    <div class="pm-card">
-                      <h4 class="card-h">Bisogni percepiti</h4>
-                      <div class="needs-sliders" id="pm-needs"></div>
-                    </div>
-
-                    <div class="pm-card mt-3">
-                      <h4 class="card-h">Affetto</h4>
-                      <div class="affect-slider" id="pm-affect"></div>
-                    </div>
-
-                    <div class="pm-card mt-3">
-                      <h4 class="card-h">Valori</h4>
-                      <div id="pm-values" class="tag-cloud"></div>
-                    </div>
-
-                    <div class="pm-card mt-3">
-                      <h4 class="card-h">Temperamento</h4>
-                      <div id="pm-temperament" class="tag-cloud"></div>
-                    </div>
-
-                    <div class="pm-card mt-3">
-                      <h4 class="card-h">Prossima attenzione</h4>
-                      <p id="pm-next-activation" class="muted text-sm"></p>
-                    </div>
-                  </div>
-
-                  <!-- COL 2: Credenze attive -->
-                  <div class="pm-col">
-                    <h3 class="eyebrow violet mb-3">🧠 MENTE PRIVATA · CREDENZE ATTIVE</h3>
-                    <div id="pm-beliefs-list"></div>
-
-                    <div id="pm-goals-card" class="pm-card border-moss mt-4">
-                      <p class="eyebrow moss mb-2">🎯 OBIETTIVI CORRENTI</p>
-                      <ul id="pm-goals" class="goals-list"></ul>
-                    </div>
-
-                    <div id="pm-reflections-card" class="pm-card border-blue mt-4">
-                      <p class="eyebrow blue mb-2">💭 RIFLESSIONI RECENTI</p>
-                      <div id="pm-reflections" class="reflections-list"></div>
-                    </div>
-                  </div>
-
-                  <!-- COL 3: Memoria episodica -->
-                  <div class="pm-col">
-                    <div class="flex-between mb-3">
-                      <h3 class="eyebrow">🕒 MEMORIA EPISODICA</h3>
-                      <span class="muted text-sm">Ordina per tick</span>
-                    </div>
-                    <div id="pm-memories" class="memories-list"></div>
-                  </div>
-                </div>
-
-                <!-- Bottom: Confronto -->
-                <div class="pm-compare mt-4">
-                  <h3 class="eyebrow mb-3">CONFRONTO: VERITÀ CANONICA VS PERCEZIONE</h3>
-                  <div class="compare-grid">
-                    <div class="compare-card border-moss">
-                      <div class="icon-badge moss">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M12 2v20M17 5c-3 0-5 2-5 5s2 5 5 5M7 5c3 0 5 2 5 5s-2 5-5 5"/></svg>
-                      </div>
-                      <div>
-                        <p class="eyebrow moss mb-1">VERITÀ CANONICA (FATTI OGGETTIVI)</p>
-                        <p id="pm-canonical-truth" class="italic text-sm muted">—</p>
-                      </div>
-                    </div>
-                    <div class="compare-card border-violet">
-                      <div class="icon-badge violet">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                      </div>
-                      <div>
-                        <p class="eyebrow violet mb-1">PERCEZIONE SOGGETTIVA</p>
-                        <p id="pm-subjective-truth" class="italic text-sm violet">—</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Content: MEMORIA -->
-              <div class="pm-tab-content" id="tab-memoria">
-                <div id="pm-memories-full" class="memories-full-list"></div>
-              </div>
-
-              <!-- Tab Content: BELIEFS -->
-              <div class="pm-tab-content" id="tab-beliefs">
-                <div id="pm-beliefs-full" class="beliefs-full-list"></div>
-              </div>
-
-              <!-- Tab Content: RELAZIONI -->
-              <div class="pm-tab-content" id="tab-relazioni">
-                <div id="pm-relationships-list" class="relationships-list"></div>
-              </div>
-
-              <!-- Tab Content: PIANI -->
-              <div class="pm-tab-content" id="tab-piani">
-                <div id="pm-plans-list" class="plans-list"></div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ====================================================== -->
-          <!-- VISTA 3: CRONACA DEL MONDO                             -->
-          <!-- ====================================================== -->
-          <section id="view-cronaca" class="view">
-            <div class="cronaca-layout">
-              <!-- Left: Storie -->
-              <div class="cronaca-left">
-                <div class="cronaca-header">
-                  <h1 class="serif-xl">Cronaca del mondo</h1>
-                  <p class="muted text-sm mt-1">Storie derivate, eventi immutabili</p>
-                </div>
-                <div class="cronaca-filters">
-                  <button class="filter-pill active">TUTTO</button>
-                  <button class="filter-pill">INCONTRI</button>
-                  <button class="filter-pill">COOPERAZIONI</button>
-                  <button class="filter-pill">CONFLITTI</button>
-                  <button class="filter-pill">RISONANZE</button>
-                </div>
-                <div id="cronaca-stories" class="cronaca-stories">
-                  <div class="empty-state">Il Cronista sta elaborando le storie del mondo…</div>
-                </div>
-                <p class="cronaca-footer-note">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M12 2v20M17 5c-3 0-5 2-5 5s2 5 5 5M7 5c3 0 5 2 5 5s-2 5-5 5"/></svg>
-                  La cronaca interpreta. L'event log conserva i fatti.
-                </p>
-              </div>
-
-              <!-- Center: Grafo sociale + timeline -->
-              <div class="cronaca-center">
-                <div class="social-graph-panel">
-                  <div class="panel-titlebar">
-                    <span class="panel-title-sm">Tessuto sociale</span>
-                    <div class="panel-actions">
-                      <button class="icon-btn" title="Schermo intero">⤢</button>
-                    </div>
-                  </div>
-                  <div id="social-graph-canvas" class="social-graph-canvas">
-                    <svg id="social-graph-svg" width="100%" height="100%"></svg>
-                  </div>
-                  <div class="graph-legend">
-                    <span><span class="line-swatch moss-line"></span> Fiducia</span>
-                    <span><span class="line-swatch ochre-line"></span> Cooperazione</span>
-                    <span><span class="line-swatch terra-line dashed"></span> Tensione</span>
-                    <span><span class="line-swatch violet-line dashed"></span> Famiglia</span>
-                  </div>
-                </div>
-
-                <div class="events-canonical-panel mt-3">
-                  <div class="panel-titlebar">
-                    <span class="panel-title-sm">Eventi canonici</span>
-                    <div class="panel-actions">
-                      <select class="filter-select"><option>Mostra tutto</option></select>
-                      <span class="muted text-sm" id="canonical-tick-display">TICK —</span>
-                    </div>
-                  </div>
-                  <div class="event-matrix-wrapper">
-                    <ul id="event-list" class="event-list"></ul>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Right: Pannello conflitto selezionato -->
-              <div class="cronaca-right" id="cronaca-right-panel">
-                <div class="empty-state mt-6">
-                  <p>Seleziona un evento o una storia per vedere dettagli e connessioni causali.</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ====================================================== -->
-          <!-- VISTA 4: RELAZIONI SOCIALI                             -->
-          <!-- ====================================================== -->
-          <section id="view-relazioni" class="view">
-            <div class="relazioni-layout">
-              <div class="relazioni-header">
-                <h1 class="serif-xl">Tessuto Sociale</h1>
-                <p class="muted mt-1">Cooperazioni, dispute, fiducia e famiglia tra i Newlander</p>
-              </div>
-              <div class="relazioni-body">
-                <!-- Cooperazioni -->
-                <div class="rel-section">
-                  <h2 class="eyebrow mb-3">COOPERAZIONI ATTIVE</h2>
-                  <div id="cooperations-list" class="rel-cards-grid"></div>
-                </div>
-                <!-- Dispute -->
-                <div class="rel-section mt-6">
-                  <h2 class="eyebrow mb-3">DISPUTE APERTE</h2>
-                  <div id="disputes-list" class="rel-cards-grid"></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ====================================================== -->
-          <!-- VISTA 5: EVENTI CANONICI                               -->
-          <!-- ====================================================== -->
-          <section id="view-eventi" class="view">
-            <div class="eventi-layout">
-              <div class="eventi-header">
-                <h1 class="serif-xl">Registro degli eventi</h1>
-                <p class="muted mt-1">Fatti canonici immutabili del mondo</p>
-              </div>
-              <div class="eventi-filters">
-                <select id="event-filter-visibility" class="filter-select">
-                  <option value="all">Tutti</option>
-                  <option value="public">Pubblici</option>
-                  <option value="local">Locali</option>
-                  <option value="private">Privati</option>
-                </select>
-              </div>
-              <ul id="eventi-full-list" class="eventi-full-list"></ul>
-            </div>
-          </section>
-
-        </div><!-- /views-container -->
-      </div><!-- /app-content -->
-    </div><!-- /app-layout -->
-
-    <script type="module" src="/src/main.ts"></script>
-
-    <!-- Chronicle detail modal -->
-    <div id="chronicle-modal" class="cmod-backdrop" aria-modal="true" role="dialog" hidden>
-      <div class="cmod-panel">
-        <header class="cmod-header">
-          <div>
-            <p class="eyebrow cmod-eyebrow" id="cmod-meta"></p>
-            <h2 id="cmod-title" class="cmod-title"></h2>
           </div>
-          <button id="cmod-close" class="cmod-close" aria-label="Chiudi">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </header>
-        <div id="cmod-body" class="cmod-body"></div>
-        <footer class="cmod-footer">
-          <span id="cmod-footer-meta" class="cmod-footer-meta"></span>
-        </footer>
-      </div>
+
+          <!-- Timeline Bottom Bar -->
+          <div class="timeline-bar">
+            <div class="tbar-left">
+              <div class="tbar-tick">TICK <span id="event-sequence">—</span></div>
+              <div class="tbar-sub">Linea del tempo degli eventi</div>
+            </div>
+            <div class="tbar-center">
+              <div class="timeline-track-wrapper">
+                <input id="time-slider" class="time-slider" type="range" min="0" max="0" value="0" />
+                <div class="event-density-vis" id="event-density-vis"></div>
+              </div>
+              <div class="tbar-legend">
+                <span><span class="ldot ldot-moss"></span> Eventi comuni</span>
+                <span><span class="ldot ldot-ochre"></span> Eventi significativi</span>
+                <span><span class="ldot ldot-resonance"></span> Risonanze</span>
+                <span id="time-label" class="muted"></span>
+              </div>
+            </div>
+            <div class="tbar-right">
+              <button id="time-toggle" class="btn-solid">Pausa visiva</button>
+              <button id="replay-toggle" class="btn-ghost mt-1">Riproduci</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- VISTA 2: MENTE PRIVATA (Profilo Agente)                -->
+        <!-- ====================================================== -->
+        <section id="view-mente-privata" class="view">
+          <div class="pm-shell">
+            <div class="pm-breadcrumbs" id="pm-breadcrumbs">Mondo / — / <strong>Mente privata</strong></div>
+
+            <!-- Hero Header -->
+            <div class="pm-hero">
+              <div class="pm-avatar-ring">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="36" height="36">
+                  <path d="M12 2v20M17 5c-3 0-5 2-5 5s2 5 5 5M7 5c3 0 5 2 5 5s-2 5-5 5" />
+                  <circle cx="12" cy="12" r="1" fill="currentColor" />
+                </svg>
+              </div>
+              <div>
+                <h1 id="pm-agent-name" class="serif-xl">—</h1>
+                <p class="italic muted">Una mente, non una scheda personaggio</p>
+                <span class="badge-private">🔒 PRIVATO · VISIBILE SOLO ALL'ARCHITETTO</span>
+              </div>
+            </div>
+
+            <!-- Tabs -->
+            <nav class="pm-tabs">
+              <button class="pm-tab active" data-tab="panoramica">PANORAMICA</button>
+              <button class="pm-tab" data-tab="memoria">MEMORIA</button>
+              <button class="pm-tab" data-tab="beliefs">BELIEFS</button>
+              <button class="pm-tab" data-tab="relazioni">RELAZIONI</button>
+              <button class="pm-tab" data-tab="piani">PIANI</button>
+            </nav>
+
+            <!-- Tab Content: PANORAMICA -->
+            <div class="pm-tab-content active" id="tab-panoramica">
+              <div class="pm-grid">
+                <!-- COL 1: Stato -->
+                <div class="pm-col">
+                  <h3 class="eyebrow mb-3">IDENTITÀ & STATO ATTUALE</h3>
+
+                  <div class="pm-card">
+                    <h4 class="card-h">Bisogni percepiti</h4>
+                    <div class="needs-sliders" id="pm-needs"></div>
+                  </div>
+
+                  <div class="pm-card mt-3">
+                    <h4 class="card-h">Affetto</h4>
+                    <div class="affect-slider" id="pm-affect"></div>
+                  </div>
+
+                  <div class="pm-card mt-3">
+                    <h4 class="card-h">Valori</h4>
+                    <div id="pm-values" class="tag-cloud"></div>
+                  </div>
+
+                  <div class="pm-card mt-3">
+                    <h4 class="card-h">Temperamento</h4>
+                    <div id="pm-temperament" class="tag-cloud"></div>
+                  </div>
+
+                  <div class="pm-card mt-3">
+                    <h4 class="card-h">Prossima attenzione</h4>
+                    <p id="pm-next-activation" class="muted text-sm"></p>
+                  </div>
+                </div>
+
+                <!-- COL 2: Credenze attive -->
+                <div class="pm-col">
+                  <h3 class="eyebrow violet mb-3">🧠 MENTE PRIVATA · CREDENZE ATTIVE</h3>
+                  <div id="pm-beliefs-list"></div>
+
+                  <div id="pm-goals-card" class="pm-card border-moss mt-4">
+                    <p class="eyebrow moss mb-2">🎯 OBIETTIVI CORRENTI</p>
+                    <ul id="pm-goals" class="goals-list"></ul>
+                  </div>
+
+                  <div id="pm-reflections-card" class="pm-card border-blue mt-4">
+                    <p class="eyebrow blue mb-2">💭 RIFLESSIONI RECENTI</p>
+                    <div id="pm-reflections" class="reflections-list"></div>
+                  </div>
+                </div>
+
+                <!-- COL 3: Memoria episodica -->
+                <div class="pm-col">
+                  <div class="flex-between mb-3">
+                    <h3 class="eyebrow">🕒 MEMORIA EPISODICA</h3>
+                    <span class="muted text-sm">Ordina per tick</span>
+                  </div>
+                  <div id="pm-memories" class="memories-list"></div>
+                </div>
+              </div>
+
+              <!-- Bottom: Confronto -->
+              <div class="pm-compare mt-4">
+                <h3 class="eyebrow mb-3">CONFRONTO: VERITÀ CANONICA VS PERCEZIONE</h3>
+                <div class="compare-grid">
+                  <div class="compare-card border-moss">
+                    <div class="icon-badge moss">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14"
+                        height="14">
+                        <path d="M12 2v20M17 5c-3 0-5 2-5 5s2 5 5 5M7 5c3 0 5 2 5 5s-2 5-5 5" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="eyebrow moss mb-1">VERITÀ CANONICA (FATTI OGGETTIVI)</p>
+                      <p id="pm-canonical-truth" class="italic text-sm muted">—</p>
+                    </div>
+                  </div>
+                  <div class="compare-card border-violet">
+                    <div class="icon-badge violet">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14"
+                        height="14">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 8v4M12 16h.01" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="eyebrow violet mb-1">PERCEZIONE SOGGETTIVA</p>
+                      <p id="pm-subjective-truth" class="italic text-sm violet">—</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Content: MEMORIA -->
+            <div class="pm-tab-content" id="tab-memoria">
+              <div id="pm-memories-full" class="memories-full-list"></div>
+            </div>
+
+            <!-- Tab Content: BELIEFS -->
+            <div class="pm-tab-content" id="tab-beliefs">
+              <div id="pm-beliefs-full" class="beliefs-full-list"></div>
+            </div>
+
+            <!-- Tab Content: RELAZIONI -->
+            <div class="pm-tab-content" id="tab-relazioni">
+              <div id="pm-relationships-list" class="relationships-list"></div>
+            </div>
+
+            <!-- Tab Content: PIANI -->
+            <div class="pm-tab-content" id="tab-piani">
+              <div id="pm-plans-list" class="plans-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- VISTA 3: CRONACA DEL MONDO                             -->
+        <!-- ====================================================== -->
+        <section id="view-cronaca" class="view">
+          <div class="cronaca-layout">
+            <!-- Left: Storie -->
+            <div class="cronaca-left">
+              <div class="cronaca-header">
+                <h1 class="serif-xl">Cronaca del mondo</h1>
+                <p class="muted text-sm mt-1">Storie derivate, eventi immutabili</p>
+              </div>
+              <div class="cronaca-filters">
+                <button class="filter-pill active">TUTTO</button>
+                <button class="filter-pill">INCONTRI</button>
+                <button class="filter-pill">COOPERAZIONI</button>
+                <button class="filter-pill">CONFLITTI</button>
+                <button class="filter-pill">RISONANZE</button>
+              </div>
+              <div id="cronaca-stories" class="cronaca-stories">
+                <div class="empty-state">Il Cronista sta elaborando le storie del mondo…</div>
+              </div>
+              <p class="cronaca-footer-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12">
+                  <path d="M12 2v20M17 5c-3 0-5 2-5 5s2 5 5 5M7 5c3 0 5 2 5 5s-2 5-5 5" />
+                </svg>
+                La cronaca interpreta. L'event log conserva i fatti.
+              </p>
+            </div>
+
+            <!-- Center: Grafo sociale + timeline -->
+            <div class="cronaca-center">
+              <div class="social-graph-panel">
+                <div class="panel-titlebar">
+                  <span class="panel-title-sm">Tessuto sociale</span>
+                  <div class="panel-actions">
+                    <button class="icon-btn" title="Schermo intero">⤢</button>
+                  </div>
+                </div>
+                <div id="social-graph-canvas" class="social-graph-canvas">
+                  <svg id="social-graph-svg" width="100%" height="100%"></svg>
+                </div>
+                <div class="graph-legend">
+                  <span><span class="line-swatch moss-line"></span> Fiducia</span>
+                  <span><span class="line-swatch ochre-line"></span> Cooperazione</span>
+                  <span><span class="line-swatch terra-line dashed"></span> Tensione</span>
+                  <span><span class="line-swatch violet-line dashed"></span> Famiglia</span>
+                </div>
+              </div>
+
+              <div class="events-canonical-panel mt-3">
+                <div class="panel-titlebar">
+                  <span class="panel-title-sm">Eventi canonici</span>
+                  <div class="panel-actions">
+                    <select class="filter-select">
+                      <option>Mostra tutto</option>
+                    </select>
+                    <span class="muted text-sm" id="canonical-tick-display">TICK —</span>
+                  </div>
+                </div>
+                <div class="event-matrix-wrapper">
+                  <ul id="event-list" class="event-list"></ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Pannello conflitto selezionato -->
+            <div class="cronaca-right" id="cronaca-right-panel">
+              <div class="empty-state mt-6">
+                <p>Seleziona un evento o una storia per vedere dettagli e connessioni causali.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- VISTA 4: RELAZIONI SOCIALI                             -->
+        <!-- ====================================================== -->
+        <section id="view-relazioni" class="view">
+          <div class="relazioni-layout">
+            <div class="relazioni-header">
+              <h1 class="serif-xl">Tessuto Sociale</h1>
+              <p class="muted mt-1">Cooperazioni, dispute, fiducia e famiglia tra i Newlander</p>
+            </div>
+            <div class="relazioni-body">
+              <!-- Cooperazioni -->
+              <div class="rel-section">
+                <h2 class="eyebrow mb-3">COOPERAZIONI ATTIVE</h2>
+                <div id="cooperations-list" class="rel-cards-grid"></div>
+              </div>
+              <!-- Dispute -->
+              <div class="rel-section mt-6">
+                <h2 class="eyebrow mb-3">DISPUTE APERTE</h2>
+                <div id="disputes-list" class="rel-cards-grid"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- VISTA 5: EVENTI CANONICI                               -->
+        <!-- ====================================================== -->
+        <section id="view-eventi" class="view">
+          <div class="eventi-layout">
+            <div class="eventi-header">
+              <h1 class="serif-xl">Registro degli eventi</h1>
+              <p class="muted mt-1">Fatti canonici immutabili del mondo</p>
+            </div>
+            <div class="eventi-filters">
+              <select id="event-filter-visibility" class="filter-select">
+                <option value="all">Tutti</option>
+                <option value="public">Pubblici</option>
+                <option value="local">Locali</option>
+                <option value="private">Privati</option>
+              </select>
+            </div>
+            <ul id="eventi-full-list" class="eventi-full-list"></ul>
+          </div>
+        </section>
+
+      </div><!-- /views-container -->
+    </div><!-- /app-content -->
+  </div><!-- /app-layout -->
+
+  <script type="module" src="/src/main.ts"></script>
+
+  <!-- Chronicle detail modal -->
+  <div id="chronicle-modal" class="cmod-backdrop" aria-modal="true" role="dialog" hidden>
+    <div class="cmod-panel">
+      <header class="cmod-header">
+        <div>
+          <p class="eyebrow cmod-eyebrow" id="cmod-meta"></p>
+          <h2 id="cmod-title" class="cmod-title"></h2>
+        </div>
+        <button id="cmod-close" class="cmod-close" aria-label="Chiudi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </header>
+      <div id="cmod-body" class="cmod-body"></div>
+      <footer class="cmod-footer">
+        <span id="cmod-footer-meta" class="cmod-footer-meta"></span>
+      </footer>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
