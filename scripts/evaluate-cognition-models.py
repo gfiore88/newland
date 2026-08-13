@@ -176,7 +176,16 @@ def build_scenarios(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "accepted actions complete only after their duration has elapsed"
                 ),
                 "rest": {"energy_recovered_per_minute": 0.03},
-                "consumables": territory["resource_effects"],
+                "consume": {
+                    "carried": {
+                        kind: {
+                            "available_quantity": quantity,
+                            "effects_per_unit": territory["resource_effects"][kind],
+                        }
+                        for kind, quantity in inventory.items()
+                        if quantity > 0.0 and kind in territory["resource_effects"]
+                    }
+                },
             },
             "social_affordances": {"cooperations": [], "disputes": []},
             "world_tick": tick,

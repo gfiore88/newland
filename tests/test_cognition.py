@@ -113,6 +113,9 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
 
         self.assertIn("stato somatico", prompt)
         self.assertIn("scegli autonomamente", prompt)
+        self.assertIn("action_contracts.consume.carried", prompt)
+        self.assertIn("source_event_ids delle memorie", prompt)
+        self.assertIn("memoria posseduta di ResonanceSignalReceived", prompt)
         self.assertNotIn("UNICA azione", prompt)
         self.assertNotIn("DEVI assolutamente", prompt)
 
@@ -613,11 +616,18 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
                 "key": "presenza",
                 "statement": "Qualcuno è arrivato.",
                 "confidence": 0.8,
-                "source_ids": [event.event_id, memory.memory_id],
+                "source_ids": [
+                    event.event_id,
+                    memory.memory_id,
+                    memory.source_event_id,
+                ],
             },
             cognition_context,
         )
-        self.assertEqual((event.event_id,), classified["source_event_ids"])
+        self.assertEqual(
+            (event.event_id, memory.source_event_id),
+            classified["source_event_ids"],
+        )
         self.assertEqual((memory.memory_id,), classified["source_memory_ids"])
 
         with self.assertRaises(ValueError):

@@ -22,14 +22,18 @@ def _classify_sources(data: dict[str, Any], context: CognitionContext) -> dict[s
     visible_ids = {
         observation.event.event_id for observation in context.observations
     }
+    remembered_event_ids = {
+        memory.source_event_id for memory in context.mind.memories
+    }
+    known_event_ids = visible_ids | remembered_event_ids
     memory_ids = {memory.memory_id for memory in context.mind.memories}
     normalized["source_event_ids"] = tuple(
-        source_id for source_id in source_ids if source_id in visible_ids
+        source_id for source_id in source_ids if source_id in known_event_ids
     )
     normalized["source_memory_ids"] = tuple(
         source_id for source_id in source_ids if source_id in memory_ids
     )
-    unknown = set(source_ids) - visible_ids - memory_ids
+    unknown = set(source_ids) - known_event_ids - memory_ids
     if unknown:
         raise ValueError(
             f"mental update references unknown sources: {sorted(unknown)}"

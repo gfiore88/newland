@@ -156,6 +156,20 @@ class WorldAdjudicatorTests(unittest.TestCase):
         self.assertEqual(0, agent.somatic_condition_ticks["thirst"])
         self.assertEqual(0, agent.dehydration_ticks)
 
+    def test_action_contract_exposes_only_consumables_the_actor_carries(self) -> None:
+        contracts = self.adjudicator.action_contracts(self.state, "nwl-001")
+
+        self.assertEqual(
+            {
+                "water": {
+                    "available_quantity": 1.0,
+                    "effects_per_unit": {"thirst": 0.5},
+                }
+            },
+            contracts["consume"]["carried"],
+        )
+        self.assertNotIn("berries", contracts["consume"]["carried"])
+
     def test_rest_updates_the_perceived_energy_change_without_prescribing_it(self) -> None:
         agent = self.state.agents["nwl-001"]
         agent.energy = 0.2

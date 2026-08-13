@@ -495,7 +495,7 @@ class NewlandSimulation:
                 if agent_id in {dispute.opener_id, dispute.target_id}
                 and dispute.status != "resolved"
             ),
-            action_contracts=self.adjudicator.action_contracts(self.state),
+            action_contracts=self.adjudicator.action_contracts(self.state, agent_id),
         )
         try:
             cognition_result = self.cognition.decide(context)

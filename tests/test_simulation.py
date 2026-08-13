@@ -658,8 +658,8 @@ class SimulationTests(unittest.TestCase):
                 context.action_contracts["rest"]["energy_recovered_per_minute"],
             )
             self.assertEqual(
-                {"thirst": 0.5},
-                context.action_contracts["consumables"]["acqua"],
+                {},
+                context.action_contracts["consume"]["carried"],
             )
             activity = next(
                 event for event in produced if event.event_type == "ActivityPerformed"

@@ -279,7 +279,10 @@ class WorldAdjudicator:
     REST_ENERGY_PER_MINUTE = 0.03
 
     @classmethod
-    def action_contracts(cls, state: WorldState) -> dict[str, object]:
+    def action_contracts(
+        cls, state: WorldState, actor_id: str
+    ) -> dict[str, object]:
+        actor = state.agents[actor_id]
         return {
             "tick_minutes": cls.TICK_MINUTES,
             "duration_semantics": (
@@ -288,9 +291,15 @@ class WorldAdjudicator:
             "rest": {
                 "energy_recovered_per_minute": cls.REST_ENERGY_PER_MINUTE
             },
-            "consumables": {
-                kind: dict(effects)
-                for kind, effects in state.resource_effects.items()
+            "consume": {
+                "carried": {
+                    kind: {
+                        "available_quantity": quantity,
+                        "effects_per_unit": dict(state.resource_effects[kind]),
+                    }
+                    for kind, quantity in actor.inventory.items()
+                    if quantity > 0.0 and kind in state.resource_effects
+                }
             },
         }
 
