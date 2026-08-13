@@ -1,7 +1,7 @@
 ---
 id: adr-0016
 title: "Embodied Somatic Perception and Autonomous Survival Deliberation"
-status: "Proposed"
+status: "Accepted"
 date: "2026-08-13"
 authors: ["Agent AI", "Giovanni Fiore"]
 tags: ["agents", "autonomy", "physiology", "cognition", "memory", "scheduling", "ollama", "evaluation"]
@@ -133,7 +133,7 @@ Chosen Option: **Alternative 4: Percezione somatica semantica, tempo coerente e 
 - [CMP-003] **Evidence Added**: `docs/diagnostics/john-flower-death-2026-08-13.md`.
 - [CMP-004] **Prospective Runtime Updates**: `physiology.py`, `simulation.py`, `world.py`, `models.py`, `cognition/prompting.py`, `cognition/retrieval.py` e relativi test soltanto dopo approvazione.
 - [CMP-005] **RAG Index**: l'indice `docs/README.md` verrà aggiornato senza sovrapporsi alla modifica UI attualmente in corso.
-- [CMP-006] **Approval Required**: questo ADR resta `Proposed` e non autorizza implementazione o download di modelli fino all'approvazione esplicita di Giovanni Fiore.
+- [CMP-006] **Approval**: Giovanni Fiore ha approvato esplicitamente questo ADR il 2026-08-13, autorizzandone l'implementazione incrementale e la valutazione locale dei modelli.
 
 ## Sources for Model Feasibility
 
