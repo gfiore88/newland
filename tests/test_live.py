@@ -224,6 +224,10 @@ class LiveSupervisorTests(unittest.TestCase):
                     "consumed_tokens"
                 ],
             )
+            self.assertEqual(
+                ["qwen2.5:3b"],
+                health["runtime"]["configured_models"]["chronicle"],
+            )
             with NewlandSimulation(
                 database, cognition=ScriptedTestCognition()
             ) as simulation:

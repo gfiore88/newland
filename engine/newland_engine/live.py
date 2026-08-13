@@ -76,7 +76,7 @@ class LiveSupervisor:
         self.port = port
         self.models = models
         self.reflective_models = reflective_models or models
-        self.chronicle_models = chronicle_models or models
+        self.chronicle_models = chronicle_models or ("qwen2.5:3b",)
         self.batch_size = batch_size
         self.poll_interval = poll_interval
         self.max_activations = max_activations
