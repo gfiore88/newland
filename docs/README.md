@@ -27,7 +27,11 @@ docs/
 │   ├── adr-0010-dynamic-embodied-carrying-capacity.md        <-- ADR-0010 proposto (Capacità corporea dinamica)
 │   ├── adr-0011-generative-arrival-identity.md             <-- ADR-0011 (Generative Arrival Identity)
 │   ├── adr-0012-cognitive-stalemate-resolution.md          <-- ADR-0012 (Cognitive Stalemate & Reflection Loop)
-│   └── adr-0013-cognitive-refactoring-and-emergence-analyzer.md <-- ADR-0013 (Cognitive Refactoring & Emergence)
+│   ├── adr-0013-cognitive-refactoring-and-emergence-analyzer.md <-- ADR-0013 (Cognitive Refactoring & Emergence)
+│   ├── adr-0014-observer-ui-architecture-and-aesthetics.md <-- ADR-0014 (Observer UI Architecture)
+│   ├── adr-0015-procedural-biome-rendering-engine.md       <-- ADR-0015 (Procedural Biome Rendering Engine)
+│   ├── adr-0016-embodied-somatic-perception-and-survival-deliberation.md <-- ADR-0016 (Embodied Somatic Perception)
+│   └── adr-0017-visual-agent-state-system.md               <-- ADR-0017 (Visual Agent State System)
 ├── agents/                                  <-- Specifiche ed Agenti
 │   └── templates/                           <-- Template Schede Personaggio (.agent.md)
 │       └── character-template.agent.md
