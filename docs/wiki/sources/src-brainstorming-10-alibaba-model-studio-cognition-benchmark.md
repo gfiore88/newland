@@ -3,7 +3,7 @@
 - **File grezzo**: [raw-brainstorming-10-alibaba-model-studio-cognition-benchmark.md](../../raw/raw-brainstorming-10-alibaba-model-studio-cognition-benchmark.md)
 - **Data ingest e verifica**: 2026-08-13
 - **Natura**: proposta sperimentale con dati commerciali temporanei
-- **Decisione derivata**: [ADR-0018 proposto](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md)
+- **Decisione derivata**: [ADR-0018 accettato](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md)
 
 ## Tesi centrale
 

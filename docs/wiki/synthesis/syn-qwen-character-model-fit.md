@@ -2,7 +2,7 @@
 
 - **Data verifica**: 2026-08-13
 - **Stato**: valutazione candidata; nessun uso runtime approvato
-- **Decisione correlata**: [ADR-0018 proposto](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md)
+- **Decisione correlata**: [ADR-0018 accettato](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md)
 - **Concetto**: [Economia cognitiva multi-modello](../concepts/cnc-economia-cognitiva-multi-modello.md)
 
 ## Verdetto

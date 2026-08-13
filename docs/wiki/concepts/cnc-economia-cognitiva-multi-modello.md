@@ -70,7 +70,7 @@ La [valutazione Qwen Character](../synthesis/syn-qwen-character-model-fit.md) in
 
 ## Decisioni ancora necessarie
 
-- [ADR-REQ-001] Provider cloud temporaneo, confine dei dati privati, gestione dei segreti, quota e arresto di spesa: proposta formalizzata in [ADR-0018](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md), non ancora approvata.
+- [ADR-REQ-001] Provider cloud temporaneo, confine dei dati privati, gestione dei segreti, quota e arresto di spesa: benchmark offline autorizzato da [ADR-0018](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md); qualsiasi uso live richiede ancora un ADR distinto.
 - [ADR-REQ-002] Corsie d'inferenza o provider indipendenti per mente, Cronista e analisi; regole di cancellazione dei soli workload derivati.
 - [ADR-REQ-003] Tassonomia minima del routing e criteri misurati di promozione/declassamento dei modelli.
 - [ADR-REQ-004] Semantica temporale degli errori tecnici e dei `CognitionDeferred`.
@@ -83,4 +83,4 @@ La [valutazione Qwen Character](../synthesis/syn-qwen-character-model-fit.md) in
 - [ADR-0009](../../adr/adr-0009-supervised-runtime-and-inference-priority.md)
 - [ADR-0013](../../adr/adr-0013-cognitive-refactoring-and-emergence-analyzer.md)
 - [ADR-0016](../../adr/adr-0016-embodied-somatic-perception-and-survival-deliberation.md)
-- [ADR-0018 proposto](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md)
+- [ADR-0018 accettato](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md)

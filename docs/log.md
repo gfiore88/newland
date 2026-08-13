@@ -214,3 +214,9 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Aggiornato ADR-0018 con un funnel Character-first e cap distinti: il 235B riceve al massimo `75k` token e soltanto 5–10 casi del disagreement set.
 - La session cache resta esclusa dalla valutazione di qualità e non può diventare memoria remota implicita degli abitanti.
 - Persistita la valutazione in `docs/wiki/synthesis/syn-qwen-character-model-fit.md`; nessuna integrazione è stata implementata e ADR-0018 resta proposto.
+
+## [2026-08-13] adr | Approvazione ADR-0018 - Benchmark cognitivo cloud limitato
+- Giovanni Fiore ha approvato esplicitamente ADR-0018.
+- Lo stato di `docs/adr/adr-0018-bounded-cloud-cognition-benchmark.md` è passato da `Proposed` ad `Accepted`.
+- Sono autorizzati l'harness offline, i test senza rete e il pilot Alibaba entro sanitizzazione, opt-in, `Free Quota Only`, funnel e cap per modello definiti nell'ADR.
+- Il provider cloud resta vietato nei comandi live e nel Cronista; ogni adozione operativa richiederà un ADR successivo.

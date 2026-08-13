@@ -1,7 +1,7 @@
 ---
 id: adr-0018
 title: "Bounded Cloud Cognition Benchmark with Alibaba Model Studio"
-status: "Proposed"
+status: "Accepted"
 date: "2026-08-13"
 authors: ["Agent AI", "Giovanni Fiore"]
 tags: ["cognition", "evaluation", "qwen", "dashscope", "cloud", "privacy", "cost-control"]
@@ -130,7 +130,7 @@ Chosen Option: **Alternative 3: Benchmark cloud offline, sanitizzato e strettame
 - [CMP-002] **ADR-0005 Refinement**: l'uso cloud viene ammesso soltanto come strumento sperimentale finito; il ciclo continuo resta locale e senza costo API.
 - [CMP-003] **ADR-0009 Preservation**: il benchmark resta fuori dal supervisore live e non modifica le priorità `agent`/`chronicle`.
 - [CMP-004] **Prospective Files After Approval**: `engine/newland_engine/cognition/`, `engine/newland_engine/evaluation.py`, `scripts/evaluate-cognition-models.py`, CLI e test dedicati.
-- [CMP-005] **No Implementation Before Approval**: questo ADR resta `Proposed`; nessuna chiamata Alibaba o modifica runtime è autorizzata finché Giovanni Fiore non lo approva esplicitamente.
+- [CMP-005] **Approval**: Giovanni Fiore ha approvato esplicitamente questo ADR il 2026-08-13. Sono autorizzati l'implementazione dell'harness offline, i test senza rete e le chiamate pilota entro i gate e i cap qui definiti; l'uso cloud nel runtime live resta escluso.
 
 ## Verified External Sources
 

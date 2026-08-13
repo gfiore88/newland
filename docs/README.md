@@ -32,7 +32,7 @@ docs/
 │   ├── adr-0015-procedural-biome-rendering-engine.md       <-- ADR-0015 (Procedural Biome Rendering Engine)
 │   ├── adr-0016-embodied-somatic-perception-and-survival-deliberation.md <-- ADR-0016 (Embodied Somatic Perception)
 │   ├── adr-0017-visual-agent-state-system.md               <-- ADR-0017 (Visual Agent State System)
-│   └── adr-0018-bounded-cloud-cognition-benchmark.md       <-- ADR-0018 proposto (Cloud Cognition Benchmark)
+│   └── adr-0018-bounded-cloud-cognition-benchmark.md       <-- ADR-0018 accettato (Cloud Cognition Benchmark)
 ├── agents/                                  <-- Specifiche ed Agenti
 │   └── templates/                           <-- Template Schede Personaggio (.agent.md)
 │       └── character-template.agent.md
@@ -71,7 +71,7 @@ docs/
 | **Template Personaggi** | [character-template.agent.md](file:///Users/giovannifiore/Desktop/newland/docs/agents/templates/character-template.agent.md) | Template di base per la scheda agentica (.agent.md) di ogni Newlander. |
 | **Skill Auto-Annealing** | [character-auto-annealing/SKILL.md](file:///Users/giovannifiore/Desktop/newland/skills/character-auto-annealing/SKILL.md) | Skill Addy Osmani per l'evoluzione ed auto-commit dei personaggi. |
 | **Governance ADR-0014** | [adr-0014-observer-ui-architecture-and-aesthetics.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0014-observer-ui-architecture-and-aesthetics.md) | ADR Nygard: Architettura e Design System dell'Observer UI |
-| **Proposta ADR-0018** | [adr-0018-bounded-cloud-cognition-benchmark.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0018-bounded-cloud-cognition-benchmark.md) | Benchmark cloud offline con opt-in, sanitizzazione, limiti locali e nessun effetto canonico. |
+| **Governance ADR-0018** | [adr-0018-bounded-cloud-cognition-benchmark.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0018-bounded-cloud-cognition-benchmark.md) | Benchmark cloud offline con opt-in, sanitizzazione, limiti locali e nessun effetto canonico. |
 
 ## Wiki RAG: Fonti Aggiuntive
 - [Proposta UI dell'Observer](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-newland-ui-proposal.md)
