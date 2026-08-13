@@ -10,27 +10,38 @@ class Activation:
     priority: int
     agent_id: str
     reason: str = field(compare=False)
+    kind: str = field(default="cognition", compare=False)
 
 
 class ActivationScheduler:
     def __init__(self) -> None:
         self._queue: list[Activation] = []
-        self._scheduled: set[tuple[int, str]] = set()
+        self._scheduled: set[tuple[int, str, str]] = set()
 
     def schedule(
-        self, agent_id: str, *, tick: int, reason: str, priority: int = 100
+        self,
+        agent_id: str,
+        *,
+        tick: int,
+        reason: str,
+        priority: int = 100,
+        kind: str = "cognition",
     ) -> None:
-        key = (tick, agent_id)
+        key = (tick, agent_id, kind)
         if key in self._scheduled:
             return
         self._scheduled.add(key)
-        heapq.heappush(self._queue, Activation(tick, priority, agent_id, reason))
+        heapq.heappush(
+            self._queue, Activation(tick, priority, agent_id, reason, kind)
+        )
 
     def pop(self) -> Activation | None:
         if not self._queue:
             return None
         activation = heapq.heappop(self._queue)
-        self._scheduled.discard((activation.tick, activation.agent_id))
+        self._scheduled.discard(
+            (activation.tick, activation.agent_id, activation.kind)
+        )
         return activation
 
     def pending(self) -> tuple[Activation, ...]:

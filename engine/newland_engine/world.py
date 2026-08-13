@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from .models import (
@@ -9,6 +10,7 @@ from .models import (
     EventEnvelope,
     Intention,
     MaterialAgentState,
+    PendingAction,
     ResonanceNode,
     ResourceNode,
     WorldState,
@@ -122,6 +124,8 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         agent = state.agents[event.actor_ids[0]]
         agent.is_dead = True
         agent.active = False
+        agent.pending_action = None
+        agent.current_action = None
     elif event.event_type == "AgentMoved":
         state.agents[event.actor_ids[0]].location = event.payload["destination"]
     elif event.event_type == "AgentRested":
@@ -200,6 +204,18 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
     elif event.event_type == "ActionAccepted":
         agent = state.agents[event.actor_ids[0]]
         agent.current_action = event.payload.get("action_type")
+    elif event.event_type == "ActionStarted":
+        agent = state.agents[event.actor_ids[0]]
+        agent.pending_action = PendingAction(
+            action_id=event.event_id,
+            intention=Intention(**event.payload["intention"]),
+            started_tick=event.world_tick,
+            completion_tick=int(event.payload["completion_tick"]),
+        )
+    elif event.event_type in {"ActionCompleted", "ActionInterrupted"}:
+        agent = state.agents[event.actor_ids[0]]
+        agent.pending_action = None
+        agent.current_action = None
     elif event.event_type == "DisputeOpened":
         state.disputes[event.event_id] = DisputeState(
             dispute_id=event.event_id,
@@ -259,6 +275,25 @@ def replay(events: list[EventEnvelope]) -> WorldState:
 
 
 class WorldAdjudicator:
+    TICK_MINUTES = 10
+    REST_ENERGY_PER_MINUTE = 0.03
+
+    @classmethod
+    def action_contracts(cls, state: WorldState) -> dict[str, object]:
+        return {
+            "tick_minutes": cls.TICK_MINUTES,
+            "duration_semantics": (
+                "accepted actions complete only after their duration has elapsed"
+            ),
+            "rest": {
+                "energy_recovered_per_minute": cls.REST_ENERGY_PER_MINUTE
+            },
+            "consumables": {
+                kind: dict(effects)
+                for kind, effects in state.resource_effects.items()
+            },
+        }
+
     def adjudicate(
         self,
         state: WorldState,
@@ -322,6 +357,97 @@ class WorldAdjudicator:
             causation_id=accepted.event_id,
         )
         return [proposal, accepted, *consequences]
+
+    def begin_action(
+        self,
+        state: WorldState,
+        actor_id: str,
+        intention: Intention,
+        *,
+        tick: int,
+        cognition: dict[str, object] | None = None,
+    ) -> list[EventEnvelope]:
+        adjudicated = self.adjudicate(
+            state,
+            actor_id,
+            intention,
+            tick=tick,
+            cognition=cognition,
+        )
+        if adjudicated[-1].event_type == "ActionRejected":
+            return adjudicated
+
+        proposal, accepted = adjudicated[:2]
+        duration_ticks = max(
+            1, math.ceil(intention.duration_minutes / self.TICK_MINUTES)
+        )
+        started = EventEnvelope(
+            event_type="ActionStarted",
+            world_tick=tick,
+            world_time=world_time_for_tick(tick),
+            actor_ids=(actor_id,),
+            location=state.agents[actor_id].location,
+            payload={
+                "action_type": intention.action_type,
+                "intention": intention.to_dict(),
+                "completion_tick": tick + duration_ticks,
+            },
+            visibility="private",
+            recipient_ids=(actor_id,),
+            causation_id=accepted.event_id,
+        )
+        return [proposal, accepted, started]
+
+    def complete_action(
+        self,
+        state: WorldState,
+        actor_id: str,
+        pending: PendingAction,
+        *,
+        tick: int,
+    ) -> list[EventEnvelope]:
+        intention = pending.intention
+        rejection = self._validate(state, actor_id, intention)
+        if rejection:
+            return [
+                EventEnvelope(
+                    event_type="ActionInterrupted",
+                    world_tick=tick,
+                    world_time=world_time_for_tick(tick),
+                    actor_ids=(actor_id,),
+                    location=state.agents[actor_id].location,
+                    payload={
+                        "action_type": intention.action_type,
+                        "reason": rejection,
+                    },
+                    visibility="private",
+                    recipient_ids=(actor_id,),
+                    causation_id=pending.action_id,
+                )
+            ]
+
+        actor = state.agents[actor_id]
+        consequences = self._consequences(
+            state,
+            actor_id,
+            intention,
+            tick=tick,
+            world_time=world_time_for_tick(tick),
+            recipients=state.agents_at(actor.location),
+            causation_id=pending.action_id,
+        )
+        completed = EventEnvelope(
+            event_type="ActionCompleted",
+            world_tick=tick,
+            world_time=world_time_for_tick(tick),
+            actor_ids=(actor_id,),
+            location=actor.location,
+            payload={"action_type": intention.action_type},
+            visibility="private",
+            recipient_ids=(actor_id,),
+            causation_id=pending.action_id,
+        )
+        return [*consequences, completed]
 
     @staticmethod
     def _validate(state: WorldState, actor_id: str, intention: Intention) -> str | None:
@@ -527,7 +653,11 @@ class WorldAdjudicator:
                     event_type="AgentRested",
                     payload={
                         "duration_minutes": intention.duration_minutes,
-                        "energy_recovered": min(1.0, intention.duration_minutes * 0.03),
+                        "energy_recovered": min(
+                            1.0,
+                            intention.duration_minutes
+                            * WorldAdjudicator.REST_ENERGY_PER_MINUTE,
+                        ),
                     },
                     **common,
                 )

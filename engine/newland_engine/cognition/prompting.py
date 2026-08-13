@@ -103,6 +103,7 @@ def build_private_context(context: CognitionContext) -> dict[str, Any]:
                     "label": activity.label,
                     "practiced_skill": activity.practiced_skill,
                     "minimum_proficiency": activity.minimum_proficiency,
+                    "energy_cost_per_10_minutes": activity.energy_cost_per_10_minutes,
                 }
                 for activity in context.available_activities
             ],
@@ -115,6 +116,7 @@ def build_private_context(context: CognitionContext) -> dict[str, Any]:
                 for node in context.local_resonance_nodes
             ],
         },
+        "action_contracts": context.action_contracts,
         "social_affordances": {
             "cooperations": [
                 {

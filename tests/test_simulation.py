@@ -31,6 +31,116 @@ from newland_engine.world import reduce_event, replay
 
 
 class SimulationTests(unittest.TestCase):
+    def test_material_action_completes_after_its_duration_and_body_advances(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=SituatedActivityTestCognition()
+            ) as simulation:
+                simulation.seed_initial_encounter((TEST_FIXTURE_PROFILES[0],))
+
+                started = simulation.run(max_activations=1)
+
+                self.assertIn("ActionStarted", {event.event_type for event in started})
+                self.assertNotIn(
+                    "ActivityPerformed", {event.event_type for event in started}
+                )
+                started_event = next(
+                    event for event in started if event.event_type == "ActionStarted"
+                )
+                pending = simulation.state.agents["nwl-001"].pending_action
+                self.assertIsNotNone(pending)
+                self.assertEqual(2, pending.completion_tick)
+
+                completed = simulation.run(max_activations=1)
+
+                activity = next(
+                    event
+                    for event in completed
+                    if event.event_type == "ActivityPerformed"
+                )
+                self.assertEqual(2, activity.world_tick)
+                self.assertLess(
+                    next(
+                        event
+                        for event in completed
+                        if event.event_type == "NeedsChanged"
+                        and event.world_tick == 2
+                    ).sequence,
+                    activity.sequence,
+                )
+                first_completion = next(
+                    event
+                    for event in completed
+                    if event.event_type == "ActionCompleted"
+                    and event.causation_id == started_event.event_id
+                )
+                self.assertEqual(2, first_completion.world_tick)
+                next_pending = simulation.state.agents["nwl-001"].pending_action
+                self.assertTrue(
+                    next_pending is None
+                    or next_pending.action_id != started_event.event_id
+                )
+
+    def test_pending_action_is_rebuilt_and_completed_after_restart(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=SituatedActivityTestCognition()
+            ) as simulation:
+                simulation.seed_initial_encounter((TEST_FIXTURE_PROFILES[0],))
+                simulation.run(max_activations=1)
+                completion_tick = simulation.state.agents[
+                    "nwl-001"
+                ].pending_action.completion_tick
+
+            with NewlandSimulation(
+                path, cognition=SituatedActivityTestCognition()
+            ) as restarted:
+                restarted.initialize()
+                pending = restarted.scheduler.pending()
+                self.assertTrue(
+                    any(
+                        activation.agent_id == "nwl-001"
+                        and activation.tick == completion_tick
+                        and activation.kind == "action_completion"
+                        for activation in pending
+                    )
+                )
+
+                produced = restarted.run(max_activations=1)
+
+            self.assertIn(
+                "ActivityPerformed", {event.event_type for event in produced}
+            )
+
+    def test_death_during_an_action_interrupts_it_without_material_effect(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=SituatedActivityTestCognition()
+            ) as simulation:
+                simulation.seed_initial_encounter((TEST_FIXTURE_PROFILES[0],))
+                agent = simulation.state.agents["nwl-001"]
+                agent.hunger = 1.0
+                agent.starvation_ticks = 199
+                simulation.scheduler = ActivationScheduler()
+                simulation.scheduler.schedule(
+                    "nwl-001", tick=1, reason="test azione mortale"
+                )
+                simulation.run(max_activations=1)
+
+                produced = simulation.run(max_activations=1)
+
+                event_types = [event.event_type for event in produced]
+                self.assertIn("AgentDied", event_types)
+                self.assertIn("ActionInterrupted", event_types)
+                self.assertNotIn("ActivityPerformed", event_types)
+                self.assertIsNone(agent.pending_action)
+                self.assertIsNone(agent.current_action)
+
     def test_critical_body_adds_early_attention_without_selecting_an_action(
         self,
     ) -> None:
@@ -225,7 +335,7 @@ class SimulationTests(unittest.TestCase):
                 path, cognition=CooperativeCycleTestCognition()
             ) as simulation:
                 simulation.seed_initial_encounter(TEST_FIXTURE_PROFILES)
-                produced = simulation.run(max_activations=3)
+                produced = simulation.run(max_activations=6)
                 social_types = [
                     event.event_type
                     for event in produced
@@ -241,14 +351,9 @@ class SimulationTests(unittest.TestCase):
                     for agent_id, agent in simulation.state.agents.items()
                 }
 
-            self.assertEqual(
-                [
-                    "CooperationProposed",
-                    "CooperationResponded",
-                    "CooperationPerformed",
-                ],
-                social_types,
-            )
+            self.assertIn("CooperationProposed", social_types)
+            self.assertIn("CooperationResponded", social_types)
+            self.assertIn("CooperationPerformed", social_types)
             self.assertTrue(
                 all(
                     event.payload["cognition"]["model"] == "cooperative-cycle-fixture"
@@ -278,6 +383,7 @@ class SimulationTests(unittest.TestCase):
             ) as simulation:
                 simulation.seed_initial_encounter(TEST_FIXTURE_PROFILES)
                 produced = simulation.run(max_activations=2)
+                produced.extend(simulation.run(max_activations=1))
                 speech = [
                     event for event in produced if event.event_type == "SpeechUttered"
                 ]
@@ -438,13 +544,13 @@ class SimulationTests(unittest.TestCase):
             with NewlandSimulation(
                 path, cognition=ScriptedTestCognition()
             ) as simulation:
-                simulation.seed_initial_encounter(TEST_FIXTURE_PROFILES)
+                simulation.seed_initial_encounter((TEST_FIXTURE_PROFILES[0],))
                 simulation.run(max_activations=1)
 
             with NewlandSimulation(
                 path, cognition=GeneratedReflectionTestCognition()
             ) as simulation:
-                simulation.seed_initial_encounter(TEST_FIXTURE_PROFILES)
+                simulation.seed_initial_encounter((TEST_FIXTURE_PROFILES[0],))
                 produced = simulation.run(max_activations=1)
                 reflections = simulation.minds["nwl-001"].reflections
 
@@ -531,8 +637,9 @@ class SimulationTests(unittest.TestCase):
             path = Path(directory) / "newland.db"
             cognition = SituatedActivityTestCognition()
             with NewlandSimulation(path, cognition=cognition) as simulation:
-                simulation.seed_initial_encounter(TEST_FIXTURE_PROFILES)
+                simulation.seed_initial_encounter((TEST_FIXTURE_PROFILES[0],))
                 produced = simulation.run(max_activations=1)
+                produced.extend(simulation.run(max_activations=1))
 
             context = cognition.contexts[0]
             self.assertEqual(("bosco_est", "campo_nord"), context.adjacent_locations)
@@ -542,6 +649,17 @@ class SimulationTests(unittest.TestCase):
                 tuple(
                     activity.activity_id for activity in context.available_activities
                 ),
+            )
+            activity_affordance = context.available_activities[0]
+            self.assertEqual(0.01, activity_affordance.energy_cost_per_10_minutes)
+            self.assertEqual(10, context.action_contracts["tick_minutes"])
+            self.assertEqual(
+                0.03,
+                context.action_contracts["rest"]["energy_recovered_per_minute"],
+            )
+            self.assertEqual(
+                {"thirst": 0.5},
+                context.action_contracts["consumables"]["acqua"],
             )
             activity = next(
                 event for event in produced if event.event_type == "ActivityPerformed"

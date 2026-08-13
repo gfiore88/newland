@@ -72,7 +72,8 @@ class ArrivalTests(unittest.TestCase):
                 path, cognition=ScriptedTestCognition()
             ) as simulation:
                 simulation.admit_arrivals(self._family_profiles())
-                produced = simulation.run(max_activations=1)
+                produced = simulation.run(max_activations=2)
+                produced.extend(simulation.run(max_activations=1))
 
             speech = next(
                 event for event in produced if event.event_type == "SpeechUttered"

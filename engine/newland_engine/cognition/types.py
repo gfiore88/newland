@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal, Protocol
 
 from ..models import AgentMind, Intention, MaterialAgentState
@@ -22,6 +22,7 @@ class ActivityAffordance:
     label: str
     practiced_skill: str | None
     minimum_proficiency: float
+    energy_cost_per_10_minutes: float = 0.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,6 +65,7 @@ class CognitionContext:
     local_resonance_nodes: tuple[ResonanceNodeAffordance, ...] = ()
     social_proposals: tuple[CooperationAffordance, ...] = ()
     active_disputes: tuple[DisputeAffordance, ...] = ()
+    action_contracts: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)

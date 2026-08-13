@@ -22,6 +22,7 @@ from .models import (
     AgentMind,
     EventEnvelope,
     Memory,
+    PendingAction,
     world_time_for_tick,
 )
 from .perception import Observation, PerceptionService
@@ -266,6 +267,15 @@ class NewlandSimulation:
         for agent_id, mind in self.minds.items():
             if self.state.agents[agent_id].is_dead:
                 continue
+            pending_action = self.state.agents[agent_id].pending_action
+            if pending_action is not None:
+                self.scheduler.schedule(
+                    agent_id,
+                    tick=max(self.state.tick, pending_action.completion_tick),
+                    reason=f"completamento: {pending_action.intention.action_type}",
+                    priority=-10,
+                    kind="action_completion",
+                )
             if self._has_critical_somatic_condition(agent_id):
                 self.scheduler.schedule(
                     agent_id,
@@ -327,15 +337,44 @@ class NewlandSimulation:
             activation = self.scheduler.pop()
             if activation is None:
                 break
-            if self.state.agents[activation.agent_id].is_dead:
+            agent = self.state.agents[activation.agent_id]
+            if agent.is_dead:
                 continue
+            if activation.kind == "cognition" and agent.pending_action is not None:
+                self.scheduler.schedule(
+                    activation.agent_id,
+                    tick=max(activation.tick, agent.pending_action.completion_tick),
+                    reason=activation.reason,
+                    priority=activation.priority,
+                )
+                continue
+            completing_action = (
+                agent.pending_action
+                if activation.kind == "action_completion"
+                else None
+            )
             produced.extend(
                 self._advance_physiology(
                     to_tick=activation.tick,
                     activating_agent_id=activation.agent_id,
                 )
             )
-            if self.state.agents[activation.agent_id].is_dead:
+            agent = self.state.agents[activation.agent_id]
+            if activation.kind == "action_completion":
+                if agent.is_dead:
+                    produced.extend(
+                        self._interrupt_action_after_death(
+                            activation.agent_id,
+                            activation.tick,
+                            completing_action,
+                        )
+                    )
+                else:
+                    produced.extend(
+                        self._complete_action(activation.agent_id, activation.tick)
+                    )
+                continue
+            if agent.is_dead:
                 continue
             produced.extend(
                 self._activate(activation.agent_id, activation.tick, activation.reason)
@@ -419,6 +458,7 @@ class NewlandSimulation:
                     label=activity.label,
                     practiced_skill=activity.practiced_skill,
                     minimum_proficiency=activity.minimum_proficiency,
+                    energy_cost_per_10_minutes=activity.energy_cost,
                 )
                 for activity in self.state.activities_at(material.location)
             ),
@@ -455,6 +495,7 @@ class NewlandSimulation:
                 if agent_id in {dispute.opener_id, dispute.target_id}
                 and dispute.status != "resolved"
             ),
+            action_contracts=self.adjudicator.action_contracts(self.state),
         )
         try:
             cognition_result = self.cognition.decide(context)
@@ -522,7 +563,7 @@ class NewlandSimulation:
         )
         if unseen and unseen[-1].sequence is not None:
             working_mind.last_perceived_sequence = unseen[-1].sequence
-        pending = self.adjudicator.adjudicate(
+        pending = self.adjudicator.begin_action(
             self.state,
             agent_id,
             intention,
@@ -543,9 +584,60 @@ class NewlandSimulation:
         ]
         for event in persisted:
             reduce_event(self.state, event)
+        started = next(
+            (event for event in persisted_pending if event.event_type == "ActionStarted"),
+            None,
+        )
+        if started is not None:
+            self.scheduler.schedule(
+                agent_id,
+                tick=int(started.payload["completion_tick"]),
+                reason=f"completamento: {intention.action_type}",
+                priority=-10,
+                kind="action_completion",
+            )
         self._schedule_generated_agenda(working_mind, tick=tick)
         self._schedule_reactions(agent_id, tick, persisted_pending)
         return persisted
+
+    def _complete_action(self, agent_id: str, tick: int) -> list[EventEnvelope]:
+        pending = self.state.agents[agent_id].pending_action
+        if pending is None:
+            return []
+        events = self.adjudicator.complete_action(
+            self.state, agent_id, pending, tick=tick
+        )
+        persisted = self.store.append_many(events)
+        for event in persisted:
+            reduce_event(self.state, event)
+        self._schedule_reactions(agent_id, tick, persisted)
+        return persisted
+
+    def _interrupt_action_after_death(
+        self,
+        agent_id: str,
+        tick: int,
+        pending: PendingAction | None,
+    ) -> list[EventEnvelope]:
+        if pending is None:
+            return []
+        interrupted = EventEnvelope(
+            event_type="ActionInterrupted",
+            world_tick=tick,
+            world_time=world_time_for_tick(tick),
+            actor_ids=(agent_id,),
+            location=self.state.agents[agent_id].location,
+            payload={
+                "action_type": pending.intention.action_type,
+                "reason": "actor died before completion",
+            },
+            visibility="private",
+            recipient_ids=(agent_id,),
+            causation_id=pending.action_id,
+        )
+        persisted = self.store.append(interrupted)
+        reduce_event(self.state, persisted)
+        return [persisted]
 
     def _schedule_generated_agenda(self, mind: AgentMind, *, tick: int) -> None:
         if mind.next_activation_tick is not None:

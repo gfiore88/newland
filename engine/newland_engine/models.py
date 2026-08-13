@@ -410,6 +410,14 @@ class Intention:
         return asdict(self)
 
 
+@dataclass(frozen=True, slots=True)
+class PendingAction:
+    action_id: str
+    intention: Intention
+    started_tick: int
+    completion_tick: int
+
+
 @dataclass(slots=True)
 class MaterialAgentState:
     agent_id: str
@@ -440,6 +448,7 @@ class MaterialAgentState:
         default_factory=lambda: {"energy": 0, "hunger": 0, "thirst": 0}
     )
     current_action: str | None = None
+    pending_action: PendingAction | None = None
 
 
 @dataclass(slots=True)
