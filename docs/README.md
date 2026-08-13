@@ -76,3 +76,4 @@ docs/
 ## Wiki RAG: Fonti Aggiuntive
 - [Proposta UI dell'Observer](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-newland-ui-proposal.md)
 - [Alibaba Model Studio e benchmark cognitivo cloud](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-10-alibaba-model-studio-cognition-benchmark.md)
+- [Idoneità dei modelli Qwen Character](file:///Users/giovannifiore/Desktop/newland/docs/wiki/synthesis/syn-qwen-character-model-fit.md)

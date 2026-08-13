@@ -27,12 +27,22 @@ Alibaba Model Studio può fornire un upper bound cloud della capacità cognitiva
 - [QLF-005] Gli snapshot possono contenere identità o biografie fornite dall'utente. L'uso cloud richiede sanitizzazione, minimizzazione e consenso architetturale esplicito.
 - [QLF-006] Il free tier è adatto alla qualificazione offline, non dimostra sostenibilità economica del mondo live dopo scadenza o esaurimento.
 
+## Valutazione successiva: Qwen Character
+
+- [CHR-001] Alibaba descrive `qwen-plus-character` e `qwen-flash-character` come modelli per role-play con miglioramenti in coerenza del personaggio, progressione tematica ed ascolto empatico.
+- [CHR-002] Entrambi hanno una quota International separata da `1M` token; i prezzi indicati sono `$0.50/$1.40` per Plus e `$0.05/$0.40` per Flash per milione di token input/output.
+- [CHR-003] Nessuno dei due supporta thinking, function calling o structured output secondo il catalogo ufficiale. La loro utilità agentica deve quindi essere provata sul `CognitionResult`, non dedotta dalla qualità conversazionale.
+- [CHR-004] La session cache non verrà usata nel benchmark di qualità: stato remoto implicito danneggerebbe replay e comparabilità e non può sostituire la memoria canonica.
+- [CHR-005] La strategia aggiornata usa Flash Character nel primo confronto e riserva 80B/235B a un piccolo insieme di casi difficili. Vedi [sintesi Qwen Character](../synthesis/syn-qwen-character-model-fit.md).
+
 ## Fonti ufficiali verificate
 
 - [Free quota per nuovi utenti](https://www.alibabacloud.com/help/en/model-studio/new-free-quota)
 - [Prezzi e quote dei modelli](https://www.alibabacloud.com/help/en/model-studio/model-pricing)
 - [Uso dei modelli deep-thinking](https://www.alibabacloud.com/help/en/model-studio/deep-thinking)
 - [Scheda qwen3-235b-a22b-thinking-2507](https://www.alibabacloud.com/help/en/model-studio/qwen3-235b-a22b-thinking-2507)
+- [Qwen Character](https://www.alibabacloud.com/help/en/model-studio/role-play)
+- [Catalogo capacità dei modelli](https://www.alibabacloud.com/help/en/model-studio/text-generation-model)
 
 ## Pagine correlate
 

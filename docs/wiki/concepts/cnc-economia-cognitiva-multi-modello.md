@@ -66,6 +66,8 @@ Una promozione di modello o policy richiede più campioni e scenari; JSON valido
 
 ADR-0018 propone di usare temporaneamente Alibaba Model Studio soltanto come upper bound offline. Il free tier non è una risorsa del mondo live: quota, scadenza e thinking rendono necessario un pilot piccolo, sanitizzato e arrestabile. Un risultato cloud migliore produrrebbe evidenza comparativa, non una promozione automatica del modello o una nuova regola di routing.
 
+La [valutazione Qwen Character](../synthesis/syn-qwen-character-model-fit.md) introduce un funnel più conservativo: Flash Character viene misurato prima per continuità personale e cognizione sociale; 80B e 235B vedono soltanto un disagreement set ristretto. La specializzazione di ruolo non vale come prova di autonomia o fattibilità.
+
 ## Decisioni ancora necessarie
 
 - [ADR-REQ-001] Provider cloud temporaneo, confine dei dati privati, gestione dei segreti, quota e arresto di spesa: proposta formalizzata in [ADR-0018](../../adr/adr-0018-bounded-cloud-cognition-benchmark.md), non ancora approvata.

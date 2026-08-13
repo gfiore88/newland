@@ -53,6 +53,12 @@
 
 ---
 
+## 🧩 Sintesi & Valutazioni (`docs/wiki/synthesis/`)
+
+- [syn-qwen-character-model-fit.md](wiki/synthesis/syn-qwen-character-model-fit.md) - *Valutazione di Qwen Flash/Plus Character e strategia progressiva che riserva i modelli 80B/235B ai soli casi difficili.*
+
+---
+
 ## 🏛️ Decisioni Architetturali (ADRs `docs/adr/`)
 - [adr-0001-agentic-governance-and-adr-workflow.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0001-agentic-governance-and-adr-workflow.md) - *ADR-0001: Governance Agentica e Workflow ADR Obbligatorio.*
 - [adr-0002-karpathy-llm-wiki-rag-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0002-karpathy-llm-wiki-rag-architecture.md) - *ADR-0002: Karpathy LLM-Wiki RAG Architecture.*

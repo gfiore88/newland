@@ -208,3 +208,9 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Qualificato il milione di token come budget per modello e non come numero di decisioni; input, output, reasoning e retry possono consumarlo rapidamente.
 - Proposto ADR-0018 per un pilot offline di 10–20 snapshot, sanitizzato, opt-in, senza chain-of-thought persistita e con arresto locale della spesa.
 - Nessun provider cloud, comando di benchmark o cambiamento del runtime live è stato implementato; ADR-0018 attende approvazione esplicita.
+
+## [2026-08-13] query | Idoneità di Qwen Character e conservazione quote grandi
+- Verificati Qwen Plus Character e Flash Character: specializzazione role-play, quota separata, prezzi, session cache e assenza di thinking/structured output.
+- Aggiornato ADR-0018 con un funnel Character-first e cap distinti: il 235B riceve al massimo `75k` token e soltanto 5–10 casi del disagreement set.
+- La session cache resta esclusa dalla valutazione di qualità e non può diventare memoria remota implicita degli abitanti.
+- Persistita la valutazione in `docs/wiki/synthesis/syn-qwen-character-model-fit.md`; nessuna integrazione è stata implementata e ADR-0018 resta proposto.

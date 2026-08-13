@@ -74,9 +74,11 @@ Chosen Option: **Alternative 3: Benchmark cloud offline, sanitizzato e strettame
 - [DEC-009] **Segreti fuori dal repository**: la chiave DashScope sarà letta da ambiente o secret store locale, redatta da eccezioni e mai persistita in fixture, configurazioni versionate o telemetry.
 - [DEC-010] **Doppio arresto di spesa**: prima del test l'operatore dovrà abilitare `Free Quota Only` nella console; inoltre l'harness imporrà limiti locali di richieste e token stimati e non effettuerà fallback a pagamento.
 - [DEC-011] **403 terminale**: `AllocationQuota.FreeTierOnly`, errori di billing o autorizzazione termineranno la configurazione interessata. Non saranno trattati come motivo per inviare la stessa cognizione a un altro provider cloud.
-- [DEC-012] **Pilot prima della scala**: partiremo con al massimo 20 snapshot, due campioni e un budget inferiore al 50% della quota visibile per modello. L'estensione a 50–100 snapshot richiederà consumo reale misurato e quota residua verificata.
-- [DEC-013] **Candidati iniziali limitati**: confronteremo la baseline locale corrente con `qwen3-32b`, `qwen3-next-80b-a3b-thinking` e `qwen3-235b-a22b-thinking-2507`. Ulteriori modelli verranno aggiunti soltanto se rispondono a una domanda sperimentale distinta.
+- [DEC-012] **Funnel progressivo**: dopo due dry-run di compatibilità per modello, confronteremo baseline locale e `qwen-flash-character` su 10–20 snapshot. `qwen-plus-character` e `qwen3-32b` entreranno soltanto se il primo stadio mostra un segnale o limite misurabile.
+- [DEC-013] **Grandi modelli sul disagreement set**: `qwen3-next-80b-a3b-thinking` e `qwen3-235b-a22b-thinking-2507` riceveranno soltanto 5–10 casi difficili nei quali i candidati economici divergono, falliscono il contratto o mostrano differenze psicologiche sostanziali. Il 235B non sarà giudice o ground truth.
 - [DEC-014] **Nessuna promozione automatica**: risultati migliori non cambieranno provider, modello ordinario, modello riflessivo o routing. Ogni adozione live richiederà un ADR successivo.
+- [DEC-015] **Cap per modello**: i tetti iniziali saranno `250k` token per Flash Character, `200k` per Plus Character, `200k` per 32B, `100k` per 80B e `75k` per 235B. Il contatore somma input, output e reasoning esposto dal provider; prima di ogni richiesta riserva anche il massimo output configurato. Sono massimi locali, non obiettivi; ogni stadio termina appena produce evidenza sufficiente.
+- [DEC-016] **Session cache esclusa dalla qualità**: il primo benchmark Character sarà stateless. La cache potrà essere valutata separatamente come ottimizzazione e non diventerà mai memoria implicita dell'abitante.
 
 ## Evaluation Protocol
 
@@ -86,6 +88,7 @@ Chosen Option: **Alternative 3: Benchmark cloud offline, sanitizzato e strettame
 - [EVA-004] Registreremo token input/output e reasoning quando esposti come soli conteggi, numero di retry, latenza media/p50/p95, errori e costo teorico post-quota.
 - [EVA-005] Il report distinguerà capacità del modello, compatibilità del protocollo e costo. Un modello che ragiona bene ma non produce risultati validabili non è automaticamente idoneo al runtime.
 - [EVA-006] La valutazione umana userà risposte anonimizzate rispetto al modello quando possibile e criteri dichiarati prima dell'esecuzione.
+- [EVA-007] Per i modelli Character misureremo continuità personale, gestione di promesse e ambivalenza, progressione del dialogo, empatia non prescrittiva, italiano e tendenza alla teatralità, mantenendo identici grounding e schema.
 
 ## Consequences
 
@@ -104,6 +107,8 @@ Chosen Option: **Alternative 3: Benchmark cloud offline, sanitizzato e strettame
 - [NEG-004] **Offerta temporanea**: disponibilità, prezzi, quote e modelli possono cambiare. - **Mitigation**: verificare console e documentazione alla data di ogni esecuzione e riportarla nei risultati.
 - [NEG-005] **Dipendenza aggiuntiva**: un adapter remoto amplia errori HTTP, rate limit e parsing. - **Mitigation**: standard library o dipendenze già presenti, timeout espliciti, errori tipizzati e nessun retry illimitato.
 - [NEG-006] **Benchmark come teatro**: risposte più lunghe possono apparire più intelligenti senza migliorare le decisioni. - **Mitigation**: scoring su grounding, coerenza e fattibilità, con verbosità esclusa dai criteri positivi.
+- [NEG-007] **Specializzazione Character**: coerenza del ruolo ed empatia possono produrre role-play convincente ma non deliberazione materiale valida. - **Mitigation**: valutare l'intero `CognitionResult`, inclusi schema, affordance e aggiornamenti mentali, senza punteggio positivo per la sola prosa.
+- [NEG-008] **Limiti documentali discordanti**: le pagine Alibaba riportano finestre di contesto diverse per Character. - **Mitigation**: imporre `8192` token come denominatore comune e registrare il limite effettivo del servizio.
 
 ## Acceptance Criteria
 
@@ -116,6 +121,8 @@ Chosen Option: **Alternative 3: Benchmark cloud offline, sanitizzato e strettame
 - [ACC-007] Il report contiene configurazioni, numero di campioni, consumo, latenza, fallimenti e limiti metodologici.
 - [ACC-008] Il benchmark non scrive eventi canonici, memorie o proiezioni del Cronista.
 - [ACC-009] Nessun modello cloud diventa default senza un nuovo ADR approvato.
+- [ACC-010] I test provano cap distinti per modello e impediscono l'invio del corpus completo a 80B o 235B fuori dal disagreement set.
+- [ACC-011] Il benchmark di qualità non invia un session ID cache e non dipende da stato remoto implicito.
 
 ## Compliance & RAG Impact
 
@@ -131,3 +138,5 @@ Chosen Option: **Alternative 3: Benchmark cloud offline, sanitizzato e strettame
 - [SRC-002] [Alibaba Model Studio model pricing and free quotas](https://www.alibabacloud.com/help/en/model-studio/model-pricing), verificata il 2026-08-13.
 - [SRC-003] [Alibaba Model Studio deep-thinking models](https://www.alibabacloud.com/help/en/model-studio/deep-thinking), verificata il 2026-08-13.
 - [SRC-004] [qwen3-235b-a22b-thinking-2507 model information](https://www.alibabacloud.com/help/en/model-studio/qwen3-235b-a22b-thinking-2507), verificata il 2026-08-13.
+- [SRC-005] [Qwen Character role-playing models](https://www.alibabacloud.com/help/en/model-studio/role-play), verificata il 2026-08-13.
+- [SRC-006] [Alibaba Model Studio text model capabilities](https://www.alibabacloud.com/help/en/model-studio/text-generation-model), verificata il 2026-08-13.
