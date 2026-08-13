@@ -19,6 +19,7 @@ from .cognition import (
 )
 from .cognition.runtime import (
     ConfiguredCognition,
+    DashScopeRequester,
     build_configured_cognition,
     default_cloud_ledger_path,
 )
@@ -51,6 +52,7 @@ class LiveSupervisor:
         cloud_token_cap: int | None = None,
         cloud_ledger_path: str | Path | None = None,
         max_activations: int | None = None,
+        dashscope_requester: DashScopeRequester | None = None,
         cognition: CognitionProvider | None = None,
         chronicler: ChroniclerProvider | None = None,
         emit: Callable[[list[object]], None] = lambda events: None,
@@ -107,6 +109,7 @@ class LiveSupervisor:
                     cloud_ledger_path
                     or default_cloud_ledger_path(self.database_path)
                 ),
+                dashscope_requester=dashscope_requester,
             )
             cognition = self.configured_cognition.cognition
         if chronicler is None:

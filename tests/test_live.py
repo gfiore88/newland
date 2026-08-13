@@ -13,6 +13,54 @@ from newland_engine.live import LiveSupervisor
 from newland_engine.simulation import NewlandSimulation
 
 
+def valid_dashscope_response() -> dict[str, object]:
+    content = {
+        "intention": {
+            "action_type": "rest",
+            "target_id": None,
+            "destination": None,
+            "duration_minutes": 10,
+            "spoken_content": None,
+            "language": None,
+            "resource_id": None,
+            "quantity": None,
+            "activity_id": None,
+            "proposal_id": None,
+            "dispute_id": None,
+            "subject_event_id": None,
+            "response": None,
+            "node_id": None,
+            "motivation_summary": "Decisione autonoma del provider cloud.",
+            "confidence": 0.7,
+        },
+        "memory_appraisals": [],
+        "mental_updates": {
+            "beliefs": [],
+            "relationships": [],
+            "affect": None,
+            "reflections": [],
+            "goals": [],
+            "plans": [],
+            "commitments": [],
+            "role_interpretations": [],
+            "anamnesis_fragments": [],
+            "resonance_orientation": None,
+        },
+        "attention_schedule": {
+            "next_activation_in_ticks": 3,
+            "reason": "Riconsiderare autonomamente la situazione.",
+        },
+    }
+    return {
+        "choices": [{"message": {"content": json.dumps(content)}}],
+        "usage": {
+            "prompt_tokens": 50,
+            "completion_tokens": 30,
+            "total_tokens": 80,
+        },
+    }
+
+
 class GeneratedTestChronicler:
     def narrate(self, context: ChronicleContext) -> ChronicleEntry:
         first = context.events[0]
@@ -121,6 +169,72 @@ class LiveSupervisorTests(unittest.TestCase):
             supervisor.shutdown()
 
             self.assertEqual(1, supervisor.health()["successful_activations"])
+
+    def test_dashscope_canary_is_canonical_and_visible_in_http_health(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            static_directory = root / "dist"
+            static_directory.mkdir()
+            (static_directory / "index.html").write_text(
+                "<!doctype html><title>Newland live</title>", encoding="utf-8"
+            )
+            from helpers import TEST_FIXTURE_PROFILES
+
+            database = root / "newland.db"
+            with NewlandSimulation(
+                database, cognition=ScriptedTestCognition()
+            ) as simulation:
+                simulation.admit_arrivals(TEST_FIXTURE_PROFILES[:1])
+            supervisor = LiveSupervisor(
+                database,
+                static_directory=static_directory,
+                port=0,
+                poll_interval=0.01,
+                models=("dashscope:qwen-flash-character",),
+                reflective_models=("dashscope:qwen-flash-character",),
+                allow_cloud_live=True,
+                dashscope_api_key="test-key",
+                dashscope_base_url=(
+                    "https://workspace.ap-southeast-1.maas.aliyuncs.com/"
+                    "compatible-mode/v1"
+                ),
+                cloud_token_cap=10_000,
+                cloud_ledger_path=root / "cloud.db",
+                max_activations=1,
+                dashscope_requester=(
+                    lambda request, timeout: valid_dashscope_response()
+                ),
+                chronicler=GeneratedTestChronicler(),
+            )
+            try:
+                supervisor.start()
+                supervisor.wait()
+                address = supervisor.address
+                assert address is not None
+                with urllib.request.urlopen(
+                    f"http://{address[0]}:{address[1]}/api/health"
+                ) as response:
+                    health = json.loads(response.read().decode("utf-8"))
+            finally:
+                supervisor.shutdown()
+
+            self.assertEqual(
+                80,
+                health["runtime"]["cloud_cognition"]["cloud_budget"][
+                    "consumed_tokens"
+                ],
+            )
+            with NewlandSimulation(
+                database, cognition=ScriptedTestCognition()
+            ) as simulation:
+                proposals = [
+                    event
+                    for event in simulation.store.events()
+                    if event.event_type == "ActionProposed"
+                ]
+            self.assertEqual(
+                "dashscope", proposals[-1].payload["cognition"]["provider"]
+            )
 
 
 if __name__ == "__main__":

@@ -301,6 +301,8 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Newland live: http://{address[0]}:{address[1]}")
             supervisor.wait()
         except KeyboardInterrupt:
+            pass
+        finally:
             supervisor.shutdown()
         return 0
 
