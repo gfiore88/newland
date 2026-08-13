@@ -429,6 +429,16 @@ class MaterialAgentState:
     exhaustion_ticks: int = 0
     starvation_ticks: int = 0
     dehydration_ticks: int = 0
+    need_trends: dict[str, str] = field(
+        default_factory=lambda: {
+            "energy": "stable",
+            "hunger": "stable",
+            "thirst": "stable",
+        }
+    )
+    somatic_condition_ticks: dict[str, int] = field(
+        default_factory=lambda: {"energy": 0, "hunger": 0, "thirst": 0}
+    )
     current_action: str | None = None
 
 

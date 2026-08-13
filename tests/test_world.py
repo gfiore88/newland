@@ -137,6 +137,8 @@ class WorldAdjudicatorTests(unittest.TestCase):
     def test_consumption_uses_inventory_and_applies_canonical_body_effects(
         self,
     ) -> None:
+        self.state.agents["nwl-001"].somatic_condition_ticks["thirst"] = 12
+        self.state.agents["nwl-001"].dehydration_ticks = 80
         events = self.adjudicator.adjudicate(
             self.state,
             "nwl-001",
@@ -150,6 +152,28 @@ class WorldAdjudicatorTests(unittest.TestCase):
         agent = self.state.agents["nwl-001"]
         self.assertEqual(0.5, agent.inventory["water"])
         self.assertAlmostEqual(0.55, agent.thirst)
+        self.assertEqual("falling", agent.need_trends["thirst"])
+        self.assertEqual(0, agent.somatic_condition_ticks["thirst"])
+        self.assertEqual(0, agent.dehydration_ticks)
+
+    def test_rest_updates_the_perceived_energy_change_without_prescribing_it(self) -> None:
+        agent = self.state.agents["nwl-001"]
+        agent.energy = 0.2
+        agent.somatic_condition_ticks["energy"] = 18
+        agent.exhaustion_ticks = 20
+        events = self.adjudicator.adjudicate(
+            self.state,
+            "nwl-001",
+            Intention(action_type="rest", duration_minutes=20),
+            tick=1,
+        )
+
+        reduce_event(self.state, events[-1])
+
+        self.assertAlmostEqual(0.8, agent.energy)
+        self.assertEqual("rising", agent.need_trends["energy"])
+        self.assertEqual(0, agent.somatic_condition_ticks["energy"])
+        self.assertEqual(0, agent.exhaustion_ticks)
 
     def test_activity_must_be_local_and_spends_physical_energy(self) -> None:
         events = self.adjudicator.adjudicate(

@@ -54,6 +54,28 @@ class PhysiologySystemTests(unittest.TestCase):
             advance.events[0].payload["crossed_thresholds"],
         )
 
+    def test_somatic_condition_duration_starts_at_the_crossed_boundary(self) -> None:
+        state = WorldState(
+            tick=0,
+            agents={
+                "nwl-001": MaterialAgentState(
+                    "nwl-001",
+                    "Elia",
+                    "village",
+                    energy=0.8,
+                    hunger=0.4,
+                    thirst=0.2,
+                )
+            },
+        )
+
+        advance = PhysiologySystem().advance(state, to_tick=35)
+
+        self.assertEqual(
+            {"energy": 5, "hunger": 11, "thirst": 7},
+            advance.events[0].payload["somatic_condition_ticks"],
+        )
+
     def test_no_elapsed_time_produces_no_body_event(self) -> None:
         state = WorldState(tick=3)
         advance = PhysiologySystem().advance(state, to_tick=3)

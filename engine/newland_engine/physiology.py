@@ -6,6 +6,71 @@ from dataclasses import dataclass
 from .models import EventEnvelope, MaterialAgentState, WorldState, world_time_for_tick
 
 
+def somatic_condition_for(need: str, value: float) -> str:
+    if need == "energy":
+        if value <= 0.0:
+            return "fatal"
+        if value <= 0.25:
+            return "critical"
+        if value <= 0.5:
+            return "strained"
+        return "regulated"
+    if need in {"hunger", "thirst"}:
+        if value >= 1.0:
+            return "fatal"
+        if value >= 0.75:
+            return "critical"
+        if value >= 0.5:
+            return "strained"
+        return "regulated"
+    raise ValueError(f"unknown somatic need: {need}")
+
+
+def project_somatic_state(agent: MaterialAgentState) -> dict[str, object]:
+    exposure_by_need = {
+        "energy": agent.exhaustion_ticks,
+        "hunger": agent.starvation_ticks,
+        "thirst": agent.dehydration_ticks,
+    }
+    scale_by_need = {
+        "energy": "higher_is_healthier",
+        "hunger": "higher_is_more_severe",
+        "thirst": "higher_is_more_severe",
+    }
+    values = {
+        "energy": agent.energy,
+        "hunger": agent.hunger,
+        "thirst": agent.thirst,
+    }
+    projected: dict[str, object] = {}
+    critical_causes: list[str] = []
+    conditions: list[str] = []
+    for need, value in values.items():
+        condition = somatic_condition_for(need, value)
+        conditions.append(condition)
+        if condition in {"critical", "fatal"}:
+            critical_causes.append(need)
+        projected[need] = {
+            "value": value,
+            "scale": scale_by_need[need],
+            "condition": condition,
+            "trend": agent.need_trends.get(need, "stable"),
+            "ticks_in_condition": agent.somatic_condition_ticks.get(need, 0),
+            "fatal_exposure_ticks": exposure_by_need[need],
+        }
+    if "fatal" in conditions:
+        overall_condition = "life_threatening"
+    elif "critical" in conditions:
+        overall_condition = "critical"
+    elif "strained" in conditions:
+        overall_condition = "strained"
+    else:
+        overall_condition = "regulated"
+    projected["overall_condition"] = overall_condition
+    projected["critical_causes"] = critical_causes
+    return projected
+
+
 @dataclass(frozen=True, slots=True)
 class PhysiologyAdvance:
     events: tuple[EventEnvelope, ...]
@@ -76,6 +141,36 @@ class PhysiologySystem:
                     rate_per_tick=self.THIRST_GAIN_PER_TICK,
                 ),
             }
+            somatic_condition_ticks = {
+                "energy": self._advance_condition_ticks(
+                    need="energy",
+                    previous=previous["energy"],
+                    current=current["energy"],
+                    elapsed=elapsed,
+                    prior_duration=agent.somatic_condition_ticks.get("energy", 0),
+                    rate_per_tick=self.ENERGY_DRAIN_PER_TICK,
+                ),
+                "hunger": self._advance_condition_ticks(
+                    need="hunger",
+                    previous=previous["hunger"],
+                    current=current["hunger"],
+                    elapsed=elapsed,
+                    prior_duration=agent.somatic_condition_ticks.get("hunger", 0),
+                    rate_per_tick=self.HUNGER_GAIN_PER_TICK,
+                ),
+                "thirst": self._advance_condition_ticks(
+                    need="thirst",
+                    previous=previous["thirst"],
+                    current=current["thirst"],
+                    elapsed=elapsed,
+                    prior_duration=agent.somatic_condition_ticks.get("thirst", 0),
+                    rate_per_tick=self.THIRST_GAIN_PER_TICK,
+                ),
+            }
+            need_trends = {
+                need: self._trend(previous[need], current[need])
+                for need in ("energy", "hunger", "thirst")
+            }
             causes = [
                 cause
                 for cause, exposure in fatal_exposure_ticks.items()
@@ -95,6 +190,8 @@ class PhysiologySystem:
                         "current": current,
                         "crossed_thresholds": crossed,
                         "fatal_exposure_ticks": fatal_exposure_ticks,
+                        "somatic_condition_ticks": somatic_condition_ticks,
+                        "need_trends": need_trends,
                     },
                     visibility="private",
                     recipient_ids=(agent_id,),
@@ -139,6 +236,51 @@ class PhysiologySystem:
         distance = abs(fatal_value - previous)
         ticks_until_fatal = math.ceil((distance / rate_per_tick) - 1e-12)
         return max(0, elapsed - ticks_until_fatal)
+
+    @staticmethod
+    def _advance_condition_ticks(
+        *,
+        need: str,
+        previous: float,
+        current: float,
+        elapsed: int,
+        prior_duration: int,
+        rate_per_tick: float,
+    ) -> int:
+        previous_condition = somatic_condition_for(need, previous)
+        current_condition = somatic_condition_for(need, current)
+        if previous_condition == current_condition:
+            return prior_duration + elapsed
+
+        entry_thresholds = {
+            "energy": {
+                "strained": 0.5,
+                "critical": 0.25,
+                "fatal": 0.0,
+            },
+            "hunger": {
+                "strained": 0.5,
+                "critical": 0.75,
+                "fatal": 1.0,
+            },
+            "thirst": {
+                "strained": 0.5,
+                "critical": 0.75,
+                "fatal": 1.0,
+            },
+        }
+        threshold = entry_thresholds[need][current_condition]
+        distance = abs(previous - threshold)
+        ticks_until_entry = math.ceil((distance / rate_per_tick) - 1e-12)
+        return max(0, elapsed - ticks_until_entry)
+
+    @staticmethod
+    def _trend(previous: float, current: float) -> str:
+        if current > previous:
+            return "rising"
+        if current < previous:
+            return "falling"
+        return "stable"
 
     def _crossed_thresholds(
         self, previous: dict[str, float], current: dict[str, float]

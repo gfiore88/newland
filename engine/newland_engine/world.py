@@ -14,6 +14,27 @@ from .models import (
     WorldState,
     world_time_for_tick,
 )
+from .physiology import somatic_condition_for
+
+
+def _record_instant_somatic_change(
+    agent: MaterialAgentState, previous: dict[str, float]
+) -> None:
+    exposure_fields = {
+        "energy": "exhaustion_ticks",
+        "hunger": "starvation_ticks",
+        "thirst": "dehydration_ticks",
+    }
+    for need in ("energy", "hunger", "thirst"):
+        before = previous[need]
+        after = float(getattr(agent, need))
+        if after == before:
+            continue
+        agent.need_trends[need] = "rising" if after > before else "falling"
+        if somatic_condition_for(need, before) != somatic_condition_for(need, after):
+            agent.somatic_condition_ticks[need] = 0
+        if somatic_condition_for(need, after) != "fatal":
+            setattr(agent, exposure_fields[need], 0)
 
 
 def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
@@ -86,6 +107,17 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
             agent.exhaustion_ticks = int(fatal_exposure_ticks["exhaustion"])
             agent.starvation_ticks = int(fatal_exposure_ticks["starvation"])
             agent.dehydration_ticks = int(fatal_exposure_ticks["dehydration"])
+        somatic_condition_ticks = event.payload.get("somatic_condition_ticks")
+        if somatic_condition_ticks is not None:
+            agent.somatic_condition_ticks = {
+                need: int(duration)
+                for need, duration in somatic_condition_ticks.items()
+            }
+        need_trends = event.payload.get("need_trends")
+        if need_trends is not None:
+            agent.need_trends = {
+                need: str(trend) for need, trend in need_trends.items()
+            }
     elif event.event_type == "AgentDied":
         agent = state.agents[event.actor_ids[0]]
         agent.is_dead = True
@@ -94,9 +126,11 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         state.agents[event.actor_ids[0]].location = event.payload["destination"]
     elif event.event_type == "AgentRested":
         agent = state.agents[event.actor_ids[0]]
+        previous = {"energy": agent.energy, "hunger": agent.hunger, "thirst": agent.thirst}
         agent.energy = min(
             1.0, agent.energy + float(event.payload.get("energy_recovered", 0.1))
         )
+        _record_instant_somatic_change(agent, previous)
     elif event.event_type == "ResourceGathered":
         resource = state.resources[event.payload["resource_id"]]
         quantity = float(event.payload["quantity"])
@@ -106,6 +140,7 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         agent.inventory[kind] = agent.inventory.get(kind, 0.0) + quantity
     elif event.event_type == "ResourceConsumed":
         agent = state.agents[event.actor_ids[0]]
+        previous = {"energy": agent.energy, "hunger": agent.hunger, "thirst": agent.thirst}
         kind = event.payload["resource_kind"]
         quantity = float(event.payload["quantity"])
         remaining = max(0.0, agent.inventory.get(kind, 0.0) - quantity)
@@ -117,11 +152,14 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         agent.energy = min(1.0, agent.energy + float(effects.get("energy", 0.0)))
         agent.hunger = max(0.0, agent.hunger - float(effects.get("hunger", 0.0)))
         agent.thirst = max(0.0, agent.thirst - float(effects.get("thirst", 0.0)))
+        _record_instant_somatic_change(agent, previous)
     elif event.event_type == "ActivityPerformed":
         agent = state.agents[event.actor_ids[0]]
+        previous = {"energy": agent.energy, "hunger": agent.hunger, "thirst": agent.thirst}
         agent.energy = max(
             0.0, agent.energy - float(event.payload.get("energy_spent", 0.0))
         )
+        _record_instant_somatic_change(agent, previous)
         practiced_skill = event.payload.get("practiced_skill")
         if practiced_skill:
             agent.skills[practiced_skill] = min(

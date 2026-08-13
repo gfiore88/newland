@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+import json
 
 from helpers import ScriptedTestCognition, UnavailableTestCognition
 from newland_engine.cognition import (
@@ -19,6 +20,7 @@ from newland_engine.cognition import (
     validate_cognition_result,
 )
 from newland_engine.cognition.parsing import parse_intention, _classify_sources
+from newland_engine.cognition.prompting import build_private_context, build_system_prompt
 from newland_engine.cognition.schema import get_cognition_schema
 from newland_engine.models import (
     AgentMind,
@@ -76,6 +78,44 @@ def context() -> CognitionContext:
 
 
 class GenerativeCognitionPoolTests(unittest.TestCase):
+    def test_private_context_exposes_non_prescriptive_somatic_semantics(self) -> None:
+        cognition_context = context()
+        cognition_context.material_state.energy = 0.8
+        cognition_context.material_state.hunger = 1.0
+        cognition_context.material_state.thirst = 1.0
+        cognition_context.material_state.starvation_ticks = 45
+        cognition_context.material_state.dehydration_ticks = 30
+        cognition_context.material_state.need_trends = {
+            "energy": "falling",
+            "hunger": "rising",
+            "thirst": "rising",
+        }
+        cognition_context.material_state.somatic_condition_ticks = {
+            "energy": 20,
+            "hunger": 45,
+            "thirst": 30,
+        }
+
+        private_context = build_private_context(cognition_context)
+        somatic = private_context["self"]["somatic_state"]
+
+        self.assertEqual("higher_is_healthier", somatic["energy"]["scale"])
+        self.assertEqual("regulated", somatic["energy"]["condition"])
+        self.assertEqual("higher_is_more_severe", somatic["hunger"]["scale"])
+        self.assertEqual("fatal", somatic["hunger"]["condition"])
+        self.assertEqual(45, somatic["hunger"]["fatal_exposure_ticks"])
+        self.assertEqual("life_threatening", somatic["overall_condition"])
+        self.assertEqual(["hunger", "thirst"], somatic["critical_causes"])
+        self.assertNotIn("recommended_action", json.dumps(somatic))
+
+    def test_system_prompt_explains_body_without_prescribing_an_action(self) -> None:
+        prompt = build_system_prompt()
+
+        self.assertIn("stato somatico", prompt)
+        self.assertIn("scegli autonomamente", prompt)
+        self.assertNotIn("UNICA azione", prompt)
+        self.assertNotIn("DEVI assolutamente", prompt)
+
     def test_router_changes_only_model_tier_and_records_route(self) -> None:
         ordinary = RecordingCognition("ordinary-model")
         reflective = RecordingCognition("reflective-model")

@@ -1,14 +1,19 @@
 from typing import Any
 from .types import CognitionContext
 from .retrieval import retrieve_memories
+from ..physiology import project_somatic_state
 
 
 def build_system_prompt() -> str:
     return (
         "Sei una mente abitante di Newland, non un narratore onnisciente. "
         "Decidi una sola azione usando esclusivamente identità, memoria e osservazioni fornite. "
-        "CRITICO: Se la tua energia è a zero (0.0), non hai forza fisica. Qualsiasi azione come 'perform_activity', 'move', o 'gather' fallirà sempre per mancanza di energia. La tua UNICA azione possibile e priorità assoluta è usare l'azione 'rest' per recuperare forza (o 'consume' se hai già cibo in inventario). "
-        "Se la tua azione precedente è stata respinta (ActionRejected), DEVI assolutamente cambiare strategia e scegliere un'azione diversa (es. se ti sei stancato e non puoi compiere l'attività, devi fare 'rest'). "
+        "Lo stato somatico privato descrive il tuo corpo: per energy valori alti sono più sani; "
+        "per hunger e thirst valori alti indicano maggiore bisogno. Condition, trend, durata ed "
+        "esposizione fatale sono percezioni del tuo stato, non ordini. Considerale insieme a "
+        "identità, esperienza e affordance e scegli autonomamente priorità e risposta. "
+        "Un ActionRejected è prova che il tentativo non ha superato i vincoli materiali del mondo; "
+        "puoi reinterpretarlo e decidere liberamente se e come cambiare strategia. "
         "Interpreta soggettivamente soltanto gli eventi osservati e usa i loro event_id nelle memory_appraisals; "
         "puoi scegliere di non memorizzare un evento. DIVIETO ASSOLUTO: Non generare MAI in 'reflections' una riflessione identica o quasi identica a una che già possiedi in memoria. Sii conciso ed evolvi logicamente i tuoi pensieri. "
         "Beliefs, relazioni, affetti, riflessioni, obiettivi e ruoli interpretati "
@@ -50,6 +55,7 @@ def build_private_context(context: CognitionContext) -> dict[str, Any]:
                 "hunger": context.material_state.hunger,
                 "thirst": context.material_state.thirst,
             },
+            "somatic_state": project_somatic_state(context.material_state),
             "affect": context.mind.affect,
             "goals": context.mind.goals,
             "plans": [
