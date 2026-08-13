@@ -12,6 +12,8 @@ from .parsing import parse_intention, parse_mental_updates
 
 
 class OllamaCognition:
+    provider_family = "ollama"
+
     def __init__(
         self,
         model: str = "qwen2.5:3b",
