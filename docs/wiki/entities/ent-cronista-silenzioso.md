@@ -13,4 +13,5 @@
 ## Riferimenti
 - ADR: [adr-0003-silent-chronicler-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0003-silent-chronicler-observer-architecture.md)
 - Concetto correlato: [cnc-console-dell-architetto.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-console-dell-architetto.md)
+- Concetto candidato: [Economia cognitiva multi-modello](../concepts/cnc-economia-cognitiva-multi-modello.md) — corsia d'inferenza o provider prospetticamente indipendente dalla classe logica già prevista da ADR-0009, soggetta a nuovo ADR.
 - Proposta UI: [src-newland-ui-proposal.md](../sources/src-newland-ui-proposal.md)

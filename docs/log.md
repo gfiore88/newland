@@ -196,3 +196,9 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Ingerito il design system e la proposta visuale `docs/raw/newland-ui-proposal.md`.
 - Generato `docs/wiki/sources/src-newland-ui-proposal.md` e collegato alle entità esistenti *Cronista Silenzioso* e *Console dell'Architetto*.
 - Approvato e registrato ADR-0014 `docs/adr/adr-0014-observer-ui-architecture-and-aesthetics.md` per l'adozione del design system (DOM overlay su PixiJS WebGL).
+
+## [2026-08-13] ingest | Brainstorming 09 - Economia cognitiva multi-modello
+- Conservata la fonte grezza in `docs/raw/raw-brainstorming-09-cognitive-economy-and-model-tiers.md`.
+- Creata la sintesi fonte e il concetto candidato di economia cognitiva, distinguendo esempi dimensionali, ipotesi sperimentali e invarianti già approvati.
+- Collegati benchmark John, ADR-0008, ADR-0009, ADR-0013, ADR-0016 e Cronista Silenzioso.
+- Nessuna policy di routing, integrazione cloud o corsia d'inferenza indipendente è stata approvata o implementata tramite questo ingest.

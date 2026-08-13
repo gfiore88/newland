@@ -15,6 +15,7 @@
 - [src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-06-natural-transition-initial-settlement-and-progressive-exploration.md) - *Brainstorming 06: Transizione Invisibile Quotidiana, la Cittadina Iniziale ed l'Esplorazione Emergente.*
 - [src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-07-primordial-conflict-grim-welcome-and-rural-architecture.md) - *Brainstorming 07: Conflitti Primordiali, Accoglienza Melanconica ed Architettura Rurale.*
 - [src-brainstorming-08-observer-architecture.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/sources/src-brainstorming-08-observer-architecture.md) - *Brainstorming 08 & ADR-0003: Architettura dell'Osservatore Integrato.*
+- [src-brainstorming-09-cognitive-economy-and-model-tiers.md](wiki/sources/src-brainstorming-09-cognitive-economy-and-model-tiers.md) - *Brainstorming 09: economia cognitiva, routing multi-modello e benchmark della vera emergenza.*
 
 ---
 
@@ -47,6 +48,7 @@
 - [cnc-esplorazione-emergente.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-esplorazione-emergente.md) - *Il meccanismo di svelamento progressivo dei territori esterni in risposta al desiderio del cuore dei Newlander.*
 - [cnc-gestione-primordiale-conflitti.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-gestione-primordiale-conflitti.md) - *La risoluzione tribale/primordiale dei conflitti e l'emersione spontanea dei ruoli comunitari.*
 - [cnc-console-dell-architetto.md](file:///Users/giovannifiore/Desktop/newland/docs/wiki/concepts/cnc-console-dell-architetto.md) - *L'interfaccia extradiegetica d'ispezione dello stato cognitivo e dei log per l'utente/architetto.*
+- [cnc-economia-cognitiva-multi-modello.md](wiki/concepts/cnc-economia-cognitiva-multi-modello.md) - *Concetto candidato per assegnare capacità, provider e code in base a misure operative senza scegliere al posto degli agenti.*
 
 ---
 
