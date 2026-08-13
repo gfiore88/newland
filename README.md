@@ -4,7 +4,7 @@
 
 ## Primo vertical slice eseguibile
 
-Il repository contiene un runtime Python event-driven con menti persistenti, percezione privata, memoria episodica soggettiva, beliefs, relazioni, affetti, riflessioni, obiettivi, piani, impegni, agenda autonoma e intenzioni generative strutturate. Il mondo canonico comprende un territorio connesso, risorse locali, nodi di risonanza, inventari, consumo, attività fisiche, arrivi atomici, lingue, competenze, famiglie, cooperazioni consensuali e conflitti, arbitrati e persistiti su SQLite. I ruoli sociali e gli eventuali frammenti di anamnesi sono interpretazioni private generate liberamente dalle singole menti, mai classificazioni o flashback assegnati dal runtime. Ollama è obbligatorio per le decisioni dei Newlander: il codice non sostituisce mai una mente con pattern statici. Tutti i cambiamenti psicologici, le azioni materiali, le interpretazioni sociali e il momento della successiva attenzione vengono scelti dalla mente dell'agente e validati contro ciò che ha realmente percepito, ricordato, conosce o può fisicamente raggiungere.
+Il repository contiene un runtime Python event-driven con menti persistenti, percezione privata, memoria episodica soggettiva, beliefs, relazioni, affetti, riflessioni, obiettivi, piani, impegni, agenda autonoma e intenzioni generative strutturate. Il mondo canonico comprende un territorio connesso, risorse locali, nodi di risonanza, inventari, consumo, attività fisiche, arrivi atomici, lingue, competenze, famiglie, cooperazioni consensuali e conflitti, arbitrati e persistiti su SQLite. I ruoli sociali e gli eventuali frammenti di anamnesi sono interpretazioni private generate liberamente dalle singole menti, mai classificazioni o flashback assegnati dal runtime. Le decisioni possono essere generate localmente da Ollama oppure, con consenso e budget espliciti, da Alibaba Model Studio; il codice non sostituisce mai una mente con pattern statici. Tutti i cambiamenti psicologici, le azioni materiali, le interpretazioni sociali e il momento della successiva attenzione vengono scelti dalla mente dell'agente e validati contro ciò che ha realmente percepito, ricordato, conosce o può fisicamente raggiungere.
 
 ```bash
 # Setup e run agentico in tempo reale
@@ -18,6 +18,21 @@ uv run newland --db data/newland.db run --continuous --model qwen2.5:3b
 npm run build --prefix ui
 uv run newland --db data/newland.db live --model qwen2.5:3b
 # http://127.0.0.1:8765
+
+# Canary Alibaba: una sola attivazione canonica e arresto automatico
+# Richiede DASHSCOPE_API_KEY e DASHSCOPE_BASE_URL nel file .env ignorato da Git.
+uv run newland --db data/newland.db live \
+  --model dashscope:qwen-flash-character \
+  --model ollama:qwen2.5:3b \
+  --allow-cloud-live --cloud-token-cap 100000 --max-activations 1
+
+# Live continua Alibaba con fallback generativo locale dichiarato
+uv run newland --db data/newland.db live \
+  --model dashscope:qwen-flash-character \
+  --model ollama:qwen2.5:3b \
+  --allow-cloud-live --cloud-token-cap 100000
+# Il consumo cumulativo e il circuito sono visibili in /api/health.
+# Il ledger non canonico predefinito è data/newland.cloud-runtime.db.
 
 # Failover fra modelli generativi, senza fallback statico
 uv run newland --db data/newland.db run \
@@ -48,6 +63,13 @@ uv run newland --db data/newland.db chronicle --model qwen2.5:3b
 # Test degli invarianti
 uv run python -m unittest discover -s tests -v
 ```
+
+`--cloud-token-cap` è cumulativo: riavviare Newland non ripristina il budget.
+Una richiesta interrotta o priva di metriche viene conteggiata per l'intera
+prenotazione. Un `403 AllocationQuota.FreeTierOnly` ferma gli altri provider
+DashScope della stessa attivazione; può proseguire soltanto un provider locale
+esplicitamente elencato. La chiave non compare nella health o negli eventi e va
+ruotata modificando soltanto `.env` a runtime fermo.
 
 ---
 

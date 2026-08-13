@@ -6,7 +6,7 @@
 
 - [BND-001] Il database degli eventi rappresenta la verità canonica della simulazione.
 - [BND-002] Ogni `AgentMind` possiede stato cognitivo e memoria privati.
-- [BND-003] Il servizio LLM è stateless: riceve un contesto privato e restituisce una proposta d'azione.
+- [BND-003] I provider LLM Ollama e DashScope sono stateless: ricevono un contesto privato agent-scoped e restituiscono una proposta d'azione; DashScope richiede consenso e budget live espliciti.
 - [BND-004] Il `WorldAdjudicator` è l'unico componente autorizzato a produrre conseguenze canoniche delle azioni.
 - [BND-005] Cronista e UI sono proiezioni downstream e non partecipano alla deliberazione.
 - [BND-006] Il router cognitivo seleziona soltanto un tier di inferenza; non modifica contesto privato, intenzione o aggiornamenti mentali generati dal provider scelto.
@@ -47,7 +47,7 @@ Ogni evento persistito contiene:
 - [EVT-013] `RoleInterpretationRevised` è privato: registra una lettura soggettiva generata dalla mente, non una carica canonica assegnata dal mondo.
 - [EVT-014] `ResonanceNodesConfigured` registra posizione e intensità fisica dei nodi senza descrivere effetti mentali.
 - [EVT-015] `ResonanceSignalReceived` contiene esclusivamente nodo, intensità e modalità di esposizione ed è privato dell'abitante coinvolto.
-- [EVT-016] `AnamnesisFragmentRevised` e `ResonanceOrientationRevised` sono mutazioni private generate dalla mente con provenienza Ollama.
+- [EVT-016] `AnamnesisFragmentRevised` e `ResonanceOrientationRevised` sono mutazioni private generate dalla mente con provenienza del provider e modello effettivamente selezionati.
 - [EVT-017] `ActionStarted`, `ActionCompleted` e `ActionInterrupted` rendono replayable il tempo realmente occupato da un'azione; la conseguenza materiale esiste soltanto al completamento.
 - [EVT-018] `NeedsChanged` conserva separatamente esposizione a esaurimento, inedia e disidratazione, così la causa di un eventuale `AgentDied` non dipende da stato volatile.
 
@@ -174,13 +174,17 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 ### Supervisione e inferenza condivisa
 
 - [OPS-001] `newland live` avvia in un unico processo il ciclo autonomo, il Cronista, l'Observer e la build statica WebGL.
-- [OPS-002] Una sola ammissione seriale protegge Ollama: le menti usano la classe `agent`, il Cronista usa `chronicle` e nessuna richiesta in corso viene interrotta.
+- [OPS-002] Una sola ammissione seriale coordina inizialmente cognition locale/cloud e Ollama: le menti usano la classe `agent`, il Cronista usa `chronicle` e nessuna richiesta in corso viene interrotta.
 - [OPS-003] Quando entrambe le classi restano in attesa, le menti vincono i pareggi e ricevono inizialmente otto turni per ogni turno del Cronista.
 - [OPS-004] Il peso è configurazione operativa e non entra in prompt, percezioni, memorie o storia canonica.
 - [OPS-005] Fallimento o ritardo del Cronista lascia il batch derivato ripetibile; non ferma il ciclo agentico e non produce prosa sostitutiva.
 - [OPS-006] Ctrl-C ferma nuove ammissioni e attende la fine della transazione attiva prima di chiudere database e servizi.
 - [OPS-007] `/api/health` distingue componenti, code, workload in corso, attivazioni riuscite, differimenti cognitivi e backlog del Cronista.
 - [OPS-008] Il supervisore registra i modelli configurati ma non arresta né scarica processi Ollama che non ha avviato.
+- [OPS-009] I model spec qualificati `ollama:<model>` e `dashscope:<model>` definiscono pool e ordine di failover; un tag senza prefisso resta Ollama per retrocompatibilità.
+- [OPS-010] La live DashScope richiede `--allow-cloud-live`, credenziale locale, endpoint Alibaba HTTPS e cap cumulativo; il ledger operativo è separato dall'event store canonico.
+- [OPS-011] `/api/health` espone budget consumato/residuo e circuit state senza chiavi, prompt, risposte private o chain-of-thought.
+- [OPS-012] Errori terminali di quota o billing saltano gli altri provider cloud della stessa attivazione; soltanto un generatore locale esplicitamente configurato può continuare.
 
 ### Bisogni corporei
 
