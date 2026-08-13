@@ -1,3 +1,4 @@
+from dataclasses import fields as dataclass_fields
 from typing import Any
 from ..models import ACTION_ARGUMENTS, Intention
 from .types import (
@@ -57,6 +58,17 @@ def _classify_sources(data: dict[str, Any], context: CognitionContext) -> dict[s
     return normalized
 
 
+def _parse_sourced_revision(
+    revision_type: type[Any], data: dict[str, Any], context: CognitionContext
+) -> Any:
+    """Keep only fields belonging to the canonical revision contract."""
+    normalized = _classify_sources(data, context)
+    allowed = {field.name for field in dataclass_fields(revision_type)}
+    return revision_type(
+        **{key: value for key, value in normalized.items() if key in allowed}
+    )
+
+
 def parse_intention(data: dict[str, Any]) -> Intention:
     """Discard schema filler without changing the generated action semantics."""
     action_type = data.get("action_type")
@@ -78,45 +90,47 @@ def parse_mental_updates(data: dict[str, Any], context: CognitionContext) -> Men
     affect_data = data.get("affect")
     return MentalUpdates(
         beliefs=tuple(
-            BeliefRevision(**_classify_sources(item, context))
+            _parse_sourced_revision(BeliefRevision, item, context)
             for item in data["beliefs"]
         ),
         relationships=tuple(
-            RelationshipRevision(**_classify_sources(item, context))
+            _parse_sourced_revision(RelationshipRevision, item, context)
             for item in data["relationships"]
         ),
         affect=(
-            AffectRevision(**_classify_sources(affect_data, context))
+            _parse_sourced_revision(AffectRevision, affect_data, context)
             if affect_data is not None
             else None
         ),
         reflections=tuple(
-            ReflectionDraft(**_classify_sources(item, context))
+            _parse_sourced_revision(ReflectionDraft, item, context)
             for item in data["reflections"]
         ),
         goals=tuple(
-            GoalRevision(**_classify_sources(item, context))
+            _parse_sourced_revision(GoalRevision, item, context)
             for item in data["goals"]
         ),
         plans=tuple(
-            PlanRevision(**_classify_sources(item, context))
+            _parse_sourced_revision(PlanRevision, item, context)
             for item in data["plans"]
         ),
         commitments=tuple(
-            CommitmentRevision(**_classify_sources(item, context))
+            _parse_sourced_revision(CommitmentRevision, item, context)
             for item in data["commitments"]
         ),
         role_interpretations=tuple(
-            RoleInterpretationRevision(**_classify_sources(item, context))
+            _parse_sourced_revision(RoleInterpretationRevision, item, context)
             for item in data["role_interpretations"]
         ),
         anamnesis_fragments=tuple(
-            AnamnesisFragmentRevision(**_classify_sources(item, context))
+            _parse_sourced_revision(AnamnesisFragmentRevision, item, context)
             for item in data["anamnesis_fragments"]
         ),
         resonance_orientation=(
-            ResonanceOrientationRevision(
-                **_classify_sources(data["resonance_orientation"], context)
+            _parse_sourced_revision(
+                ResonanceOrientationRevision,
+                data["resonance_orientation"],
+                context,
             )
             if data["resonance_orientation"] is not None
             else None

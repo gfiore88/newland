@@ -23,6 +23,7 @@ from newland_engine.cognition.parsing import (
     _classify_sources,
     parse_intention,
     parse_memory_appraisals,
+    parse_mental_updates,
 )
 from newland_engine.cognition.prompting import build_private_context, build_system_prompt
 from newland_engine.cognition.schema import get_cognition_schema
@@ -507,6 +508,38 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
         self.assertEqual(1, len(appraisals))
         self.assertEqual("event-visible", appraisals[0].source_event_id)
         self.assertFalse(hasattr(appraisals[0], "occurrence_count"))
+
+    def test_mental_update_parser_discards_only_irrelevant_schema_filler(
+        self,
+    ) -> None:
+        updates = parse_mental_updates(
+            {
+                "beliefs": [],
+                "relationships": [],
+                "affect": None,
+                "reflections": [],
+                "goals": [],
+                "plans": [
+                    {
+                        "operation": "upsert",
+                        "plan_key": "find-water",
+                        "description": "Cercare acqua nel territorio.",
+                        "steps": ["Esaminare i luoghi adiacenti."],
+                        "source_ids": [],
+                        "status": "active",
+                    }
+                ],
+                "commitments": [],
+                "role_interpretations": [],
+                "anamnesis_fragments": [],
+                "resonance_orientation": None,
+            },
+            context(),
+        )
+
+        self.assertEqual("find-water", updates.plans[0].plan_key)
+        self.assertEqual(["Esaminare i luoghi adiacenti."], updates.plans[0].steps)
+        self.assertFalse(hasattr(updates.plans[0], "status"))
 
     def test_role_labels_are_free_text_not_a_runtime_taxonomy(self) -> None:
         role_schema = get_cognition_schema()["properties"]["mental_updates"][
