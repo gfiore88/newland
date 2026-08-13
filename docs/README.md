@@ -26,7 +26,8 @@ docs/
 │   ├── adr-0009-supervised-runtime-and-inference-priority.md <-- ADR-0009 (Supervisore & Priorità LLM)
 │   ├── adr-0010-dynamic-embodied-carrying-capacity.md        <-- ADR-0010 proposto (Capacità corporea dinamica)
 │   ├── adr-0011-generative-arrival-identity.md             <-- ADR-0011 (Generative Arrival Identity)
-│   └── adr-0012-cognitive-stalemate-resolution.md          <-- ADR-0012 (Cognitive Stalemate & Reflection Loop)
+│   ├── adr-0012-cognitive-stalemate-resolution.md          <-- ADR-0012 (Cognitive Stalemate & Reflection Loop)
+│   └── adr-0013-cognitive-refactoring-and-emergence-analyzer.md <-- ADR-0013 (Cognitive Refactoring & Emergence)
 ├── agents/                                  <-- Specifiche ed Agenti
 │   └── templates/                           <-- Template Schede Personaggio (.agent.md)
 │       └── character-template.agent.md
@@ -58,6 +59,7 @@ docs/
 | **Proposta ADR-0010** | [adr-0010-dynamic-embodied-carrying-capacity.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0010-dynamic-embodied-carrying-capacity.md) | Capacità di carico derivata da profilo corporeo, salute ed evoluzione fisica event-sourced. |
 | **Governance ADR-0011** | [adr-0011-generative-arrival-identity.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0011-generative-arrival-identity.md) | ADR Nygard: Generative Arrival Identity. |
 | **Governance ADR-0012** | [adr-0012-cognitive-stalemate-resolution.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0012-cognitive-stalemate-resolution.md) | ADR Nygard: Cognitive Stalemate Resolution (Energy Deadlock & Duplicate Reflections). |
+| **Governance ADR-0013** | [adr-0013-cognitive-refactoring-and-emergence-analyzer.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0013-cognitive-refactoring-and-emergence-analyzer.md) | ADR Nygard: Refactoring Cognition, Emergence Analyzer, and Milestone Emergence-1. |
 | **Contratti Runtime** | [agent-runtime-contracts.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/agent-runtime-contracts.md) | Contratti implementativi per eventi canonici, `AgentMind`, percezione, intenzioni, arbitraggio, scheduling e replay. |
 | **Contratto Observer** | [observer-api-contract.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/observer-api-contract.md) | Read model privilegiato, snapshot HTTP, stream SSE, sicurezza locale e non-interferenza. |
 | **Roadmap Engine** | [implementation-roadmap.md](file:///Users/giovannifiore/Desktop/newland/docs/architecture/implementation-roadmap.md) | Milestone dal vertical slice agentico alla UI WebGL obbligatoria. |
