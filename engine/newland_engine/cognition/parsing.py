@@ -2,6 +2,7 @@ from typing import Any
 from ..models import ACTION_ARGUMENTS, Intention
 from .types import (
     CognitionContext,
+    MemoryAppraisal,
     MentalUpdates,
     BeliefRevision,
     RelationshipRevision,
@@ -14,6 +15,21 @@ from .types import (
     AnamnesisFragmentRevision,
     ResonanceOrientationRevision,
 )
+
+
+def parse_memory_appraisals(data: list[dict[str, Any]]) -> tuple[MemoryAppraisal, ...]:
+    """Discard retrieval metadata without altering subjective appraisal fields."""
+    fields = {
+        "source_event_id",
+        "subjective_summary",
+        "salience",
+        "emotional_tone",
+        "confidence",
+    }
+    return tuple(
+        MemoryAppraisal(**{key: value for key, value in item.items() if key in fields})
+        for item in data
+    )
 
 
 def _classify_sources(data: dict[str, Any], context: CognitionContext) -> dict[str, Any]:

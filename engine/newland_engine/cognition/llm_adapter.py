@@ -4,11 +4,11 @@ from urllib.request import Request, urlopen
 from uuid import uuid4
 
 from .exceptions import CognitionUnavailable
-from .types import CognitionContext, CognitionResult, MemoryAppraisal, AttentionSchedule
+from .types import AttentionSchedule, CognitionContext, CognitionResult
 from .validation import validate_cognition_result
 from .schema import get_cognition_schema
 from .prompting import build_system_prompt, build_private_context
-from .parsing import parse_intention, parse_mental_updates
+from .parsing import parse_intention, parse_memory_appraisals, parse_mental_updates
 
 
 class OllamaCognition:
@@ -43,9 +43,7 @@ class OllamaCognition:
                 content = self._request(messages)
                 parsed = json.loads(content)
                 intention = parse_intention(parsed["intention"])
-                appraisals = tuple(
-                    MemoryAppraisal(**item) for item in parsed["memory_appraisals"]
-                )
+                appraisals = parse_memory_appraisals(parsed["memory_appraisals"])
                 mental_updates = parse_mental_updates(
                     parsed["mental_updates"], context
                 )

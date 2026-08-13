@@ -11,14 +11,13 @@ from uuid import uuid4
 from .cloud_budget import CloudBudgetExceeded, CloudUsageLedger
 from .configuration import validate_alibaba_endpoint
 from .exceptions import CognitionUnavailable
-from .parsing import parse_intention, parse_mental_updates
+from .parsing import parse_intention, parse_memory_appraisals, parse_mental_updates
 from .prompting import build_private_context, build_system_prompt
 from .schema import get_cognition_schema
 from .types import (
     AttentionSchedule,
     CognitionContext,
     CognitionResult,
-    MemoryAppraisal,
 )
 from .validation import validate_cognition_result
 
@@ -107,9 +106,8 @@ class DashScopeCognition:
                 parsed_response = json.loads(content)
                 result = CognitionResult(
                     intention=parse_intention(parsed_response["intention"]),
-                    memory_appraisals=tuple(
-                        MemoryAppraisal(**item)
-                        for item in parsed_response["memory_appraisals"]
+                    memory_appraisals=parse_memory_appraisals(
+                        parsed_response["memory_appraisals"]
                     ),
                     mental_updates=parse_mental_updates(
                         parsed_response["mental_updates"], context

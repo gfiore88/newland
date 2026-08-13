@@ -15,14 +15,17 @@ from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from uuid import uuid4
 
-from .cognition.parsing import parse_intention, parse_mental_updates
+from .cognition.parsing import (
+    parse_intention,
+    parse_memory_appraisals,
+    parse_mental_updates,
+)
 from .cognition.prompting import build_private_context, build_system_prompt
 from .cognition.schema import get_cognition_schema
 from .cognition.types import (
     AttentionSchedule,
     CognitionContext,
     CognitionResult,
-    MemoryAppraisal,
 )
 from .cognition.validation import validate_cognition_result
 
@@ -163,9 +166,8 @@ class DashScopeEvaluationCognition:
                 parsed = json.loads(content)
                 result = CognitionResult(
                     intention=parse_intention(parsed["intention"]),
-                    memory_appraisals=tuple(
-                        MemoryAppraisal(**item)
-                        for item in parsed["memory_appraisals"]
+                    memory_appraisals=parse_memory_appraisals(
+                        parsed["memory_appraisals"]
                     ),
                     mental_updates=parse_mental_updates(
                         parsed["mental_updates"], context

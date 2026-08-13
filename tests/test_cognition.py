@@ -19,7 +19,11 @@ from newland_engine.cognition import (
     RoutedCognition,
     validate_cognition_result,
 )
-from newland_engine.cognition.parsing import parse_intention, _classify_sources
+from newland_engine.cognition.parsing import (
+    _classify_sources,
+    parse_intention,
+    parse_memory_appraisals,
+)
 from newland_engine.cognition.prompting import build_private_context, build_system_prompt
 from newland_engine.cognition.schema import get_cognition_schema
 from newland_engine.models import (
@@ -482,6 +486,27 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
         self.assertIsNone(intention.destination)
         self.assertIsNone(intention.resource_id)
         self.assertIsNone(intention.proposal_id)
+
+    def test_appraisal_parser_discards_only_irrelevant_retrieval_metadata(
+        self,
+    ) -> None:
+        appraisals = parse_memory_appraisals(
+            [
+                {
+                    "source_event_id": "event-visible",
+                    "subjective_summary": "Ho notato un cambiamento.",
+                    "salience": 0.8,
+                    "emotional_tone": "attenzione",
+                    "confidence": 0.9,
+                    "occurrence_count": 4,
+                    "memory_ids": ["memory-source"],
+                }
+            ]
+        )
+
+        self.assertEqual(1, len(appraisals))
+        self.assertEqual("event-visible", appraisals[0].source_event_id)
+        self.assertFalse(hasattr(appraisals[0], "occurrence_count"))
 
     def test_role_labels_are_free_text_not_a_runtime_taxonomy(self) -> None:
         role_schema = get_cognition_schema()["properties"]["mental_updates"][
