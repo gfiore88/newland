@@ -93,20 +93,16 @@ export class NewlandMapScene {
       await this.app.init({
         resizeTo: this.host,
         preference: "webgl",
+        preferWebGLVersion: 1,
+        antialias: false,
         autoDensity: true,
         resolution: Math.min(window.devicePixelRatio, 1.5),
         backgroundAlpha: 0,
         hello: false,
       });
-    } catch {
-      await this.app.init({
-        resizeTo: this.host,
-        preference: "canvas",
-        autoDensity: true,
-        resolution: 1,
-        backgroundAlpha: 0,
-        hello: false,
-      });
+    } catch (e) {
+      console.error("PixiJS WebGL init failed:", e);
+      throw e;
     }
     this.app.ticker.maxFPS = 30;
     this.app.canvas.className = "world-canvas";
