@@ -116,6 +116,69 @@ class GenerativeCognitionPoolTests(unittest.TestCase):
         self.assertNotIn("UNICA azione", prompt)
         self.assertNotIn("DEVI assolutamente", prompt)
 
+    def test_memory_retrieval_consolidates_echoes_without_deleting_sources(
+        self,
+    ) -> None:
+        cognition_context = context()
+        repeated_summary = (
+            "Ricreare un ambiente confortevole e rilassante, recuperando energia."
+        )
+        cognition_context.mind.memories = [
+            Memory(
+                memory_id=f"echo-{index}",
+                source_event_id=f"event-{index}",
+                event_type="AgentRested" if index % 2 else "NeedsChanged",
+                summary=(
+                    repeated_summary
+                    if index < 5
+                    else "Ricreare un ambiente confortevole e rilassante recuperando energia"
+                ),
+                salience=1.0,
+                emotional_tone="calma",
+                confidence=1.0,
+                created_tick=index,
+            )
+            for index in range(10)
+        ]
+        cognition_context.mind.memories.extend(
+            [
+                Memory(
+                    memory_id="water-memory",
+                    source_event_id="water-event",
+                    event_type="ResourceConsumed",
+                    summary="L'acqua ha attenuato la sete.",
+                    salience=0.8,
+                    emotional_tone="sollievo",
+                    confidence=0.9,
+                    created_tick=20,
+                ),
+                Memory(
+                    memory_id="path-memory",
+                    source_event_id="path-event",
+                    event_type="AgentMoved",
+                    summary="Il sentiero verso il bosco era percorribile.",
+                    salience=0.7,
+                    emotional_tone="attenzione",
+                    confidence=0.9,
+                    created_tick=21,
+                ),
+            ]
+        )
+
+        memories = build_private_context(cognition_context)["recent_memories"]
+
+        echo = next(memory for memory in memories if memory["memory_id"] == "echo-9")
+        self.assertEqual(10, echo["occurrence_count"])
+        self.assertEqual(
+            [f"event-{index}" for index in range(10)],
+            echo["source_event_ids"],
+        )
+        self.assertEqual(
+            {"echo-9", "water-memory", "path-memory"},
+            {memory["memory_id"] for memory in memories},
+        )
+        self.assertEqual(12, len(cognition_context.mind.memories))
+
     def test_router_changes_only_model_tier_and_records_route(self) -> None:
         ordinary = RecordingCognition("ordinary-model")
         reflective = RecordingCognition("reflective-model")

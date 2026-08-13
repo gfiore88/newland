@@ -147,6 +147,9 @@ def build_private_context(context: CognitionContext) -> dict[str, Any]:
                 "salience": memory.salience,
                 "emotional_tone": memory.emotional_tone,
                 "confidence": memory.confidence,
+                "occurrence_count": memory.occurrence_count,
+                "memory_ids": list(memory.memory_ids),
+                "source_event_ids": list(memory.source_event_ids),
             }
             for memory in retrieve_memories(context)
         ],
