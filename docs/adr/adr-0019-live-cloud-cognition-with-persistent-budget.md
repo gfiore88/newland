@@ -1,7 +1,7 @@
 ---
 id: adr-0019
 title: "Live Cloud Cognition with Persistent Budget and Generative Continuity"
-status: "Proposed"
+status: "Accepted"
 date: "2026-08-13"
 authors: ["Agent AI", "Giovanni Fiore"]
 tags: ["cognition", "live", "qwen", "dashscope", "budget", "privacy", "autonomy"]
@@ -149,4 +149,4 @@ Chosen Option: **Alternative 3: Provider qualificati, routing esplicito e budget
 - [CMP-003] **ADR-0009 esteso**: la cognition cloud entra nella corsia agent-first esistente; il Cronista resta derivato e locale.
 - [CMP-004] **ADR-0005 raffinato**: Ollama non è più l'unico provider live consentito, ma resta il default retrocompatibile e la continuità locale consigliata.
 - [CMP-005] **Prospective files after approval**: `engine/newland_engine/cognition/`, `engine/newland_engine/live.py`, `engine/newland_engine/cli.py`, `engine/newland_engine/inference.py`, `scripts/start-live.sh`, documentazione e test dedicati.
-- [CMP-006] **Approval required**: lo stato resta `Proposed` finché Giovanni Fiore non approva esplicitamente l'ADR 019; nessuna cognition cloud live sarà implementata prima di allora.
+- [CMP-006] **Approval**: Giovanni Fiore ha approvato esplicitamente l'ADR 019 il 2026-08-13 e ha autorizzato implementazione, test e canary live finito entro i gate qui definiti.
