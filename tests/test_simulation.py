@@ -26,10 +26,45 @@ from newland_engine.models import (
     world_time_for_tick,
 )
 from newland_engine.simulation import NewlandSimulation
+from newland_engine.scheduler import ActivationScheduler
 from newland_engine.world import reduce_event, replay
 
 
 class SimulationTests(unittest.TestCase):
+    def test_critical_body_adds_early_attention_without_selecting_an_action(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "newland.db"
+            with NewlandSimulation(
+                path, cognition=GeneratedAgendaTestCognition()
+            ) as simulation:
+                simulation.seed_initial_encounter(TEST_FIXTURE_PROFILES)
+                simulation.state.agents["nwl-001"].hunger = 0.74
+                simulation.state.agents["nwl-002"].is_dead = True
+                simulation.scheduler = ActivationScheduler()
+                simulation.scheduler.schedule(
+                    "nwl-001", tick=1, reason="agenda precedente", priority=50
+                )
+
+                produced = simulation.run(max_activations=1)
+                pending = simulation.scheduler.pending()
+
+            self.assertTrue(
+                any(
+                    activation.agent_id == "nwl-001"
+                    and activation.tick == 4
+                    and activation.reason == "persistenza somatica critica"
+                    for activation in pending
+                )
+            )
+            proposed = next(
+                event for event in produced if event.event_type == "ActionProposed"
+            )
+            self.assertEqual(
+                "generated-agenda-fixture", proposed.payload["cognition"]["model"]
+            )
+
     def test_resonance_does_not_create_static_flashback_when_cognition_fails(
         self,
     ) -> None:

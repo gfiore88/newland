@@ -25,7 +25,7 @@ from .models import (
     world_time_for_tick,
 )
 from .perception import Observation, PerceptionService
-from .physiology import PhysiologySystem
+from .physiology import PhysiologySystem, somatic_condition_for
 from .scheduler import ActivationScheduler
 from .world import WorldAdjudicator, reduce_event, replay
 
@@ -121,6 +121,8 @@ INITIAL_TERRITORY = {
 
 
 class NewlandSimulation:
+    SOMATIC_CRITICAL_RECHECK_TICKS = 3
+
     def __init__(
         self, database_path: str | Path, cognition: CognitionProvider | None = None
     ) -> None:
@@ -264,6 +266,13 @@ class NewlandSimulation:
         for agent_id, mind in self.minds.items():
             if self.state.agents[agent_id].is_dead:
                 continue
+            if self._has_critical_somatic_condition(agent_id):
+                self.scheduler.schedule(
+                    agent_id,
+                    tick=self.state.tick + self.SOMATIC_CRITICAL_RECHECK_TICKS,
+                    reason="persistenza somatica critica",
+                    priority=0,
+                )
             unseen = self.store.events(after_sequence=mind.last_perceived_sequence)
             if self.perception.perceive(
                 agent_id,
@@ -352,7 +361,24 @@ class NewlandSimulation:
                 reason="segnale corporeo oltre soglia percettiva",
                 priority=0,
             )
+        for agent_id, agent in self.state.agents.items():
+            if agent.is_dead or not self._has_critical_somatic_condition(agent_id):
+                continue
+            self.scheduler.schedule(
+                agent_id,
+                tick=to_tick + self.SOMATIC_CRITICAL_RECHECK_TICKS,
+                reason="persistenza somatica critica",
+                priority=0,
+            )
         return persisted
+
+    def _has_critical_somatic_condition(self, agent_id: str) -> bool:
+        agent = self.state.agents[agent_id]
+        return any(
+            somatic_condition_for(need, float(getattr(agent, need)))
+            in {"critical", "fatal"}
+            for need in ("energy", "hunger", "thirst")
+        )
 
     def _activate(self, agent_id: str, tick: int, reason: str) -> list[EventEnvelope]:
         mind = self.minds[agent_id]
