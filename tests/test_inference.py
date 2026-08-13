@@ -118,6 +118,45 @@ class InferenceAdmissionTests(unittest.TestCase):
         queued_thread.join(timeout=2)
         self.assertEqual(1, admission.snapshot().completed_agent_jobs)
 
+    def test_prompt_annealer_is_lower_priority_than_waiting_agent(self) -> None:
+        admission = InferenceAdmission()
+        active_started = threading.Event()
+        release_active = threading.Event()
+        order: list[str] = []
+
+        active = threading.Thread(
+            target=lambda: admission.run(
+                "agent",
+                lambda: (
+                    active_started.set(),
+                    release_active.wait(timeout=2),
+                    order.append("active-agent"),
+                ),
+            )
+        )
+        annealer = threading.Thread(
+            target=lambda: admission.run(
+                "annealer", lambda: order.append("annealer")
+            )
+        )
+        waiting_agent = threading.Thread(
+            target=lambda: admission.run(
+                "agent", lambda: order.append("waiting-agent")
+            )
+        )
+        active.start()
+        self.assertTrue(active_started.wait(timeout=1))
+        annealer.start()
+        waiting_agent.start()
+        release_active.set()
+        for thread in (active, annealer, waiting_agent):
+            thread.join(timeout=2)
+
+        self.assertEqual(
+            ["active-agent", "waiting-agent", "annealer"], order
+        )
+        self.assertEqual(1, admission.snapshot().completed_annealer_jobs)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -22,7 +22,10 @@ from .cognition.runtime import (
     DashScopeRequester,
     build_configured_cognition,
     default_cloud_ledger_path,
+    default_prompt_ledger_path,
 )
+from .cognition.prompt_learning import LocalPromptAnnealer
+from .cognition.schema import DEFAULT_PROMPT_REGISTRY
 from .inference import AdmittedChronicler, AdmittedCognition, InferenceAdmission
 from .event_store import EventStore
 from .observer import ObserverServer
@@ -51,6 +54,10 @@ class LiveSupervisor:
         dashscope_base_url: str = "",
         cloud_token_cap: int | None = None,
         cloud_ledger_path: str | Path | None = None,
+        prompt_registry_path: str | Path = DEFAULT_PROMPT_REGISTRY,
+        prompt_ledger_path: str | Path | None = None,
+        allow_prompt_annealing: bool = False,
+        prompt_annealer_model: str = "qwen2.5:3b",
         max_activations: int | None = None,
         dashscope_requester: DashScopeRequester | None = None,
         cognition: CognitionProvider | None = None,
@@ -80,6 +87,8 @@ class LiveSupervisor:
         self.batch_size = batch_size
         self.poll_interval = poll_interval
         self.max_activations = max_activations
+        self.allow_prompt_annealing = allow_prompt_annealing
+        self.prompt_annealer_model = prompt_annealer_model
         self.emit = emit
         self.stop_event = Event()
         self._booted = Event()
@@ -89,6 +98,9 @@ class LiveSupervisor:
             "agent_loop": "created",
             "chronicle": "created",
             "observer": "created",
+            "prompt_annealer": (
+                "created" if allow_prompt_annealing else "disabled"
+            ),
         }
         self._successful_activations = 0
         self._cognition_deferrals = 0
@@ -110,6 +122,11 @@ class LiveSupervisor:
                     or default_cloud_ledger_path(self.database_path)
                 ),
                 dashscope_requester=dashscope_requester,
+                prompt_registry_path=prompt_registry_path,
+                prompt_ledger_path=(
+                    prompt_ledger_path
+                    or default_prompt_ledger_path(self.database_path)
+                ),
             )
             cognition = self.configured_cognition.cognition
         if chronicler is None:
@@ -140,6 +157,8 @@ class LiveSupervisor:
         )
         self._start_thread("observer", self._run_observer)
         self._start_thread("chronicle", self._run_chronicle)
+        if self.allow_prompt_annealing:
+            self._start_thread("prompt_annealer", self._run_prompt_annealer)
 
     def wait(self) -> None:
         while not self.stop_event.wait(0.25):
@@ -260,6 +279,31 @@ class LiveSupervisor:
                 self._record_failure("chronicle", error)
             self.stop_event.wait(self.poll_interval)
         self._set_component("chronicle", "stopped")
+
+    def _run_prompt_annealer(self) -> None:
+        configured = self.configured_cognition
+        if (
+            configured is None
+            or configured.prompt_registry is None
+            or configured.prompt_failure_ledger is None
+        ):
+            self._set_component("prompt_annealer", "unavailable")
+            return
+        annealer = LocalPromptAnnealer(
+            registry=configured.prompt_registry,
+            ledger=configured.prompt_failure_ledger,
+            model=self.prompt_annealer_model,
+        )
+        self._set_component("prompt_annealer", "running")
+        while not self.stop_event.wait(max(self.poll_interval, 1.0)):
+            try:
+                self.admission.run("annealer", annealer.run_once)
+            except BaseException as error:
+                if self.stop_event.is_set():
+                    break
+                self._record_failure("prompt_annealer", error)
+                self.stop_event.wait(max(self.poll_interval, 1.0))
+        self._set_component("prompt_annealer", "stopped")
 
     def _run_observer(self) -> None:
         self._set_component("observer", "running")

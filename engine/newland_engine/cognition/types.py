@@ -260,7 +260,9 @@ class CognitionResult:
     model: str
     inference_id: str
     attempts: int
-    prompt_version: str = "agent-cognition-v4"
+    prompt_version: str = "unversioned"
+    prompt_hash: str = ""
+    schema_hash: str = ""
     route: str = "ordinary"
 
     def provenance(self) -> dict[str, Any]:
@@ -270,5 +272,7 @@ class CognitionResult:
             "inference_id": self.inference_id,
             "attempts": self.attempts,
             "prompt_version": self.prompt_version,
+            "prompt_hash": self.prompt_hash,
+            "schema_hash": self.schema_hash,
             "route": self.route,
         }

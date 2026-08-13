@@ -73,6 +73,7 @@
 - [adr-0011-generative-arrival-identity.md](file:///Users/giovannifiore/Desktop/newland/docs/adr/adr-0011-generative-arrival-identity.md) - *ADR-0011: Generative Arrival Identity (Nessun profilo statico agli arrivi).*
 - [adr-0018-bounded-cloud-cognition-benchmark.md](adr/adr-0018-bounded-cloud-cognition-benchmark.md) - *ADR-0018 accettato: benchmark cognitivo cloud offline, sanitizzato e strettamente budgetato.*
 - [adr-0019-live-cloud-cognition-with-persistent-budget.md](adr/adr-0019-live-cloud-cognition-with-persistent-budget.md) - *ADR-0019 accettato: cognition Alibaba live con opt-in, budget persistente e continuità soltanto generativa.*
+- [adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md](adr/adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md) - *ADR-0020 accettato: prompt registry esterno, evidenze persistenti e annealing autonomo limitato con rollback.*
 
 ---
 

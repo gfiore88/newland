@@ -1,0 +1,27 @@
+{
+  "active_version": "agent-cognition-v4",
+  "candidate_version": null,
+  "format_version": 1,
+  "metrics": {},
+  "previous_version": null,
+  "rollout": {
+    "failures": 0,
+    "minimum_observations": 3,
+    "state": "stable",
+    "successes": 0
+  },
+  "versions": {
+    "agent-cognition-v4": {
+      "base": "versions/agent-cognition-v4/base.md",
+      "examples": "versions/agent-cognition-v4/examples.json",
+      "hashes": {
+        "base": "21cf4946a983b999d88cc14a7185f4caba7ff376630b0f36af0560892501ff68",
+        "examples": "dcca123e3d88d1c03df8a10dee90e02808ea5e00b6c583cc4d89229272171b5e",
+        "lessons": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "schema": "a7530dd1b8efb7929ec17f97a5877cffeaaa93f930e60b39bf26cb39ef0f6dc9"
+      },
+      "lessons": "versions/agent-cognition-v4/lessons.json",
+      "schema": "versions/agent-cognition-v4/schema.json"
+    }
+  }
+}

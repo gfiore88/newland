@@ -114,6 +114,15 @@ def valid_response(*, include_usage: bool = True) -> dict[str, object]:
     return response
 
 
+def prompt_registry_for(directory: str | Path):
+    from newland_engine.cognition.prompt_registry import PromptRegistry
+    from tests.test_prompt_registry import write_registry
+
+    registry_path = Path(directory) / "prompt-registry"
+    write_registry(registry_path)
+    return PromptRegistry(registry_path)
+
+
 class LiveModelConfigurationTests(unittest.TestCase):
     def test_model_specs_preserve_bare_ollama_tags_and_accept_qualified_models(
         self,
@@ -295,6 +304,7 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
                     ledger=ledger,
                     model_token_cap=20_000,
                     requester=lambda request, timeout: valid_response(),
+                    prompt_registry=prompt_registry_for(directory),
                 )
 
                 result = provider.decide(cognition_context())
@@ -302,10 +312,52 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
                 self.assertEqual("dashscope", result.provider)
                 self.assertEqual("qwen-flash-character", result.model)
                 self.assertEqual("rest", result.intention.action_type)
+                self.assertEqual("agent-cognition-v4", result.prompt_version)
+                self.assertEqual(64, len(result.prompt_hash))
+                self.assertEqual(64, len(result.schema_hash))
                 self.assertEqual(83, ledger.snapshot().consumed_tokens)
                 health = json.dumps(provider.health())
                 self.assertNotIn("never persist this private reasoning", health)
                 self.assertNotIn(API_KEY, health)
+
+    def test_provider_hot_reloads_candidate_between_complete_inferences(self) -> None:
+        from tests.test_prompt_registry import write_registry
+        from newland_engine.cognition.prompt_registry import PromptRegistry
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            registry_path = root / "registry"
+            write_registry(registry_path)
+            registry = PromptRegistry(registry_path)
+            with CloudUsageLedger(
+                root / "cloud.db", global_cap=20_000
+            ) as ledger:
+                provider = DashScopeCognition(
+                    model="qwen-flash-character",
+                    api_key=API_KEY,
+                    base_url=ALIBABA_ENDPOINT,
+                    ledger=ledger,
+                    model_token_cap=20_000,
+                    requester=lambda request, timeout: valid_response(),
+                    prompt_registry=registry,
+                )
+                baseline = provider.decide(cognition_context())
+                candidate = registry.stage_candidate(
+                    lessons=[
+                        {
+                            "lesson_id": "les-shape",
+                            "violation_codes": ["response.shape"],
+                            "text": "Restituisci tutti i campi richiesti.",
+                            "rationale": "Mantiene il contratto.",
+                            "risks": [],
+                        }
+                    ]
+                )
+                canary = provider.decide(cognition_context())
+
+            self.assertEqual("agent-cognition-v4", baseline.prompt_version)
+            self.assertEqual(candidate.version, canary.prompt_version)
+            self.assertNotEqual(baseline.prompt_hash, canary.prompt_hash)
 
     def test_missing_usage_charges_full_request_reservation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -322,6 +374,7 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
                     requester=lambda request, timeout: valid_response(
                         include_usage=False
                     ),
+                    prompt_registry=prompt_registry_for(directory),
                 )
 
                 provider.decide(cognition_context())
@@ -428,14 +481,67 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
                     ledger=ledger,
                     model_token_cap=20_000,
                     requester=requester,
+                    prompt_registry=prompt_registry_for(directory),
                 )
                 result = provider.decide(cognition_context())
 
         repair = requests[1]["messages"][-1]["content"]
+        previous = requests[1]["messages"][-2]
         self.assertEqual(2, result.attempts)
+        self.assertEqual("assistant", previous["role"])
+        self.assertIn('"action_type": "consume"', previous["content"])
         self.assertIn("carried è vuoto", repair)
         self.assertIn("non inventare resource_id", repair)
         self.assertNotIn("scegli move", repair)
+
+    def test_exhausted_candidate_contract_failure_rolls_back_registry(self) -> None:
+        from tests.test_prompt_registry import write_registry
+        from newland_engine.cognition.prompt_registry import PromptRegistry
+
+        invalid = valid_response()
+        invalid["choices"][0]["message"]["content"] = json.dumps(
+            {
+                "intention": "rest",
+                "memory_appraisals": [],
+                "mental_updates": {},
+                "attention_schedule": {},
+            }
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            registry_path = root / "registry"
+            write_registry(registry_path)
+            registry = PromptRegistry(registry_path)
+            candidate = registry.stage_candidate(
+                lessons=[
+                    {
+                        "lesson_id": "les-shape",
+                        "violation_codes": ["response.shape"],
+                        "text": "Restituisci la forma JSON richiesta.",
+                        "rationale": "Chiarisce la forma.",
+                        "risks": [],
+                    }
+                ]
+            )
+            with CloudUsageLedger(
+                root / "cloud.db", global_cap=20_000
+            ) as cloud_ledger:
+                provider = DashScopeCognition(
+                    model="qwen-flash-character",
+                    api_key=API_KEY,
+                    base_url=ALIBABA_ENDPOINT,
+                    ledger=cloud_ledger,
+                    model_token_cap=20_000,
+                    requester=lambda request, timeout: invalid,
+                    prompt_registry=registry,
+                )
+                with self.assertRaises(CognitionUnavailable):
+                    provider.decide(cognition_context())
+
+            self.assertEqual(
+                "agent-cognition-v4", registry.health()["active_version"]
+            )
+            self.assertIsNone(registry.health()["candidate_version"])
 
     def test_terminal_cloud_failure_skips_other_cloud_and_uses_local_generator(
         self,
@@ -485,6 +591,10 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
 class ConfiguredCognitionRuntimeTests(unittest.TestCase):
     def test_factory_builds_mixed_pool_and_exposes_safe_cloud_health(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
+            from tests.test_prompt_registry import write_registry
+
+            prompt_registry_path = Path(directory) / "prompt-registry"
+            write_registry(prompt_registry_path)
             configured = build_configured_cognition(
                 ordinary_models=(
                     "dashscope:qwen-flash-character",
@@ -496,6 +606,7 @@ class ConfiguredCognitionRuntimeTests(unittest.TestCase):
                 base_url=ALIBABA_ENDPOINT,
                 cloud_token_cap=10_000,
                 ledger_path=Path(directory) / "cloud.db",
+                prompt_registry_path=prompt_registry_path,
                 dashscope_requester=lambda request, timeout: valid_response(),
             )
             try:

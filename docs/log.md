@@ -228,3 +228,24 @@ Registro cronologico append-only delle attività di Ingest, Query e Lint della w
 - Verificato il canary reale finito di John Flower: `ActionProposed` 71 generato da `dashscope:qwen-flash-character`, accettato e avviato, con inference ID e senza reasoning o credenziali persistiti.
 - Il ledger registra 57.579 token in nove chiamate, inclusi quattro canary differiti usati per irrobustire grounding e parsing; budget residuo locale 42.421 token.
 - Suite complessiva: 145 test Python verdi.
+
+## [2026-08-13] adr | Proposta ADR-0020 - Prompt registry e annealing cognitivo
+- Rilevato che il prompt cognitivo e il repair sono incorporati nei moduli Python e non possono evolvere o fare rollback indipendentemente dal rilascio applicativo.
+- Proposto un registry versionato sotto `docs/`, un learning ledger redatto, lesson overlay tecnici, annealer locale subordinato, canary sulle attivazioni naturali e rollback atomico.
+- Separato il nucleo human-gated dall'overlay autonomo: nessuna lezione può prescrivere azioni o modificare schema, eventi, menti o principi del mondo.
+- Nessuna modifica al runtime è autorizzata finché ADR-0020 non riceve approvazione esplicita.
+
+## [2026-08-13] adr | Approvazione ADR-0020 - Prompt registry e annealing cognitivo
+- Giovanni Fiore ha approvato esplicitamente ADR-0020 con l'indicazione di procedere.
+- Lo stato di `docs/adr/adr-0020-external-cognition-prompt-registry-and-autonomous-annealing.md` è passato da `Proposed` ad `Accepted`.
+- Sono autorizzati registry esterno, learning ledger redatto, overlay autonomi limitati, canary, hot reload transazionale e rollback entro i gate dell'ADR.
+
+## [2026-08-13] implementation | ADR-0020 - Prompt registry e annealing cognitivo
+- Migrato `agent-cognition-v4` da stringhe Python a un registry verificato sotto `docs/prompts/agent-cognition/`, condiviso da Ollama, DashScope live e benchmark cloud.
+- Ogni inferenza congela prompt e schema, registra versione e hash canonici e mantiene lo stesso artefatto durante il repair.
+- Aggiunto learning ledger separato con fingerprint e categorie strutturate senza prompt privati, output integrali, segreti o reasoning.
+- Aggiunto annealer Ollama locale a priorità inferiore alle menti, policy anti-coaching, trigger aggregato, canary naturale, promozione e rollback atomici.
+- Aggiunti i comandi `newland prompts status|run|rollback` e l'opt-in live `--allow-prompt-annealing`.
+- Il repair DashScope include ora la risposta invalida precedente senza prescrivere un'azione, evitando una seconda richiesta priva del dato da correggere.
+- Il regression set esterno conserva in forma sintetica i quattro difetti emersi nei canary Alibaba; hash, hot reload tra inferenze e isolamento del manifest sono coperti dai test.
+- Verifica finale completata con 171 test Python verdi, compilazione dei moduli, controllo diff e stato CLI del registry `healthy`.

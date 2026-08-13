@@ -15,6 +15,9 @@ from .configuration import (
 from .dashscope_adapter import DashScopeCognition
 from .llm_adapter import OllamaCognition
 from .provider import CognitionProvider, GenerativeCognitionPool, RoutedCognition
+from .prompt_learning import PromptFailureLedger
+from .prompt_registry import PromptRegistry
+from .schema import DEFAULT_PROMPT_REGISTRY
 
 
 DashScopeRequester = Callable[[Request, float], dict[str, Any]]
@@ -27,6 +30,8 @@ class ConfiguredCognition:
     reflective_specs: tuple[ModelSpec, ...]
     cloud_providers: tuple[DashScopeCognition, ...]
     ledger: CloudUsageLedger | None = None
+    prompt_registry: PromptRegistry | None = None
+    prompt_failure_ledger: PromptFailureLedger | None = None
     _closed: bool = False
     _final_health: dict[str, object] | None = None
 
@@ -46,6 +51,16 @@ class ConfiguredCognition:
             "cloud_providers": [
                 provider.health() for provider in self.cloud_providers
             ],
+            "prompt_registry": (
+                self.prompt_registry.health()
+                if self.prompt_registry is not None
+                else None
+            ),
+            "prompt_learning": (
+                self.prompt_failure_ledger.summary()
+                if self.prompt_failure_ledger is not None
+                else None
+            ),
         }
 
     def close(self) -> None:
@@ -55,6 +70,8 @@ class ConfiguredCognition:
         self._closed = True
         if self.ledger is not None:
             self.ledger.close()
+        if self.prompt_failure_ledger is not None:
+            self.prompt_failure_ledger.close()
 
     def __enter__(self) -> ConfiguredCognition:
         return self
@@ -72,6 +89,8 @@ def build_configured_cognition(
     base_url: str,
     cloud_token_cap: int | None,
     ledger_path: str | Path,
+    prompt_registry_path: str | Path = DEFAULT_PROMPT_REGISTRY,
+    prompt_ledger_path: str | Path | None = None,
     dashscope_requester: DashScopeRequester | None = None,
 ) -> ConfiguredCognition:
     ordinary_specs = tuple(ModelSpec.parse(value) for value in ordinary_models)
@@ -98,10 +117,18 @@ def build_configured_cognition(
         else None
     )
     cloud_providers: list[DashScopeCognition] = []
+    prompt_registry = PromptRegistry(prompt_registry_path)
+    prompt_failure_ledger = PromptFailureLedger(
+        prompt_ledger_path or default_prompt_ledger_path(ledger_path)
+    )
 
     def provider_for(spec: ModelSpec) -> CognitionProvider:
         if spec.provider == "ollama":
-            return OllamaCognition(model=spec.model)
+            return OllamaCognition(
+                model=spec.model,
+                prompt_registry=prompt_registry,
+                failure_ledger=prompt_failure_ledger,
+            )
         assert ledger is not None
         provider = DashScopeCognition(
             model=spec.model,
@@ -110,6 +137,8 @@ def build_configured_cognition(
             ledger=ledger,
             model_token_cap=LIVE_CLOUD_MODEL_POLICIES[spec.model].token_cap,
             requester=dashscope_requester,
+            prompt_registry=prompt_registry,
+            failure_ledger=prompt_failure_ledger,
         )
         cloud_providers.append(provider)
         return provider
@@ -124,6 +153,7 @@ def build_configured_cognition(
     except BaseException:
         if ledger is not None:
             ledger.close()
+        prompt_failure_ledger.close()
         raise
     return ConfiguredCognition(
         cognition=RoutedCognition(ordinary, reflective),
@@ -131,9 +161,17 @@ def build_configured_cognition(
         reflective_specs=reflective_specs,
         cloud_providers=tuple(cloud_providers),
         ledger=ledger,
+        prompt_registry=prompt_registry,
+        prompt_failure_ledger=prompt_failure_ledger,
     )
 
 
 def default_cloud_ledger_path(database_path: str | Path) -> Path:
     database = Path(database_path)
     return database.with_name(f"{database.stem}.cloud-runtime.db")
+
+
+def default_prompt_ledger_path(database_path: str | Path) -> Path:
+    database = Path(database_path)
+    stem = database.stem.removesuffix(".cloud-runtime")
+    return database.with_name(f"{stem}.prompt-runtime.db")

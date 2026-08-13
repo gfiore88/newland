@@ -185,6 +185,10 @@ class LiveSupervisorTests(unittest.TestCase):
                 database, cognition=ScriptedTestCognition()
             ) as simulation:
                 simulation.admit_arrivals(TEST_FIXTURE_PROFILES[:1])
+            from tests.test_prompt_registry import write_registry
+
+            prompt_registry_path = root / "prompt-registry"
+            write_registry(prompt_registry_path)
             supervisor = LiveSupervisor(
                 database,
                 static_directory=static_directory,
@@ -200,6 +204,7 @@ class LiveSupervisorTests(unittest.TestCase):
                 ),
                 cloud_token_cap=10_000,
                 cloud_ledger_path=root / "cloud.db",
+                prompt_registry_path=prompt_registry_path,
                 max_activations=1,
                 dashscope_requester=(
                     lambda request, timeout: valid_dashscope_response()
@@ -238,6 +243,20 @@ class LiveSupervisorTests(unittest.TestCase):
                 ]
             self.assertEqual(
                 "dashscope", proposals[-1].payload["cognition"]["provider"]
+            )
+            self.assertEqual(
+                "agent-cognition-v4",
+                proposals[-1].payload["cognition"]["prompt_version"],
+            )
+            self.assertEqual(
+                64, len(proposals[-1].payload["cognition"]["prompt_hash"])
+            )
+            self.assertEqual(
+                64, len(proposals[-1].payload["cognition"]["schema_hash"])
+            )
+            self.assertEqual(
+                "healthy",
+                health["runtime"]["cloud_cognition"]["prompt_registry"]["status"],
             )
 
 

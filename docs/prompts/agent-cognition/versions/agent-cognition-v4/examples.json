@@ -1,0 +1,35 @@
+[
+  {
+    "case_id": "canary-memory-source-field",
+    "violation_code": "reference.source_field",
+    "invalid_shape": {
+      "memory_appraisals": [{"source_ids": ["[EVENT_ID]"]}]
+    },
+    "required_constraint": "Ogni memory appraisal usa source_event_id singolare."
+  },
+  {
+    "case_id": "canary-consume-without-carried-resource",
+    "violation_code": "material.consume_unavailable",
+    "invalid_shape": {
+      "intention": {"action_type": "consume", "resource_id": null},
+      "action_contracts": {"consume": {"carried": {}}}
+    },
+    "required_constraint": "Consume richiede un resource_id presente in carried; il contratto non suggerisce un'azione alternativa."
+  },
+  {
+    "case_id": "canary-missing-mental-provenance",
+    "violation_code": "reference.source_field",
+    "invalid_shape": {
+      "mental_updates": {"beliefs": [{"source_ids": []}]}
+    },
+    "required_constraint": "Ogni aggiornamento mentale generato richiede source_ids non vuoto e posseduto."
+  },
+  {
+    "case_id": "canary-foreign-plan-metadata",
+    "violation_code": "response.shape",
+    "invalid_shape": {
+      "mental_updates": {"plans": [{"status": "active"}]}
+    },
+    "required_constraint": "I piani restituiscono soltanto i campi ammessi dallo schema; status è contesto, non output di revisione."
+  }
+]

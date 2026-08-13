@@ -95,6 +95,28 @@ class CliTests(unittest.TestCase):
             emitted,
         )
 
+    def test_live_prompt_annealing_requires_explicit_opt_in(self) -> None:
+        args = build_parser().parse_args(
+            ["live", "--allow-prompt-annealing", "--prompt-annealer-model", "qwen3:8b"]
+        )
+
+        self.assertTrue(args.allow_prompt_annealing)
+        self.assertEqual("qwen3:8b", args.prompt_annealer_model)
+        self.assertTrue(
+            str(args.prompt_registry).endswith("docs/prompts/agent-cognition")
+        )
+
+    def test_prompt_commands_expose_status_run_and_rollback(self) -> None:
+        parser = build_parser()
+
+        status = parser.parse_args(["prompts", "status"])
+        run = parser.parse_args(["prompts", "run", "--model", "qwen3:8b"])
+        rollback = parser.parse_args(["prompts", "rollback"])
+
+        self.assertEqual("status", status.prompt_command)
+        self.assertEqual("qwen3:8b", run.model)
+        self.assertEqual("rollback", rollback.prompt_command)
+
 
 if __name__ == "__main__":
     unittest.main()

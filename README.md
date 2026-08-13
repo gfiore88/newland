@@ -34,6 +34,24 @@ uv run newland --db data/newland.db live \
 # Il consumo cumulativo e il circuito sono visibili in /api/health.
 # Il ledger non canonico predefinito è data/newland.cloud-runtime.db.
 
+# Registry del prompt cognitivo e learning ledger
+# Il prompt attivo vive sotto docs/prompts/, non nei moduli Python.
+uv run newland --db data/newland.db prompts status
+
+# Genera al massimo un candidato locale dagli errori strutturali ripetuti.
+uv run newland --db data/newland.db prompts run --model qwen2.5:3b
+
+# Ripristina atomicamente la versione precedente dalla prossima attivazione.
+uv run newland --db data/newland.db prompts rollback
+
+# Annealing autonomo nella live: opt-in esplicito e modello Ollama locale.
+# Evidenze e candidati non generano chiamate Alibaba aggiuntive.
+uv run newland --db data/newland.db live \
+  --model dashscope:qwen-flash-character \
+  --model ollama:qwen2.5:3b \
+  --allow-cloud-live --cloud-token-cap 100000 \
+  --allow-prompt-annealing --prompt-annealer-model qwen2.5:3b
+
 # Failover fra modelli generativi, senza fallback statico
 uv run newland --db data/newland.db run \
   --model qwen2.5:3b --model qwen2.5:1.5b
@@ -70,6 +88,15 @@ prenotazione. Un `403 AllocationQuota.FreeTierOnly` ferma gli altri provider
 DashScope della stessa attivazione; può proseguire soltanto un provider locale
 esplicitamente elencato. La chiave non compare nella health o negli eventi e va
 ruotata modificando soltanto `.env` a runtime fermo.
+
+Il prompt cognitivo attivo è verificato tramite SHA-256 prima di ogni
+attivazione. Prompt, schema e lesson overlay vengono congelati per l'intera
+inferenza, compreso l'eventuale repair. Gli errori di contratto vengono
+aggregati in `data/newland.prompt-runtime.db` usando soltanto codici e categorie
+redatte: il ledger non conserva contesto privato, output integrali o reasoning.
+Un candidato che richiede repair viene ritirato automaticamente; una promozione
+diventa effettiva soltanto fra due attivazioni e può essere annullata senza
+riavviare il mondo.
 
 ---
 

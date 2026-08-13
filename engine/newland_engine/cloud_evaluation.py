@@ -20,8 +20,9 @@ from .cognition.parsing import (
     parse_memory_appraisals,
     parse_mental_updates,
 )
-from .cognition.prompting import build_private_context, build_system_prompt
-from .cognition.schema import get_cognition_schema
+from .cognition.prompting import build_private_context
+from .cognition.prompt_registry import PromptRegistry
+from .cognition.schema import DEFAULT_PROMPT_REGISTRY
 from .cognition.types import (
     AttentionSchedule,
     CognitionContext,
@@ -87,6 +88,7 @@ class DashScopeEvaluationCognition:
         timeout_seconds: float = 120.0,
         max_attempts: int = 2,
         requester: Requester | None = None,
+        prompt_registry: PromptRegistry | None = None,
     ) -> None:
         if not allow_cloud:
             raise CloudEvaluationConfigurationError(
@@ -134,17 +136,21 @@ class DashScopeEvaluationCognition:
         self._max_attempts = max_attempts
         self._requester = requester or _open_json
         self.usage = TokenUsage()
+        self.prompt_registry = prompt_registry or PromptRegistry(
+            DEFAULT_PROMPT_REGISTRY
+        )
 
     def decide(self, context: CognitionContext) -> CognitionResult:
         inference_id = str(uuid4())
+        artifact = self.prompt_registry.snapshot()
         canonical_schema = json.dumps(
-            get_cognition_schema(), ensure_ascii=False, separators=(",", ":")
+            artifact.schema, ensure_ascii=False, separators=(",", ":")
         )
         messages = [
             {
                 "role": "system",
                 "content": (
-                    f"{build_system_prompt()} JSON Schema vincolante della risposta "
+                    f"{artifact.system_prompt} JSON Schema vincolante della risposta "
                     f"finale: {canonical_schema}"
                 ),
             },
@@ -179,6 +185,9 @@ class DashScopeEvaluationCognition:
                     model=self.model,
                     inference_id=inference_id,
                     attempts=attempt,
+                    prompt_version=artifact.version,
+                    prompt_hash=artifact.prompt_hash,
+                    schema_hash=artifact.schema_hash,
                 )
                 validate_cognition_result(result, context)
                 return result

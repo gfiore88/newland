@@ -185,6 +185,10 @@ Un'intenzione contiene `action_type`, `target_id`, `destination`, `duration_minu
 - [OPS-010] La live DashScope richiede `--allow-cloud-live`, credenziale locale, endpoint Alibaba HTTPS e cap cumulativo; il ledger operativo è separato dall'event store canonico.
 - [OPS-011] `/api/health` espone budget consumato/residuo e circuit state senza chiavi, prompt, risposte private o chain-of-thought.
 - [OPS-012] Errori terminali di quota o billing saltano gli altri provider cloud della stessa attivazione; soltanto un generatore locale esplicitamente configurato può continuare.
+- [OPS-013] Il contratto cognitivo viene caricato dal registry esterno `docs/prompts/agent-cognition`; una singola inferenza mantiene immutabili prompt e schema anche durante un repair.
+- [OPS-014] Ogni provenienza cognitiva registra `prompt_version`, `prompt_hash` e `schema_hash`; hash o manifest invalidi non vengono attivati.
+- [OPS-015] Gli errori strutturali confluiscono nel learning ledger non canonico e minimizzato; l'annealer locale può modificare soltanto lesson overlay tecnici e resta subordinato alle menti.
+- [OPS-016] Candidate prompt usano attivazioni naturali come canary: un repair causa rollback, mentre la promozione avviene soltanto al confine fra attivazioni complete.
 
 ### Bisogni corporei
 

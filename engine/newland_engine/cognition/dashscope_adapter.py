@@ -12,8 +12,10 @@ from .cloud_budget import CloudBudgetExceeded, CloudUsageLedger
 from .configuration import validate_alibaba_endpoint
 from .exceptions import CognitionUnavailable
 from .parsing import parse_intention, parse_memory_appraisals, parse_mental_updates
-from .prompting import build_private_context, build_system_prompt
-from .schema import get_cognition_schema
+from .prompting import build_private_context
+from .prompt_learning import PromptFailure, PromptFailureLedger
+from .prompt_registry import PromptArtifact, PromptRegistry
+from .schema import DEFAULT_PROMPT_REGISTRY
 from .types import (
     AttentionSchedule,
     CognitionContext,
@@ -46,6 +48,8 @@ class DashScopeCognition:
         circuit_cooldown_seconds: float = 60.0,
         requester: Requester | None = None,
         clock: Clock = monotonic,
+        prompt_registry: PromptRegistry | None = None,
+        failure_ledger: PromptFailureLedger | None = None,
     ) -> None:
         validate_alibaba_endpoint(base_url)
         if not api_key.strip():
@@ -66,6 +70,10 @@ class DashScopeCognition:
         self._cooldown_seconds = circuit_cooldown_seconds
         self._requester = requester or _open_json
         self._clock = clock
+        self.prompt_registry = prompt_registry or PromptRegistry(
+            DEFAULT_PROMPT_REGISTRY
+        )
+        self.failure_ledger = failure_ledger
         self._consecutive_transport_failures = 0
         self._circuit_opened_at: float | None = None
         self._requests = 0
@@ -79,14 +87,15 @@ class DashScopeCognition:
                 [{"model": self.model, "error": "DashScope circuit is open"}]
             )
         inference_id = str(uuid4())
+        artifact = self.prompt_registry.snapshot()
         schema = json.dumps(
-            get_cognition_schema(), ensure_ascii=False, separators=(",", ":")
+            artifact.schema, ensure_ascii=False, separators=(",", ":")
         )
         messages = [
             {
                 "role": "system",
                 "content": (
-                    f"{build_system_prompt()} JSON Schema vincolante della risposta "
+                    f"{artifact.system_prompt} JSON Schema vincolante della risposta "
                     f"finale: {schema}"
                 ),
             },
@@ -98,6 +107,7 @@ class DashScopeCognition:
             },
         ]
         failures: list[dict[str, str]] = []
+        contract_failed = False
         for attempt in range(1, self._max_attempts + 1):
             parsed_response: Any = None
             try:
@@ -119,9 +129,19 @@ class DashScopeCognition:
                     model=self.model,
                     inference_id=inference_id,
                     attempts=attempt,
+                    prompt_version=artifact.version,
+                    prompt_hash=artifact.prompt_hash,
+                    schema_hash=artifact.schema_hash,
                 )
                 validate_cognition_result(result, context)
                 self._consecutive_transport_failures = 0
+                self.prompt_registry.observe(
+                    artifact.version,
+                    first_attempt_valid=attempt == 1,
+                    provider=self.provider_family,
+                    model=self.model,
+                    tokens=_reported_total_tokens(body),
+                )
                 return result
             except _TerminalCloudFailure as error:
                 failures.append({"model": self.model, "error": str(error)})
@@ -144,22 +164,70 @@ class DashScopeCognition:
                 ValueError,
                 json.JSONDecodeError,
             ) as error:
+                contract_failed = True
+                self._record_prompt_failure(artifact, attempt, error)
                 message = self._redact(str(error))
                 message += _material_contract_detail(parsed_response, context)
                 failures.append({"model": self.model, "error": message})
                 if attempt < self._max_attempts:
-                    messages.append(
-                        {
-                            "role": "user",
-                            "content": (
-                                "La risposta finale precedente non rispettava il "
-                                f"contratto: {message}. Rivaluta autonomamente lo "
-                                "stesso contesto e restituisci soltanto un oggetto "
-                                "JSON valido."
-                            ),
-                        }
+                    messages.extend(
+                        [
+                            {
+                                "role": "assistant",
+                                "content": locals().get("content", ""),
+                            },
+                            {
+                                "role": "user",
+                                "content": (
+                                    "La risposta finale precedente non rispettava il "
+                                    f"contratto: {message}. Rivaluta autonomamente lo "
+                                    "stesso contesto e restituisci soltanto un oggetto "
+                                    "JSON valido."
+                                ),
+                            },
+                        ]
                     )
+        if contract_failed:
+            self.prompt_registry.observe(
+                artifact.version,
+                first_attempt_valid=False,
+                provider=self.provider_family,
+                model=self.model,
+            )
         raise CognitionUnavailable(failures)
+
+    def _record_prompt_failure(
+        self, artifact: PromptArtifact, attempt: int, error: Exception
+    ) -> None:
+        if self.failure_ledger is None:
+            return
+        message = str(error)
+        lowered = message.lower()
+        if "source_event_id" in lowered or "source_ids" in lowered:
+            code = "reference.source_field"
+        elif "consume" in lowered or "carried" in lowered:
+            code = "material.consume_unavailable"
+        elif isinstance(error, json.JSONDecodeError):
+            code = "response.invalid_json"
+        elif isinstance(error, (KeyError, AttributeError, TypeError)):
+            code = "response.shape"
+        else:
+            code = "contract.invalid"
+        field = str(error.args[0]) if isinstance(error, KeyError) and error.args else "response"
+        self.failure_ledger.record(
+            PromptFailure(
+                violation_code=code,
+                field_path=field,
+                observed_type=type(error).__name__,
+                provider=self.provider_family,
+                model=self.model,
+                prompt_version=artifact.version,
+                prompt_hash=artifact.prompt_hash,
+                schema_hash=artifact.schema_hash,
+                attempt=attempt,
+                detail=message,
+            )
+        )
 
     def health(self) -> dict[str, object]:
         ledger = self._ledger.snapshot()
@@ -311,6 +379,13 @@ def _non_negative_int(value: Any) -> int:
         return max(0, int(value or 0))
     except (TypeError, ValueError):
         return 0
+
+
+def _reported_total_tokens(body: dict[str, Any]) -> int | None:
+    usage = body.get("usage")
+    if not isinstance(usage, dict) or usage.get("total_tokens") is None:
+        return None
+    return _non_negative_int(usage["total_tokens"])
 
 
 class _NoRedirectHandler(HTTPRedirectHandler):

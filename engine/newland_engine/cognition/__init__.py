@@ -25,6 +25,14 @@ from .provider import CognitionProvider, RoutedCognition, GenerativeCognitionPoo
 from .llm_adapter import OllamaCognition
 from .dashscope_adapter import DashScopeCognition
 from .validation import validate_cognition_result
+from .prompt_registry import PromptArtifact, PromptRegistry, PromptRegistryError
+from .prompt_learning import (
+    PromptAnnealingPolicy,
+    PromptFailure,
+    PromptFailureLedger,
+    PromptLesson,
+    PromptLessonRejected,
+)
 
 __all__ = [
     "ResourceAffordance",
@@ -54,4 +62,12 @@ __all__ = [
     "OllamaCognition",
     "DashScopeCognition",
     "validate_cognition_result",
+    "PromptArtifact",
+    "PromptRegistry",
+    "PromptRegistryError",
+    "PromptAnnealingPolicy",
+    "PromptFailure",
+    "PromptFailureLedger",
+    "PromptLesson",
+    "PromptLessonRejected",
 ]

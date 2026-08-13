@@ -9,7 +9,7 @@ from typing import Literal, Protocol, TypeVar
 from .chronicle import ChronicleContext, ChronicleEntry, ChroniclerProvider
 from .cognition import CognitionContext, CognitionProvider, CognitionResult
 
-Workload = Literal["agent", "chronicle"]
+Workload = Literal["agent", "chronicle", "annealer"]
 ResultT = TypeVar("ResultT")
 
 
@@ -17,15 +17,19 @@ ResultT = TypeVar("ResultT")
 class InferenceAdmissionSnapshot:
     agent_queue_depth: int
     chronicle_queue_depth: int
+    annealer_queue_depth: int
     in_flight: Workload | None
     completed_agent_jobs: int
     completed_chronicle_jobs: int
+    completed_annealer_jobs: int
     failed_agent_jobs: int
     failed_chronicle_jobs: int
+    failed_annealer_jobs: int
     consecutive_agent_jobs: int
     agent_weight: int
     total_agent_wait_seconds: float
     total_chronicle_wait_seconds: float
+    total_annealer_wait_seconds: float
     accepting: bool
 
     def to_dict(self) -> dict[str, object]:
@@ -40,13 +44,26 @@ class InferenceAdmission:
             raise ValueError("agent_weight must be positive")
         self.agent_weight = agent_weight
         self._condition = Condition()
-        self._waiting: dict[Workload, int] = {"agent": 0, "chronicle": 0}
+        self._waiting: dict[Workload, int] = {
+            "agent": 0,
+            "chronicle": 0,
+            "annealer": 0,
+        }
         self._in_flight: Workload | None = None
-        self._completed: dict[Workload, int] = {"agent": 0, "chronicle": 0}
-        self._failed: dict[Workload, int] = {"agent": 0, "chronicle": 0}
+        self._completed: dict[Workload, int] = {
+            "agent": 0,
+            "chronicle": 0,
+            "annealer": 0,
+        }
+        self._failed: dict[Workload, int] = {
+            "agent": 0,
+            "chronicle": 0,
+            "annealer": 0,
+        }
         self._wait_seconds: dict[Workload, float] = {
             "agent": 0.0,
             "chronicle": 0.0,
+            "annealer": 0.0,
         }
         self._consecutive_agent_jobs = 0
         self._accepting = True
@@ -58,7 +75,7 @@ class InferenceAdmission:
             self._condition.notify_all()
 
     def run(self, workload: Workload, operation: Callable[[], ResultT]) -> ResultT:
-        if workload not in {"agent", "chronicle"}:
+        if workload not in {"agent", "chronicle", "annealer"}:
             raise ValueError(f"unsupported inference workload: {workload}")
         queued_at = monotonic()
         with self._condition:
@@ -99,15 +116,19 @@ class InferenceAdmission:
             return InferenceAdmissionSnapshot(
                 agent_queue_depth=self._waiting["agent"],
                 chronicle_queue_depth=self._waiting["chronicle"],
+                annealer_queue_depth=self._waiting["annealer"],
                 in_flight=self._in_flight,
                 completed_agent_jobs=self._completed["agent"],
                 completed_chronicle_jobs=self._completed["chronicle"],
+                completed_annealer_jobs=self._completed["annealer"],
                 failed_agent_jobs=self._failed["agent"],
                 failed_chronicle_jobs=self._failed["chronicle"],
+                failed_annealer_jobs=self._failed["annealer"],
                 consecutive_agent_jobs=self._consecutive_agent_jobs,
                 agent_weight=self.agent_weight,
                 total_agent_wait_seconds=self._wait_seconds["agent"],
                 total_chronicle_wait_seconds=self._wait_seconds["chronicle"],
+                total_annealer_wait_seconds=self._wait_seconds["annealer"],
                 accepting=self._accepting,
             )
 
@@ -119,10 +140,12 @@ class InferenceAdmission:
                 self._waiting["chronicle"] > 0
                 and self._consecutive_agent_jobs >= self.agent_weight
             )
-        return not (
-            self._waiting["agent"] > 0
-            and self._consecutive_agent_jobs < self.agent_weight
-        )
+        if workload == "chronicle":
+            return not (
+                self._waiting["agent"] > 0
+                and self._consecutive_agent_jobs < self.agent_weight
+            )
+        return self._waiting["agent"] == 0 and self._waiting["chronicle"] == 0
 
 
 class InferenceAdmissionClosed(RuntimeError):

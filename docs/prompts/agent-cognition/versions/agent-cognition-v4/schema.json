@@ -1,0 +1,642 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attention_schedule": {
+      "additionalProperties": false,
+      "properties": {
+        "next_activation_in_ticks": {
+          "maximum": 144,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reason": {
+          "maxLength": 300,
+          "type": "string"
+        }
+      },
+      "required": [
+        "next_activation_in_ticks",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "intention": {
+      "additionalProperties": false,
+      "properties": {
+        "action_type": {
+          "enum": [
+            "speak",
+            "move",
+            "rest",
+            "offer_help",
+            "gather",
+            "consume",
+            "perform_activity",
+            "propose_cooperation",
+            "respond_cooperation",
+            "perform_cooperation",
+            "open_dispute",
+            "respond_dispute",
+            "attune_resonance"
+          ],
+          "type": "string"
+        },
+        "activity_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "destination": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dispute_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "duration_minutes": {
+          "maximum": 240,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "motivation_summary": {
+          "maxLength": 300,
+          "type": "string"
+        },
+        "node_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "proposal_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "quantity": {
+          "exclusiveMinimum": 0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "resource_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "response": {
+          "enum": [
+            "accept",
+            "decline",
+            "contest",
+            "offer_resolution",
+            "accept_resolution",
+            null
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "spoken_content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subject_event_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "action_type",
+        "target_id",
+        "destination",
+        "duration_minutes",
+        "spoken_content",
+        "language",
+        "resource_id",
+        "quantity",
+        "activity_id",
+        "proposal_id",
+        "dispute_id",
+        "subject_event_id",
+        "response",
+        "node_id",
+        "motivation_summary",
+        "confidence"
+      ],
+      "type": "object"
+    },
+    "memory_appraisals": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "emotional_tone": {
+            "maxLength": 100,
+            "type": "string"
+          },
+          "salience": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "source_event_id": {
+            "type": "string"
+          },
+          "subjective_summary": {
+            "maxLength": 500,
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_event_id",
+          "subjective_summary",
+          "salience",
+          "emotional_tone",
+          "confidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "mental_updates": {
+      "additionalProperties": false,
+      "properties": {
+        "affect": {
+          "additionalProperties": false,
+          "properties": {
+            "calm_delta": {
+              "maximum": 1,
+              "minimum": -1,
+              "type": "number"
+            },
+            "curiosity_delta": {
+              "maximum": 1,
+              "minimum": -1,
+              "type": "number"
+            },
+            "interpretation": {
+              "maxLength": 500,
+              "type": "string"
+            },
+            "melancholy_delta": {
+              "maximum": 1,
+              "minimum": -1,
+              "type": "number"
+            },
+            "source_ids": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "calm_delta",
+            "curiosity_delta",
+            "melancholy_delta",
+            "interpretation",
+            "source_ids"
+          ],
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "anamnesis_fragments": {
+          "description": "Esperienze soggettive opzionali generate solo da segnali di risonanza percepiti; non sono fatti canonici sul passato.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "confidence": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "content": {
+                "maxLength": 900,
+                "type": "string"
+              },
+              "fragment_key": {
+                "maxLength": 120,
+                "type": "string"
+              },
+              "interpretation": {
+                "maxLength": 700,
+                "type": "string"
+              },
+              "phenomenon_label": {
+                "maxLength": 160,
+                "type": "string"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "fragment_key",
+              "phenomenon_label",
+              "content",
+              "interpretation",
+              "confidence",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "beliefs": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "confidence": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "key": {
+                "maxLength": 120,
+                "type": "string"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "statement": {
+                "maxLength": 500,
+                "type": "string"
+              }
+            },
+            "required": [
+              "key",
+              "statement",
+              "confidence",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "commitments": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "commitment_key": {
+                "maxLength": 120,
+                "type": "string"
+              },
+              "description": {
+                "maxLength": 500,
+                "type": "string"
+              },
+              "due_tick": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "involved_agent_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "operation": {
+                "enum": [
+                  "add",
+                  "complete",
+                  "abandon"
+                ],
+                "type": "string"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "operation",
+              "commitment_key",
+              "description",
+              "due_tick",
+              "involved_agent_ids",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "goals": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "goal": {
+                "maxLength": 300,
+                "type": "string"
+              },
+              "operation": {
+                "enum": [
+                  "add",
+                  "remove"
+                ],
+                "type": "string"
+              },
+              "reason": {
+                "maxLength": 500,
+                "type": "string"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "operation",
+              "goal",
+              "reason",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "plans": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "maxLength": 500,
+                "type": "string"
+              },
+              "operation": {
+                "enum": [
+                  "upsert",
+                  "complete",
+                  "abandon"
+                ],
+                "type": "string"
+              },
+              "plan_key": {
+                "maxLength": 120,
+                "type": "string"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "steps": {
+                "items": {
+                  "maxLength": 300,
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "operation",
+              "plan_key",
+              "description",
+              "steps",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "reflections": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "confidence": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "statement": {
+                "maxLength": 700,
+                "type": "string"
+              }
+            },
+            "required": [
+              "statement",
+              "confidence",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "relationships": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "familiarity_delta": {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "number"
+              },
+              "interpretation": {
+                "maxLength": 500,
+                "type": "string"
+              },
+              "other_agent_id": {
+                "type": "string"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "tension_delta": {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "number"
+              },
+              "trust_delta": {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "number"
+              },
+              "warmth_delta": {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "number"
+              }
+            },
+            "required": [
+              "other_agent_id",
+              "familiarity_delta",
+              "trust_delta",
+              "warmth_delta",
+              "tension_delta",
+              "interpretation",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "resonance_orientation": {
+          "additionalProperties": false,
+          "properties": {
+            "interpretation": {
+              "maxLength": 700,
+              "type": "string"
+            },
+            "receptive": {
+              "type": "boolean"
+            },
+            "source_ids": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "receptive",
+            "interpretation",
+            "source_ids"
+          ],
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "role_interpretations": {
+          "description": "Interpretazioni soggettive opzionali. Usare remove solo per interpretation_key già presenti nel contesto privato.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "confidence": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "interpretation": {
+                "maxLength": 600,
+                "type": "string"
+              },
+              "interpretation_key": {
+                "maxLength": 120,
+                "type": "string"
+              },
+              "operation": {
+                "enum": [
+                  "upsert",
+                  "remove"
+                ],
+                "type": "string"
+              },
+              "role_label": {
+                "maxLength": 160,
+                "type": "string"
+              },
+              "source_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "subject_agent_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation",
+              "interpretation_key",
+              "subject_agent_id",
+              "role_label",
+              "interpretation",
+              "confidence",
+              "source_ids"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "beliefs",
+        "relationships",
+        "affect",
+        "reflections",
+        "goals",
+        "plans",
+        "commitments",
+        "role_interpretations",
+        "anamnesis_fragments",
+        "resonance_orientation"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "intention",
+    "memory_appraisals",
+    "mental_updates",
+    "attention_schedule"
+  ],
+  "type": "object"
+}
