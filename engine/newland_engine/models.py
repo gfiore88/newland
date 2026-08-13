@@ -426,7 +426,9 @@ class MaterialAgentState:
     inventory_capacity: float = 20.0
     active: bool = True
     is_dead: bool = False
+    exhaustion_ticks: int = 0
     starvation_ticks: int = 0
+    dehydration_ticks: int = 0
     current_action: str | None = None
 
 

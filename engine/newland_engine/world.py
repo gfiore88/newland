@@ -81,6 +81,11 @@ def reduce_event(state: WorldState, event: EventEnvelope) -> WorldState:
         agent.energy = float(event.payload["current"]["energy"])
         agent.hunger = float(event.payload["current"]["hunger"])
         agent.thirst = float(event.payload["current"]["thirst"])
+        fatal_exposure_ticks = event.payload.get("fatal_exposure_ticks")
+        if fatal_exposure_ticks is not None:
+            agent.exhaustion_ticks = int(fatal_exposure_ticks["exhaustion"])
+            agent.starvation_ticks = int(fatal_exposure_ticks["starvation"])
+            agent.dehydration_ticks = int(fatal_exposure_ticks["dehydration"])
     elif event.event_type == "AgentDied":
         agent = state.agents[event.actor_ids[0]]
         agent.is_dead = True

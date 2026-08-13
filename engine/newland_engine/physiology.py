@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from .models import EventEnvelope, MaterialAgentState, WorldState, world_time_for_tick
@@ -20,6 +21,7 @@ class PhysiologySystem:
     ENERGY_INTERRUPT = 0.25
     HUNGER_INTERRUPT = 0.75
     THIRST_INTERRUPT = 0.75
+    FATAL_EXPOSURE_LIMIT = 200
 
     def advance(self, state: WorldState, *, to_tick: int) -> PhysiologyAdvance:
         elapsed = to_tick - state.tick
@@ -30,6 +32,8 @@ class PhysiologySystem:
         interrupted: list[str] = []
         for agent_id in sorted(state.agents):
             agent = state.agents[agent_id]
+            if agent.is_dead:
+                continue
             previous = self._needs(agent)
             current = {
                 "energy": self._bounded(
@@ -45,29 +49,38 @@ class PhysiologySystem:
             crossed = self._crossed_thresholds(previous, current)
             if crossed:
                 interrupted.append(agent_id)
-            
-            # Starvation Logic
-            fatal_condition = current["energy"] == 0.0 or current["hunger"] == 1.0 or current["thirst"] == 1.0
-            if fatal_condition:
-                agent.starvation_ticks += elapsed
-            else:
-                agent.starvation_ticks = 0
-            
-            # se supera 200 tick (circa 20 ore simulate), muore.
-            if agent.starvation_ticks > 200 and not agent.is_dead:
-                events.append(
-                    EventEnvelope(
-                        event_type="AgentDied",
-                        world_tick=to_tick,
-                        world_time=world_time_for_tick(to_tick),
-                        actor_ids=(agent_id,),
-                        location=agent.location,
-                        payload={"reason": "starvation or dehydration"},
-                        visibility="public",
-                        recipient_ids=(),
-                    )
-                )
-                interrupted.append(agent_id)
+
+            fatal_exposure_ticks = {
+                "exhaustion": self._advance_fatal_exposure(
+                    previous=previous["energy"],
+                    current=current["energy"],
+                    elapsed=elapsed,
+                    prior_exposure=agent.exhaustion_ticks,
+                    fatal_value=0.0,
+                    rate_per_tick=self.ENERGY_DRAIN_PER_TICK,
+                ),
+                "starvation": self._advance_fatal_exposure(
+                    previous=previous["hunger"],
+                    current=current["hunger"],
+                    elapsed=elapsed,
+                    prior_exposure=agent.starvation_ticks,
+                    fatal_value=1.0,
+                    rate_per_tick=self.HUNGER_GAIN_PER_TICK,
+                ),
+                "dehydration": self._advance_fatal_exposure(
+                    previous=previous["thirst"],
+                    current=current["thirst"],
+                    elapsed=elapsed,
+                    prior_exposure=agent.dehydration_ticks,
+                    fatal_value=1.0,
+                    rate_per_tick=self.THIRST_GAIN_PER_TICK,
+                ),
+            }
+            causes = [
+                cause
+                for cause, exposure in fatal_exposure_ticks.items()
+                if exposure > self.FATAL_EXPOSURE_LIMIT
+            ]
 
             events.append(
                 EventEnvelope(
@@ -81,12 +94,51 @@ class PhysiologySystem:
                         "previous": previous,
                         "current": current,
                         "crossed_thresholds": crossed,
+                        "fatal_exposure_ticks": fatal_exposure_ticks,
                     },
                     visibility="private",
                     recipient_ids=(agent_id,),
                 )
             )
+            if causes:
+                events.append(
+                    EventEnvelope(
+                        event_type="AgentDied",
+                        world_tick=to_tick,
+                        world_time=world_time_for_tick(to_tick),
+                        actor_ids=(agent_id,),
+                        location=agent.location,
+                        payload={
+                            "reason": " and ".join(causes),
+                            "causes": causes,
+                            "fatal_exposure_ticks": fatal_exposure_ticks,
+                        },
+                        visibility="public",
+                        recipient_ids=(),
+                    )
+                )
+                interrupted.append(agent_id)
         return PhysiologyAdvance(tuple(events), tuple(interrupted))
+
+    @staticmethod
+    def _advance_fatal_exposure(
+        *,
+        previous: float,
+        current: float,
+        elapsed: int,
+        prior_exposure: int,
+        fatal_value: float,
+        rate_per_tick: float,
+    ) -> int:
+        current_is_fatal = current == fatal_value
+        if not current_is_fatal:
+            return 0
+        if previous == fatal_value:
+            return prior_exposure + elapsed
+
+        distance = abs(fatal_value - previous)
+        ticks_until_fatal = math.ceil((distance / rate_per_tick) - 1e-12)
+        return max(0, elapsed - ticks_until_fatal)
 
     def _crossed_thresholds(
         self, previous: dict[str, float], current: dict[str, float]
