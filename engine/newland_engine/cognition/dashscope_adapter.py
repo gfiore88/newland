@@ -100,21 +100,22 @@ class DashScopeCognition:
         ]
         failures: list[dict[str, str]] = []
         for attempt in range(1, self._max_attempts + 1):
+            parsed_response: Any = None
             try:
                 body = self._budgeted_request(messages)
                 content = str(body["choices"][0]["message"]["content"])
-                parsed = json.loads(content)
+                parsed_response = json.loads(content)
                 result = CognitionResult(
-                    intention=parse_intention(parsed["intention"]),
+                    intention=parse_intention(parsed_response["intention"]),
                     memory_appraisals=tuple(
                         MemoryAppraisal(**item)
-                        for item in parsed["memory_appraisals"]
+                        for item in parsed_response["memory_appraisals"]
                     ),
                     mental_updates=parse_mental_updates(
-                        parsed["mental_updates"], context
+                        parsed_response["mental_updates"], context
                     ),
                     attention_schedule=AttentionSchedule(
-                        **parsed["attention_schedule"]
+                        **parsed_response["attention_schedule"]
                     ),
                     provider="dashscope",
                     model=self.model,
@@ -146,6 +147,7 @@ class DashScopeCognition:
                 json.JSONDecodeError,
             ) as error:
                 message = self._redact(str(error))
+                message += _material_contract_detail(parsed_response, context)
                 failures.append({"model": self.model, "error": message})
                 if attempt < self._max_attempts:
                     messages.append(
@@ -324,3 +326,25 @@ class _NoRedirectHandler(HTTPRedirectHandler):
         new_url: str,
     ) -> None:
         return None
+
+
+def _material_contract_detail(
+    parsed_response: Any, context: CognitionContext
+) -> str:
+    if not isinstance(parsed_response, dict):
+        return ""
+    intention = parsed_response.get("intention")
+    if not isinstance(intention, dict) or intention.get("action_type") != "consume":
+        return ""
+    consume = context.action_contracts.get("consume", {})
+    carried = consume.get("carried", {}) if isinstance(consume, dict) else {}
+    if carried:
+        identifiers = ", ".join(sorted(str(key) for key in carried))
+        return (
+            " Per consume, resource_id deve essere uno dei carried disponibili: "
+            f"{identifiers}."
+        )
+    return (
+        " action_contracts.consume.carried è vuoto: consume non è "
+        "materialmente disponibile; non inventare resource_id."
+    )

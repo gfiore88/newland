@@ -400,6 +400,43 @@ class DashScopeLiveCognitionTests(unittest.TestCase):
                 self.assertEqual(2, calls)
                 self.assertEqual("open", provider.health()["circuit_state"])
 
+    def test_repair_explains_empty_inventory_without_choosing_an_action(self) -> None:
+        requests: list[dict[str, object]] = []
+        invalid = valid_response()
+        invalid_content = json.loads(
+            invalid["choices"][0]["message"]["content"]
+        )
+        invalid_content["intention"]["action_type"] = "consume"
+        invalid_content["intention"]["resource_id"] = None
+        invalid["choices"][0]["message"]["content"] = json.dumps(
+            invalid_content
+        )
+        responses = [invalid, valid_response()]
+
+        def requester(request: object, timeout: float) -> dict[str, object]:
+            requests.append(json.loads(request.data.decode("utf-8")))
+            return responses.pop(0)
+
+        with tempfile.TemporaryDirectory() as directory:
+            with CloudUsageLedger(
+                Path(directory) / "runtime.db", global_cap=20_000
+            ) as ledger:
+                provider = DashScopeCognition(
+                    model="qwen-flash-character",
+                    api_key=API_KEY,
+                    base_url=ALIBABA_ENDPOINT,
+                    ledger=ledger,
+                    model_token_cap=20_000,
+                    requester=requester,
+                )
+                result = provider.decide(cognition_context())
+
+        repair = requests[1]["messages"][-1]["content"]
+        self.assertEqual(2, result.attempts)
+        self.assertIn("carried è vuoto", repair)
+        self.assertIn("non inventare resource_id", repair)
+        self.assertNotIn("scegli move", repair)
+
     def test_terminal_cloud_failure_skips_other_cloud_and_uses_local_generator(
         self,
     ) -> None:
